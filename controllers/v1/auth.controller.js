@@ -43,7 +43,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       phone,
       role: "USER",
-    });
+    }).select("-password");
 
     return res.json(user);
   } catch (error) {
