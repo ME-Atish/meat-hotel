@@ -6,7 +6,10 @@ const userController = require("../../controllers/v1/user.controller");
 
 const router = express.Router();
 
-router.get("/", authMiddleware, isAdminMiddleware, userController.getAll);
+router.route("/").get(authMiddleware, isAdminMiddleware, userController.getAll);
 
+router
+  .route("/ban/:id")
+  .post(authMiddleware, isAdminMiddleware, userController.banUser);
 
-module.exports = router
+module.exports = router;
