@@ -121,3 +121,27 @@ exports.login = async (req, res) => {
     }
   }
 };
+exports.refreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
+    if (!refreshToken) {
+      return res.status(401).json({ message: "The refresh token expired" });
+    }
+    const user = await userModel.findOne({ refreshToken });
+
+    if (!user) {
+      return res.status(403).json({ message: "User not found" });
+    }
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const newAccessToken = generateAccessToken(user.email);
+
+    res.cookie("access_token", newAccessToken);
+
+    return res.status(204);
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
