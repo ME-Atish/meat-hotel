@@ -12,4 +12,6 @@ router
   .route("/ban/:id")
   .post(authMiddleware, isAdminMiddleware, userController.banUser);
 
+router.route("/:id").delete(authMiddleware, isAdminMiddleware, userController.remove)
+
 module.exports = router;
