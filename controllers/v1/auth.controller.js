@@ -36,14 +36,16 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await userModel.create({
-      username,
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      role: "USER",
-    }).select("-password");
+    const user = await userModel
+      .create({
+        username,
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role: "USER",
+      })
+      .select("-password");
 
     return res.json(user);
   } catch (error) {
@@ -66,7 +68,7 @@ exports.login = async (req, res) => {
       }
       return res.json({ message: "Login successfully" });
     }
-    const { error } = loginValidation(req.body); // 💡 Fix: Joi returns an object with an `error` property
+    const { error } = loginValidation(req.body);
     if (error) {
       return res
         .status(422)
