@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const userModel = require("../../models/user.model");
 const banUserModel = require("../../models/ban.user.model");
+const isValidObjectId = require("../../utils/isValidObjectId")
 
 exports.getAll = async (req, res) => {
   const users = await userModel.find({}).select("-password");
@@ -13,9 +14,8 @@ exports.banUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
 
-    if (!isValidObjectId) {
+    if (isValidObjectId(id)) {
       return res.status(409).json({ message: "The id not valid" });
     }
 
