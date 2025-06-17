@@ -138,7 +138,7 @@ exports.refreshToken = async (req, res) => {
 
     res.cookie("access_token", newAccessToken);
 
-    return res.status(204);
+    return res.status(204).json({});
   } catch (error) {
     if (error) {
       throw error;

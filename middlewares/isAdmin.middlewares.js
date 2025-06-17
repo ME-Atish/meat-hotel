@@ -3,7 +3,9 @@ const userModel = require("../models/user.model");
 
 module.exports = async (req, res, next) => {
   if (!req.cookies.refresh_token) {
-    return res.status(403).json({ message: "You have not access to this route" });
+    return res
+      .status(403)
+      .json({ message: "You have not access to this route" });
   }
 
   const token = jwt.verify(
@@ -13,9 +15,13 @@ module.exports = async (req, res, next) => {
 
   const user = await userModel.findOne({ email: token.email });
 
-  if(user.role==="USER"){
-    return res.status(403).json({message: "You have not access to this route"})
+  if (user.role === "USER") {
+    return res
+      .status(403)
+      .json({ message: "You have not access to this route" });
   }
+
+  req.user = user;
 
   next();
 };
