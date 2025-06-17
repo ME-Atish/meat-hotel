@@ -12,10 +12,10 @@ router
   .route("/ban/:id")
   .post(authMiddleware, isAdminMiddleware, userController.banUser);
 
-  
+router.route("/").put(authMiddleware, userController.updateInfo);
 router
-  .route("/")
-  .put(authMiddleware, userController.updateInfo);
+  .route("/role")
+  .put(authMiddleware, isAdminMiddleware, userController.changeRole);
 
 router
   .route("/:id")

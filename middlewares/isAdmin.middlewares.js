@@ -12,8 +12,11 @@ module.exports = async (req, res, next) => {
     req.cookies.refresh_token,
     process.env.REFRESH_TOKEN_SECRET
   );
-
   const user = await userModel.findOne({ email: token.email });
+
+  if (!user) {
+    return res.status(403).json({ Message: "User not found" });
+  }
 
   if (user.role === "USER") {
     return res

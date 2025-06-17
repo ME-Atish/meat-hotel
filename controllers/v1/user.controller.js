@@ -4,6 +4,7 @@ const userModel = require("../../models/user.model");
 const banUserModel = require("../../models/ban.user.model");
 const isValidObjectId = require("../../utils/isValidObjectId");
 const updateInfoValidator = require("../../utils/validators/user.update.validate");
+const { generateRefreshToken } = require("../../utils/auth");
 
 exports.getAll = async (req, res) => {
   const users = await userModel.find({}).select("-password");
@@ -68,6 +69,8 @@ exports.updateInfo = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const newRefreshToken = generateRefreshToken(email);
+
     const updateUser = await userModel
       .findByIdAndUpdate(
         { _id: req.user._id },
@@ -78,11 +81,41 @@ exports.updateInfo = async (req, res) => {
           phone,
           password: hashedPassword,
           role: req.user.role,
+          refreshToken: newRefreshToken
         }
       )
       .select("-password");
 
+    res.cookie("refresh_token", newRefreshToken, { httpOnly: true });
+
     return res.status(200).json({ updateUser });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+exports.changeRole = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    if (isValidObjectId(id)) {
+      return res.status(409).json({ message: "Id is not valid" });
+    }
+
+    const user = await userModel.findOne({ _id: id });
+    if (!user) {
+      return res.status(403).json({ message: "User not found" });
+    }
+
+    let newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
+
+    await userModel.findByIdAndUpdate({ _id: id }, { role: newRole });
+
+    return res
+      .status(200)
+      .json({ message: "User's role changed successfully" });
   } catch (error) {
     if (error) {
       throw error;
