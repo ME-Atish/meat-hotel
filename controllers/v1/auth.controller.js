@@ -8,6 +8,14 @@ const loginValidation = require("../../utils/validators/user.login.validate");
 const { generateAccessToken } = require("../../utils/auth");
 const { generateRefreshToken } = require("../../utils/auth");
 
+/**
+ * Register the users into website
+ * 
+ * @param {*} req 
+ * @param {*} res
+ *  
+ * @returns res
+ */
 exports.register = async (req, res) => {
   try {
     const validationResult = registerValidation(req.body);
@@ -54,8 +62,18 @@ exports.register = async (req, res) => {
     }
   }
 };
+
+/**
+ * Login to the website into website
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * 
+ * @returns res 
+ */
 exports.login = async (req, res) => {
   try {
+    // If the user's tick the remember me this codes for next time will work
     if (req.cookies.refresh_token) {
       const jwtPayload = jwt.verify(
         req.cookies.refresh_token,
@@ -110,6 +128,7 @@ exports.login = async (req, res) => {
 
     res.cookie("access_token", accessToken, { httpOnly: true });
 
+    // check if the remember me is ticked 
     if (rememberMe) {
       res.cookie("refresh_token", refreshToken, { httpOnly: true });
     }
@@ -121,6 +140,15 @@ exports.login = async (req, res) => {
     }
   }
 };
+
+/**
+ * Client send request to this route and give access token in cookies 
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * 
+ * @returns res 
+ */
 exports.refreshToken = async (req, res) => {
   try {
     const refreshToken = req.cookies.refresh_token;

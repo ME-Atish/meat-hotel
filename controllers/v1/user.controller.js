@@ -6,12 +6,28 @@ const isValidObjectId = require("../../utils/isValidObjectId");
 const updateInfoValidator = require("../../utils/validators/user.update.validate");
 const { generateRefreshToken } = require("../../utils/auth");
 
+/**
+ * Get all the users information
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @return res
+ */
 exports.getAll = async (req, res) => {
   const users = await userModel.find({}).select("-password");
 
   return res.json(users);
 };
 
+/**
+ * Ban users with id
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns res
+ */
 exports.banUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -34,6 +50,14 @@ exports.banUser = async (req, res) => {
   }
 };
 
+/**
+ * Remove the users from website
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns res
+ */
 exports.remove = async (req, res) => {
   try {
     const { id } = req.params;
@@ -56,6 +80,14 @@ exports.remove = async (req, res) => {
   }
 };
 
+/**
+ * Updating the user information
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns res
+ */
 exports.updateInfo = async (req, res) => {
   try {
     const { error } = updateInfoValidator(req.body);
@@ -81,7 +113,7 @@ exports.updateInfo = async (req, res) => {
           phone,
           password: hashedPassword,
           role: req.user.role,
-          refreshToken: newRefreshToken
+          refreshToken: newRefreshToken,
         }
       )
       .select("-password");
@@ -96,6 +128,14 @@ exports.updateInfo = async (req, res) => {
   }
 };
 
+/**
+ * Change uses's role
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * 
+ * @returns res 
+ */
 exports.changeRole = async (req, res) => {
   try {
     const { id } = req.body;

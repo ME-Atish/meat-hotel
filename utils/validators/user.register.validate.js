@@ -1,5 +1,14 @@
 const joi = require("joi");
 
+/**
+ * Validating the data that client send in req.body for sign-up operations
+ *
+ * @param string data
+ *
+ * @return boolean
+ *
+ */
+
 const registerValidation = (data) => {
   const schema = joi.object({
     username: joi.string().min(5).max(25),

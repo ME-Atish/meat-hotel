@@ -1,5 +1,14 @@
 const joi = require("joi");
 
+/**
+ * Validating the data that client send in req.body for update their information
+ *
+ * @param string data
+ *
+ * @return boolean
+ *
+ */
+
 const updateInfoValidation = (data) => {
   const schema = joi.object({
     username: joi.string().min(5).max(25),

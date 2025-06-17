@@ -27,7 +27,7 @@ const schema = mongoose.Schema(
       enum: ["ADMIN", "USER", "OWNER"],
       default: "USER",
     },
-    refreshToken: String
+    refreshToken: String,
   },
   { timestamp: true }
 );

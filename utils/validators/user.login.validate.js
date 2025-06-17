@@ -1,5 +1,13 @@
 const joi = require("joi");
 
+/**
+ * Validating the data that client send in req.body for login operations
+ *
+ * @param string data
+ *
+ * @return boolean
+ *
+ */
 const loginValidation = (data) => {
   const schema = joi.object({
     identifier: joi
