@@ -8,6 +8,7 @@ const session = require("express-session");
 
 const authRouter = require("./routers/v1/auth.router");
 const userRouter = require("./routers/v1/user.router");
+const ownerRouter = require("./routers/v1/owner.router");
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use(
 
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
+app.use("/v1/owner", ownerRouter);
 
 // When path incorrect, these codes will run
 app.use((req, res) => {
