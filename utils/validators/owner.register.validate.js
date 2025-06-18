@@ -7,6 +7,7 @@ const joi = require("joi");
  *
  * @return boolean
  *
+ * 
  */
 
 const registerValidation = (data) => {
