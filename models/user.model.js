@@ -27,6 +27,10 @@ const schema = mongoose.Schema(
       enum: ["ADMIN", "USER"],
       default: "USER",
     },
+    isReserved: {
+      type: String,
+      default: 0,
+    },
     refreshToken: String,
   },
   { timestamp: true }
