@@ -153,3 +153,36 @@ exports.reserve = async (req, res) => {
     }
   }
 };
+
+exports.cancelReservation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (isValidObjectId(id)) {
+      return res.status(422).json({ message: "Id is not valid" });
+    }
+
+    await hotelModel.findByIdAndUpdate(
+      { _id: id },
+      {
+        isReserved: 0,
+      }
+    );
+
+    await userModel.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        isReserved: 0,
+      }
+    );
+
+    return res
+      .status(200)
+      .json({
+        message: "The reservation operation was successfully canceled.",
+      });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};

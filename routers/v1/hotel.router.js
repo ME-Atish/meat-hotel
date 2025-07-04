@@ -20,6 +20,9 @@ router
     hotelController.create
   );
 router.route("/reserve/:id").post(authMiddleware, hotelController.reserve);
+router
+  .route("/reserve/:id/cancel")
+  .post(authMiddleware, hotelController.cancelReservation);
 
 router.route("/:id").delete(hotelController.delete);
 
