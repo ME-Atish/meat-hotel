@@ -14,10 +14,6 @@ const schema = mongoose.Schema(
       type: String,
       required: true,
     },
-    details: {
-      type: String,
-      required: true,
-    },
     facilities: {
       type: String,
       required: true,
@@ -38,12 +34,8 @@ const schema = mongoose.Schema(
       type: String,
       required: true,
     },
-    HotelGuests: {
-      type: Number,
-      required: true,
-    },
     image: {
-      type: String,
+      type: Object,
     },
     owner: {
       type: mongoose.Types.ObjectId,
