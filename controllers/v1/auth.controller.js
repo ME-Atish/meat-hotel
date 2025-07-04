@@ -10,10 +10,10 @@ const { generateRefreshToken } = require("../../utils/auth");
 
 /**
  * Register the users into website
- * 
- * @param {*} req 
+ *
+ * @param {*} req
  * @param {*} res
- *  
+ *
  * @returns res
  */
 exports.register = async (req, res) => {
@@ -52,6 +52,7 @@ exports.register = async (req, res) => {
         password: hashedPassword,
         phone,
         role: "USER",
+        isReserved: 0,
       })
       .select("-password");
 
@@ -65,11 +66,11 @@ exports.register = async (req, res) => {
 
 /**
  * Login to the website into website
- * 
- * @param {*} req 
- * @param {*} res 
- * 
- * @returns res 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns res
  */
 exports.login = async (req, res) => {
   try {
@@ -128,7 +129,7 @@ exports.login = async (req, res) => {
 
     res.cookie("access_token", accessToken, { httpOnly: true });
 
-    // check if the remember me is ticked 
+    // check if the remember me is ticked
     if (rememberMe) {
       res.cookie("refresh_token", refreshToken, { httpOnly: true });
     }
@@ -142,12 +143,12 @@ exports.login = async (req, res) => {
 };
 
 /**
- * Client send request to this route and give access token in cookies 
- * 
- * @param {*} req 
- * @param {*} res 
- * 
- * @returns res 
+ * Client send request to this route and give access token in cookies
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns res
  */
 exports.refreshToken = async (req, res) => {
   try {

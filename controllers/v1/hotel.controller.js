@@ -1,5 +1,7 @@
 const hotelModel = require("../../models/hotel.model");
 const ownerModel = require("../../models/owner.model");
+const userModel = require("../../models/user.model");
+const reserveModel = require("../../models/reserve.model");
 const createHotelValidator = require("../../utils/validators/hotel.create.validator");
 const isValidObjectId = require("../../utils/isValidObjectId");
 
@@ -109,6 +111,42 @@ exports.update = async (req, res) => {
     }
 
     return res.status(200).json({ message: "Hotel updated successfully" });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+exports.reserve = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (isValidObjectId(id)) {
+      return res.status(422).json({ message: "Id is not valid" });
+    }
+
+    const hotelInfo = await hotelModel.findOne({ _id: id });
+
+    if (hotelInfo.isReserved) {
+      return res.status(409).json({ message: "Hotel already reserved" });
+    }
+
+    const userInfo = await userModel.findOne({ _id: req.user._id });
+    if (userInfo.isReserved) {
+      return res.status(409).json({ message: "User already reserved hotel" });
+    }
+
+    await hotelModel.findByIdAndUpdate(
+      { _id: hotelInfo._id },
+      { isReserved: 1 }
+    );
+    await userModel.findByIdAndUpdate({ _id: userInfo._id }, { isReserved: 1 });
+
+    await reserveModel.create({ hotel: hotelInfo._id, user: req.user._id });
+
+    return res.status(200).json({
+      message: "Hotel reserved successfully",
+    });
   } catch (error) {
     if (error) {
       throw error;
