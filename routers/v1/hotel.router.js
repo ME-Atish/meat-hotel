@@ -8,7 +8,9 @@ const multerStorage = require("../../utils/uploader.js");
 
 const router = express.Router();
 
-router.route("/").get(hotelController.getAll);
+router
+  .route("/")
+  .get(authMiddleware, isAdminMiddlewares, hotelController.getAll);
 
 router
   .route("/")
@@ -24,8 +26,12 @@ router
   .route("/reserve/:id/cancel")
   .post(authMiddleware, hotelController.cancelReservation);
 
-router.route("/:id").delete(hotelController.delete);
+router
+  .route("/:id")
+  .delete(authMiddleware, isAdminMiddlewares, hotelController.delete);
 
-router.route("/:id").put(hotelController.update);
+router
+  .route("/:id")
+  .put(authMiddleware, isAdminMiddlewares, hotelController.update);
 
 module.exports = router;

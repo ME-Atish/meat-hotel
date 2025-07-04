@@ -38,7 +38,7 @@ exports.register = async (req, res) => {
 
     if (isUserExist) {
       return res
-        .status(409)
+        .status(403)
         .json({ message: "The username or email already exist" });
     }
 
@@ -102,17 +102,17 @@ exports.login = async (req, res) => {
 
     if (!user) {
       return res
-        .status(401)
+        .status(403)
         .json({ message: "The username or email not found" });
     }
 
-    const isPasswordValid = await bcrypt.compare(
+    const isPasswordCorrect = await bcrypt.compare(
       password.toString(),
       user.password
     );
 
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "The password is not valid" });
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "The password is not correct" });
     }
 
     const accessToken = generateAccessToken(user.email);
