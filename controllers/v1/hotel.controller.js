@@ -72,3 +72,46 @@ exports.delete = async (req, res) => {
     }
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const { error } = createHotelValidator(req.body);
+
+    if (error) {
+      return res
+        .status(422)
+        .json({ message: "Validation failed", details: error.details });
+    }
+    const { id } = req.params;
+    if (isValidObjectId(id)) {
+      return res.status(422).json({ message: "Id is not valid" });
+    }
+
+    const { name, address, description, facilities, price, province, city } =
+      req.body;
+
+    const updateHotel = await hotelModel.findByIdAndUpdate(
+      { _id: id },
+      {
+        name,
+        address,
+        description,
+        facilities,
+        price,
+        province,
+        city,
+        image: req.files,
+        owner: req.user._id,
+      }
+    );
+    if (!updateHotel) {
+      return res.status(403).json({ message: "Hotel not found" });
+    }
+
+    return res.status(200).json({ message: "Hotel updated successfully" });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};

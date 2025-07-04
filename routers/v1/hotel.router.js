@@ -22,4 +22,6 @@ router
 
 router.route("/:id").delete(hotelController.delete);
 
+router.route("/:id").put(hotelController.update);
+
 module.exports = router;
