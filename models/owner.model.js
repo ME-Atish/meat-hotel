@@ -7,11 +7,6 @@ const schema = mongoose.Schema(
       ref: "user",
       required: true,
     },
-    city: {
-      type: String,
-      required: true,
-    },
-    
   },
   { timestamp: true }
 );
