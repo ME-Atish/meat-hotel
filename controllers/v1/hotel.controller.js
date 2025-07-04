@@ -1,11 +1,12 @@
 const hotelModel = require("../../models/hotel.model");
 const ownerModel = require("../../models/owner.model");
 const createHotelValidator = require("../../utils/validators/hotel.create.validator");
+const isValidObjectId = require("../../utils/isValidObjectId");
 
 exports.getAll = async (req, res) => {
   try {
     const hotels = await hotelModel.find({});
-    return res.json(hotels);
+    return res.status(200).json(hotels);
   } catch (error) {
     if (error) {
       throw error;
@@ -44,6 +45,27 @@ exports.create = async (req, res) => {
     });
 
     return res.status(201).json(createHotel);
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (isValidObjectId(id)) {
+      return res.status(422).json({ message: "Id is not valid" });
+    }
+
+    const deleteHotel = await hotelModel.findByIdAndDelete({ _id: id });
+
+    if (!deleteHotel) {
+      return res.status(403).json({ message: "The hotel not found" });
+    }
+
+    return res.status(200).json({ message: "Hotel deleted successfully" });
   } catch (error) {
     if (error) {
       throw error;

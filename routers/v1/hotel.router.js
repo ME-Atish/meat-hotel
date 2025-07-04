@@ -20,4 +20,6 @@ router
     hotelController.create
   );
 
+router.route("/:id").delete(hotelController.delete);
+
 module.exports = router;
