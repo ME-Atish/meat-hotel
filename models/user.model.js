@@ -32,8 +32,8 @@ const schema = mongoose.Schema(
       default: "USER",
     },
     isReserved: {
-      type: Number,
-      default: 0,
+      type: Boolean,
+      default: false,
     },
     refreshToken: {
       type: String,

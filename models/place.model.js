@@ -23,8 +23,8 @@ const schema = mongoose.Schema(
       required: true,
     },
     isReserved: {
-      type: Number,
-      default: 0,
+      type: Boolean,
+      default: false,
     },
     province: {
       type: String,

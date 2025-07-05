@@ -2,13 +2,13 @@ const placeModel = require("../../models/place.model");
 const ownerModel = require("../../models/owner.model");
 const userModel = require("../../models/user.model");
 const reserveModel = require("../../models/reserve.model");
-const createHotelValidator = require("../../utils/validators/hotel.create.validator");
+const createPlaceValidator = require("../../utils/validators/place.create.validator");
 const isValidObjectId = require("../../utils/isValidObjectId");
 
 exports.getAll = async (req, res) => {
   try {
-    const hotels = await placeModel.find({});
-    return res.status(200).json(hotels);
+    const places = await placeModel.find({});
+    return res.status(200).json(places);
   } catch (error) {
     if (error) {
       throw error;
@@ -18,7 +18,7 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { error } = createHotelValidator(req.body);
+    const { error } = createPlaceValidator(req.body);
     if (error) {
       return res
         .status(422)
@@ -34,7 +34,7 @@ exports.create = async (req, res) => {
       await ownerModel.create({ user: req.user._id });
     }
 
-    const createHotel = await placeModel.create({
+    const createPlace = await placeModel.create({
       name,
       address,
       description,
@@ -42,11 +42,12 @@ exports.create = async (req, res) => {
       price,
       province,
       city,
+      isReserved: false,
       image: req.files,
       owner: req.user,
     });
 
-    return res.status(201).json(createHotel);
+    return res.status(201).json(createPlace);
   } catch (error) {
     if (error) {
       throw error;
@@ -61,13 +62,13 @@ exports.delete = async (req, res) => {
       return res.status(422).json({ message: "Id is not valid" });
     }
 
-    const deleteHotel = await placeModel.findByIdAndDelete({ _id: id });
+    const deletePlace = await placeModel.findByIdAndDelete({ _id: id });
 
-    if (!deleteHotel) {
-      return res.status(403).json({ message: "The hotel not found" });
+    if (!deletePlace) {
+      return res.status(403).json({ message: "The place not found" });
     }
 
-    return res.status(200).json({ message: "Hotel deleted successfully" });
+    return res.status(200).json({ message: "Place deleted successfully" });
   } catch (error) {
     if (error) {
       throw error;
@@ -77,7 +78,7 @@ exports.delete = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const { error } = createHotelValidator(req.body);
+    const { error } = createPlaceValidator(req.body);
 
     if (error) {
       return res
@@ -92,7 +93,7 @@ exports.update = async (req, res) => {
     const { name, address, description, facilities, price, province, city } =
       req.body;
 
-    const updateHotel = await placeModel.findByIdAndUpdate(
+    const updatePlace = await placeModel.findByIdAndUpdate(
       { _id: id },
       {
         name,
@@ -106,11 +107,11 @@ exports.update = async (req, res) => {
         owner: req.user._id,
       }
     );
-    if (!updateHotel) {
-      return res.status(403).json({ message: "Hotel not found" });
+    if (!updatePlace) {
+      return res.status(403).json({ message: "Place not found" });
     }
 
-    return res.status(200).json({ message: "Hotel updated successfully" });
+    return res.status(200).json({ message: "Place updated successfully" });
   } catch (error) {
     if (error) {
       throw error;
@@ -125,27 +126,27 @@ exports.reserve = async (req, res) => {
       return res.status(422).json({ message: "Id is not valid" });
     }
 
-    const hotelInfo = await placeModel.findOne({ _id: id });
+    const placeInfo = await placeModel.findOne({ _id: id });
 
-    if (hotelInfo.isReserved) {
-      return res.status(409).json({ message: "Hotel already reserved" });
+    if (placeInfo.isReserved) {
+      return res.status(409).json({ message: "Place already reserved" });
     }
 
     const userInfo = await userModel.findOne({ _id: req.user._id });
     if (userInfo.isReserved) {
-      return res.status(409).json({ message: "User already reserved hotel" });
+      return res.status(409).json({ message: "User already reserved place" });
     }
 
     await placeModel.findByIdAndUpdate(
-      { _id: hotelInfo._id },
-      { isReserved: 1 }
+      { _id: placeInfo._id },
+      { isReserved: true }
     );
-    await userModel.findByIdAndUpdate({ _id: userInfo._id }, { isReserved: 1 });
+    await userModel.findByIdAndUpdate({ _id: userInfo._id }, { isReserved: true });
 
-    await reserveModel.create({ hotel: hotelInfo._id, user: req.user._id });
+    await reserveModel.create({ place: placeInfo._id, user: req.user._id });
 
     return res.status(200).json({
-      message: "Hotel reserved successfully",
+      message: "Place reserved successfully",
     });
   } catch (error) {
     if (error) {
@@ -164,14 +165,14 @@ exports.cancelReservation = async (req, res) => {
     await placeModel.findByIdAndUpdate(
       { _id: id },
       {
-        isReserved: 0,
+        isReserved: false,
       }
     );
 
     await userModel.findByIdAndUpdate(
       { _id: req.user._id },
       {
-        isReserved: 0,
+        isReserved: false,
       }
     );
 
