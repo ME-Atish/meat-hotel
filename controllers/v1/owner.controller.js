@@ -1,6 +1,5 @@
 const ownerModel = require("../../models/owner.model");
 const isValidObjectId = require("../../utils/isValidObjectId");
-const registerOwnerValidator = require("../../utils/validators/owner.register.validate");
 
 exports.getAll = async (req, res) => {
   try {
@@ -16,15 +15,7 @@ exports.getAll = async (req, res) => {
 
 exports.register = async (req, res) => {
   try {
-    const { error } = registerOwnerValidator(req.body);
-    if (error) {
-      return res
-        .status(422)
-        .json({ message: "Validation failed", details: error.details });
-    }
-    const { city } = req.body;
-
-    const owner = await ownerModel.create({ user: req.user._id, city });
+    const owner = await ownerModel.create({ user: req.user._id });
 
     return res.status(201).json({ owner });
   } catch (error) {
@@ -62,22 +53,11 @@ exports.update = async (req, res) => {
     if (isValidObjectId(id)) {
       return res.status(422).json({ message: "Id is not valid" });
     }
-    const { error } = registerOwnerValidator(req.body);
-    if (error) {
-      return res
-        .status(422)
-        .json({ message: "Validation failed", details: error.details });
-    }
 
-    const { city } = req.body;
-
-    const updatedUser = await ownerModel.findByIdAndUpdate(
-      { _id: id },
-      { city }
-    );
+    const updatedUser = await ownerModel.findByIdAndUpdate({ _id: id });
 
     if (!updatedUser) {
-      return res.status(409).json({ message: "owner not found" });
+      return res.status(403).json({ message: "owner not found" });
     }
 
     return res

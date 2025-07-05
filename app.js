@@ -10,6 +10,9 @@ const userRouter = require("./routers/v1/user.router");
 const ownerRouter = require("./routers/v1/owner.router");
 const hotelRouter = require("./routers/v1/hotel.router");
 const searchRouter = require("./routers/v1/search.router");
+const configSwagger = require("./config/swagger");
+
+configSwagger(app)
 
 app.use(cors());
 app.use(express.json());

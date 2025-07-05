@@ -33,12 +33,12 @@ exports.banUser = async (req, res) => {
     const { id } = req.params;
 
     if (isValidObjectId(id)) {
-      return res.status(409).json({ message: "The id not valid" });
+      return res.status(422).json({ message: "The id not valid" });
     }
 
     const mainUser = await userModel.findOne({ _id: id }).lean();
     if (!mainUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(403).json({ message: "User not found" });
     }
     const banUserResult = await banUserModel.create({ phone: mainUser.phone });
 
@@ -63,13 +63,13 @@ exports.remove = async (req, res) => {
     const { id } = req.params;
 
     if (isValidObjectId(id)) {
-      return res.status(409).json({ message: "Id is not valid" });
+      return res.status(422).json({ message: "Id is not valid" });
     }
 
     const removeUser = await userModel.findByIdAndDelete({ _id: id });
 
     if (!removeUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(403).json({ message: "User not found" });
     }
 
     return res.status(200).json({ message: "User delete successfully" });
@@ -141,7 +141,7 @@ exports.changeRole = async (req, res) => {
     const { id } = req.body;
 
     if (isValidObjectId(id)) {
-      return res.status(409).json({ message: "Id is not valid" });
+      return res.status(422).json({ message: "Id is not valid" });
     }
 
     const user = await userModel.findOne({ _id: id });
