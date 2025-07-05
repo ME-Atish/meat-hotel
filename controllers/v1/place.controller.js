@@ -1,7 +1,7 @@
 const placeModel = require("../../models/place.model");
 const userModel = require("../../models/user.model");
 const reserveModel = require("../../models/reserve.model");
-const createPlaceValidator = require("../../utils/validators/place.create.validator");
+const placeValidator = require("../../utils/validators/place.validator");
 const isValidObjectId = require("../../utils/isValidObjectId");
 
 exports.getAll = async (req, res) => {
@@ -18,12 +18,11 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    // check req.body with Joi
-    const { error } = createPlaceValidator(req.body);
-    if (error) {
-      return res
-        .status(422)
-        .json({ message: "Validation failed", details: error.details });
+    // check req.body with Zod
+    const validationResult = placeValidator.create(req.body);
+
+    if (!validationResult.success) {
+      return res.status(422).json({ errors: validationResult.error.errors });
     }
 
     const { name, address, description, facilities, price, province, city } =
@@ -86,14 +85,14 @@ exports.delete = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    // validate body with Joi
-    const { error } = createPlaceValidator(req.body);
+    // validate body with Zod
 
-    if (error) {
-      return res
-        .status(422)
-        .json({ message: "Validation failed", details: error.details });
+    const validationResult = placeValidator.create(req.body);
+
+    if (!validationResult.success) {
+      return res.status(422).json({ error: validationResult.error.errors });
     }
+
     const { id } = req.params;
     // validate id
     if (isValidObjectId(id)) {

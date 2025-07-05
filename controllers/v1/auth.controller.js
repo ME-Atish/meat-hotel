@@ -2,8 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const userModel = require("../../models/user.model");
-const registerValidation = require("../../utils/validators/user.register.validate");
-const loginValidation = require("../../utils/validators/user.login.validate");
+const userValidator = require("../../utils/validators/user.validator");
 const { generateAccessToken } = require("../../utils/auth");
 const { generateRefreshToken } = require("../../utils/auth");
 
@@ -17,10 +16,11 @@ const { generateRefreshToken } = require("../../utils/auth");
  */
 exports.register = async (req, res) => {
   try {
-    const validationResult = registerValidation(req.body);
     // Validate req.body
-    if (!validationResult) {
-      return res.status(422).json(validationResult);
+    const validationResult = userValidator.register(req.body);
+
+    if (!validationResult.success) {
+      return res.status(422).json({ error: validationResult.error.errors });
     }
 
     const { username, firstName, lastName, email, password, phone } = req.body;
@@ -28,8 +28,10 @@ exports.register = async (req, res) => {
     // Find user for check is the user ban or not
     const isUserBan = await userModel.findOne({ phone });
 
-    if (isUserBan.isBan) {
-      return res.status(409).json({ message: "This phone number is ban" });
+    if (isUserBan) {
+      if (isUserBan.isBan) {
+        return res.status(409).json({ message: "This phone number is ban" });
+      }
     }
     // Check is user exist (with username and email)
     const isUserExist = await userModel.findOne({
@@ -83,19 +85,18 @@ exports.login = async (req, res) => {
         process.env.REFRESH_TOKEN_SECRET
       );
       // Find user
-      const user = await userModel.findOne(jwtPayload.email);
+      const user = await userModel.findOne({ email: jwtPayload.email });
 
       if (!user) {
         return res.status(403).json({ message: "User not found" });
       }
       return res.json({ message: "Login successfully" });
     }
-    const { error } = loginValidation(req.body);
-    // Validate req.body
-    if (error) {
-      return res
-        .status(422)
-        .json({ message: "Validation failed", details: error.details });
+
+    const validationResult = userValidator.login(req.body);
+
+    if (!validationResult.success) {
+      return res.status(422).json({ error: validationResult.error.errors });
     }
 
     // Identifier include username or email (either is one)
@@ -103,7 +104,7 @@ exports.login = async (req, res) => {
 
     // Check for find username or email in database
     const user = await userModel.findOne({
-      $or: [{ username: identifier }, { email: identifier }],
+      $or: [{ username: identifier }],
     });
 
     if (!user) {
@@ -111,7 +112,7 @@ exports.login = async (req, res) => {
         .status(403)
         .json({ message: "The username or email not found" });
     }
-    // Checking for pass word correction 
+    // Checking for pass word correction
     const isPasswordCorrect = await bcrypt.compare(
       password.toString(),
       user.password
