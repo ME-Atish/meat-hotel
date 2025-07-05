@@ -12,7 +12,8 @@ const joi = require("joi");
 const registerValidation = (data) => {
   const schema = joi.object({
     username: joi.string().min(5).max(25),
-    name: joi.string().min(3).max(25),
+    firstName: joi.string().min(3).max(25),
+    lastName: joi.string().min(3).max(25),
     email: joi.string().email(),
     phone: joi.string(),
     isReserved: joi.number().valid(0,1),

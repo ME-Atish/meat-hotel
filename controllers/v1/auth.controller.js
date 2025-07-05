@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
       return res.status(422).json(validationResult);
     }
 
-    const { username, name, email, password, phone } = req.body;
+    const { username, firstName, lastName, email, password, phone } = req.body;
 
     const isUserBan = await banUserModel.findOne({ phone });
 
@@ -47,7 +47,8 @@ exports.register = async (req, res) => {
 
     const user = await userModel.create({
       username,
-      name,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       phone,
