@@ -31,7 +31,10 @@ const schema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    refreshToken: String,
+    refreshToken: {
+      type: String,
+      required: true,
+    },
   },
   { timestamp: true }
 );

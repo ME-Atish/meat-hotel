@@ -43,18 +43,18 @@ exports.register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const refreshToken = generateRefreshToken(email);
 
-    const user = await userModel
-      .create({
-        username,
-        name,
-        email,
-        password: hashedPassword,
-        phone,
-        role: "USER",
-        isReserved: 0,
-      })
-      .select("-password");
+    const user = await userModel.create({
+      username,
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+      role: "USER",
+      isReserved: 0,
+      refreshToken,
+    });
 
     return res.json(user);
   } catch (error) {
@@ -116,16 +116,15 @@ exports.login = async (req, res) => {
     }
 
     const accessToken = generateAccessToken(user.email);
-    const refreshToken = generateRefreshToken(user.email);
 
     const email = user.email;
 
-    await userModel.findOneAndUpdate(
-      { email },
-      {
-        $set: { refreshToken },
-      }
-    );
+    const findUser = await userModel.findOne({ email });
+
+    const refreshToken = findUser.refreshToken;
+
+    console.log(findUser);
+    console.log(refreshToken);
 
     res.cookie("access_token", accessToken, { httpOnly: true });
 
