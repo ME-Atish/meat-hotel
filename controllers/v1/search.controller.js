@@ -1,10 +1,10 @@
-const hotelModel = require("../../models/hotel.model");
+const placeModel = require("../../models/place.model");
 
 exports.get = async (req, res) => {
   try {
     const { keyword } = req.params;
 
-    const search = await hotelModel.find({
+    const search = await placeModel.find({
       description: { $regex: ".*" + keyword + ".*" },
     });
 

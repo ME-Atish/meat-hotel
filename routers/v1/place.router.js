@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 
-const hotelController = require("../../controllers/v1/hotel.controller");
+const placeController = require("../../controllers/v1/place.controller");
 const authMiddleware = require("../../middlewares/auth.middleware.js");
 const isAdminMiddlewares = require("../../middlewares/isAdmin.middlewares.js");
 const multerStorage = require("../../utils/uploader.js");
@@ -10,9 +10,9 @@ const router = express.Router();
 
 /**
  * @swagger
- * /v1/hotel:
+ * /v1/place:
  *   get:
- *     summary: Get all hotels
+ *     summary: Get all places
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -23,26 +23,26 @@ const router = express.Router();
  *       - in: cookie
  *         name: refresh_token
  *         required: true
- *     tags: [Hotel]
+ *     tags: [place]
  *     responses:
  *       200:
- *         description: List of hotels returned successfully
+ *         description: List of places returned successfully
  *       403:
  *          description: User not found or you have not access to this route
  */
 
 router
   .route("/")
-  .get(authMiddleware, isAdminMiddlewares, hotelController.getAll);
+  .get(authMiddleware, isAdminMiddlewares, placeController.getAll);
 
 /**
  * @swagger
- * /v1/hotel:
+ * /v1/place:
  *   post:
- *     summary: Create a new hotel
- *     description: Creates a new hotel with the provided details and images. Requires access token in cookie.
+ *     summary: Create a new place
+ *     description: Creates a new place with the provided details and images. Requires access token in cookie.
  *     tags:
- *       - Hotel
+ *       - place
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -59,19 +59,19 @@ router
  *             properties:
  *               name:
  *                 type: string
- *                 description: Name of the hotel
- *                 example: Hotel Sunshine
+ *                 description: Name of the place
+ *                 example: place Sunshine
  *               address:
  *                 type: string
- *                 description: Address of the hotel
+ *                 description: Address of the place
  *                 example: 123 Main St
  *               description:
  *                 type: string
- *                 description: Description of the hotel
- *                 example: A cozy and comfortable hotel
+ *                 description: Description of the place
+ *                 example: A cozy and comfortable place
  *               facilities:
  *                 type: string
- *                 description: facilities of hotel
+ *                 description: facilities of place
  *                 example: "pool, bedroom, kitchen"
  *               price:
  *                 type: number
@@ -79,21 +79,21 @@ router
  *                 example: 150000
  *               province:
  *                 type: string
- *                 description: Province where the hotel is located
+ *                 description: Province where the place is located
  *                 example: Ontario
  *               city:
  *                 type: string
- *                 description: City where the hotel is located
+ *                 description: City where the place is located
  *                 example: Toronto
  *               image:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
- *                 description: Up to 5 images of the hotel
+ *                 description: Up to 5 images of the place
  *     responses:
  *       201:
- *         description: Hotel created successfully
+ *         description: place created successfully
  *
  *       403:
  *         description: User not found or you have not access to this route
@@ -107,15 +107,15 @@ router
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },
     ]),
-    hotelController.create
+    placeController.create
   );
 
 /**
  * @swagger
  * /v1/reserve/{id}:
  *   post:
- *     summary: Reserve a hotel
- *     description: Reserve a hotel by its ID. Requires access token in cookie for authentication.
+ *     summary: Reserve a place
+ *     description: Reserve a place by its ID. Requires access token in cookie for authentication.
  *     tags:
  *       - Reservation
  *     parameters:
@@ -130,23 +130,23 @@ router
  *         required: true
  *         schema:
  *           type: string
- *         description: Hotel ID to reserve
+ *         description: place ID to reserve
  *     responses:
  *       200:
- *         description: Hotel reserved successfully
+ *         description: place reserved successfully
  *       422:
  *         description: Validation error
  *       409:
- *         description: Hotel already reserved or user already has a reservation for this hotel
+ *         description: place already reserved or user already has a reservation for this place
  */
-router.route("/reserve/:id").post(authMiddleware, hotelController.reserve);
+router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
 
 /**
  * @swagger
  * /v1/reserve/{id}/cancel:
  *   post:
- *     summary: Cancel a hotel reservation
- *     description: Cancels an existing hotel reservation by hotel ID. Requires access token in cookie for authentication.
+ *     summary: Cancel a place reservation
+ *     description: Cancels an existing place reservation by place ID. Requires access token in cookie for authentication.
  *     tags:
  *       - Reservation
  *     parameters:
@@ -161,7 +161,7 @@ router.route("/reserve/:id").post(authMiddleware, hotelController.reserve);
  *         required: true
  *         schema:
  *           type: string
- *         description: Hotel ID to cancel
+ *         description: place ID to cancel
  *     responses:
  *       200:
  *         description: The reservation operation was successfully canceled
@@ -173,16 +173,16 @@ router.route("/reserve/:id").post(authMiddleware, hotelController.reserve);
 
 router
   .route("/reserve/:id/cancel")
-  .post(authMiddleware, hotelController.cancelReservation);
+  .post(authMiddleware, placeController.cancelReservation);
 
 /**
  * @swagger
- * /v1/hotel/{id}:
+ * /v1/place/{id}:
  *   delete:
- *     summary: Delete a hotel by ID
- *     description: Deletes a hotel specified by its ID. Requires admin access with valid access and refresh tokens in cookies.
+ *     summary: Delete a place by ID
+ *     description: Deletes a place specified by its ID. Requires admin access with valid access and refresh tokens in cookies.
  *     tags:
- *       - Hotel
+ *       - place
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -201,27 +201,27 @@ router
  *         required: true
  *         schema:
  *           type: string
- *         description: Hotel ID to delete
+ *         description: place ID to delete
  *     responses:
  *       200:
  *         description: Successfully deleted
  *       403:
- *         description: You have not access to this route or hotel not found
+ *         description: You have not access to this route or place not found
  *       422:
  *         description: Validation error
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddlewares, hotelController.delete);
+  .delete(authMiddleware, isAdminMiddlewares, placeController.delete);
 
 /**
  * @swagger
- * /v1/hotel/{id}:
+ * /v1/place/{id}:
  *   put:
- *     summary: Update hotel information
- *     description: Updates the information of a hotel specified by its ID. Requires admin access with valid access and refresh tokens in cookies.
+ *     summary: Update place information
+ *     description: Updates the information of a place specified by its ID. Requires admin access with valid access and refresh tokens in cookies.
  *     tags:
- *       - Hotel
+ *       - place
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -240,17 +240,17 @@ router
  *         required: true
  *         schema:
  *           type: string
- *         description: Hotel ID to update
+ *         description: place ID to update
  *     responses:
  *       200:
  *         description: Successfully updated
  *       403:
- *         description: You have not access to this route or hotel not found
+ *         description: You have not access to this route or place not found
  *       422:
  *         description: Validation error
  */
 router
   .route("/:id")
-  .put(authMiddleware, isAdminMiddlewares, hotelController.update);
+  .put(authMiddleware, isAdminMiddlewares, placeController.update);
 
 module.exports = router;

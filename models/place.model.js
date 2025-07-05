@@ -48,6 +48,6 @@ const schema = mongoose.Schema(
   }
 );
 
-const model = mongoose.model("hotel", schema);
+const model = mongoose.model("place", schema);
 
 module.exports = model;
