@@ -7,7 +7,7 @@ const createHotelValidator = async (data) => {
     description: joi.string().min(8).max(50),
     facilities: joi.string().max(20),
     price: joi.number(),
-    isReserved: joi.number().valid(0, 1),
+    isReserved: joi.boolean(),
     province: joi.string().min(2).max(20),
     city: joi.string().min(2).max(20),
     image: joi.string(),

@@ -16,7 +16,7 @@ const registerValidation = (data) => {
     lastName: joi.string().min(3).max(25),
     email: joi.string().email(),
     phone: joi.string(),
-    isReserved: joi.number().valid(0,1),
+    isReserved: joi.boolean(),
     refreshToken: joi.string(),
     password: joi.string().min(5).max(16),
     repeat_password: joi.ref("password"),

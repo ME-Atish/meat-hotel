@@ -4,6 +4,7 @@ exports.get = async (req, res) => {
   try {
     const { keyword } = req.params;
 
+    // The keyword that the client sends is searched in the place descriptions.
     const search = await placeModel.find({
       description: { $regex: ".*" + keyword + ".*" },
     });

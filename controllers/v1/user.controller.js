@@ -30,15 +30,17 @@ exports.getAll = async (req, res) => {
 exports.banUser = async (req, res) => {
   try {
     const { id } = req.params;
-
+    // Validate id
     if (isValidObjectId(id)) {
       return res.status(422).json({ message: "The id not valid" });
     }
 
+    // Find user for ban
     const mainUser = await userModel.findOne({ _id: id }).lean();
     if (!mainUser) {
       return res.status(403).json({ message: "User not found" });
     }
+    // Ban user process
     await userModel.findByIdAndUpdate({ _id: mainUser._id }, { isBan: true });
 
     return res.status(200).json({ message: "The user baned successfully" });
@@ -60,7 +62,7 @@ exports.banUser = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const { id } = req.params;
-
+    // Validate id
     if (isValidObjectId(id)) {
       return res.status(422).json({ message: "Id is not valid" });
     }
@@ -90,6 +92,7 @@ exports.remove = async (req, res) => {
 exports.updateInfo = async (req, res) => {
   try {
     const { error } = updateInfoValidator(req.body);
+    // Validate req.body
     if (error) {
       return res
         .status(422)
@@ -98,10 +101,13 @@ exports.updateInfo = async (req, res) => {
 
     const { name, username, email, phone, password } = req.body;
 
+    // Password hashing process 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate new refresh token
     const newRefreshToken = generateRefreshToken(email);
 
+    // Update user's info
     const updateUser = await userModel
       .findByIdAndUpdate(
         { _id: req.user._id },
@@ -117,6 +123,7 @@ exports.updateInfo = async (req, res) => {
       )
       .select("-password");
 
+    // Set refresh token in cookie
     res.cookie("refresh_token", newRefreshToken, { httpOnly: true });
 
     return res.status(200).json({ updateUser });
@@ -138,18 +145,19 @@ exports.updateInfo = async (req, res) => {
 exports.changeRole = async (req, res) => {
   try {
     const { id } = req.body;
-
+    // Validate id
     if (isValidObjectId(id)) {
       return res.status(422).json({ message: "Id is not valid" });
     }
-
+    // Find user to change role
     const user = await userModel.findOne({ _id: id });
     if (!user) {
       return res.status(403).json({ message: "User not found" });
     }
-
+    // If user's role is admin, it change to user and on the contrary
     let newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
 
+    // Set new role in database
     await userModel.findByIdAndUpdate({ _id: id }, { role: newRole });
 
     return res
