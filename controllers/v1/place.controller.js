@@ -1,5 +1,4 @@
 const placeModel = require("../../models/place.model");
-const ownerModel = require("../../models/owner.model");
 const userModel = require("../../models/user.model");
 const reserveModel = require("../../models/reserve.model");
 const createPlaceValidator = require("../../utils/validators/place.create.validator");
@@ -28,10 +27,15 @@ exports.create = async (req, res) => {
     const { name, address, description, facilities, price, province, city } =
       req.body;
 
-    const ownerExist = await ownerModel.findOne({ user: req.user._id });
+    const ownerExist = await userModel.findOne({ email: req.user.email });
 
-    if (!ownerExist) {
-      await ownerModel.create({ user: req.user._id });
+    console.log(ownerExist);
+
+    if (!ownerExist.owner) {
+      await userModel.findByIdAndUpdate(
+        { _id: req.user._id },
+        { isOwner: true }
+      );
     }
 
     const createPlace = await placeModel.create({
@@ -141,7 +145,10 @@ exports.reserve = async (req, res) => {
       { _id: placeInfo._id },
       { isReserved: true }
     );
-    await userModel.findByIdAndUpdate({ _id: userInfo._id }, { isReserved: true });
+    await userModel.findByIdAndUpdate(
+      { _id: userInfo._id },
+      { isReserved: true }
+    );
 
     await reserveModel.create({ place: placeInfo._id, user: req.user._id });
 
@@ -176,11 +183,9 @@ exports.cancelReservation = async (req, res) => {
       }
     );
 
-    return res
-      .status(200)
-      .json({
-        message: "The reservation operation was successfully canceled.",
-      });
+    return res.status(200).json({
+      message: "The reservation operation was successfully canceled.",
+    });
   } catch (error) {
     if (error) {
       throw error;
