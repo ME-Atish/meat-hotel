@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 const userModel = require("../../models/user.model");
 const isValidObjectId = require("../../utils/isValidObjectId");
-const updateInfoValidator = require("../../utils/validators/user.update.validate");
+const userValidator = require("../../utils/validators/user.validator");
 const { generateRefreshToken } = require("../../utils/auth");
 
 /**
@@ -91,17 +91,15 @@ exports.remove = async (req, res) => {
  */
 exports.updateInfo = async (req, res) => {
   try {
-    const { error } = updateInfoValidator(req.body);
-    // Validate req.body
-    if (error) {
-      return res
-        .status(422)
-        .json({ message: "Validation failed", details: error.details });
+    const validationResult = userValidator.register(req.body);
+
+    if (!validationResult.success) {
+      return res.status(422).json({ error: validationResult.error.errors });
     }
 
     const { name, username, email, phone, password } = req.body;
 
-    // Password hashing process 
+    // Password hashing process
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate new refresh token
