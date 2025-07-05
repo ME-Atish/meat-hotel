@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const userModel = require("../../models/user.model");
-const banUserModel = require("../../models/ban.user.model");
 const registerValidation = require("../../utils/validators/user.register.validate");
 const loginValidation = require("../../utils/validators/user.login.validate");
 const { generateAccessToken } = require("../../utils/auth");
@@ -26,9 +25,9 @@ exports.register = async (req, res) => {
 
     const { username, firstName, lastName, email, password, phone } = req.body;
 
-    const isUserBan = await banUserModel.findOne({ phone });
+    const isUserBan = await userModel.findOne({ phone });
 
-    if (isUserBan) {
+    if (isUserBan.isBan) {
       return res.status(409).json({ message: "This phone number is ban" });
     }
 

@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 
 const userModel = require("../../models/user.model");
-const banUserModel = require("../../models/ban.user.model");
 const isValidObjectId = require("../../utils/isValidObjectId");
 const updateInfoValidator = require("../../utils/validators/user.update.validate");
 const { generateRefreshToken } = require("../../utils/auth");
@@ -40,7 +39,7 @@ exports.banUser = async (req, res) => {
     if (!mainUser) {
       return res.status(403).json({ message: "User not found" });
     }
-    const banUserResult = await banUserModel.create({ phone: mainUser.phone });
+    await userModel.findByIdAndUpdate({ _id: mainUser._id }, { isBan: true });
 
     return res.status(200).json({ message: "The user baned successfully" });
   } catch (error) {
@@ -130,11 +129,11 @@ exports.updateInfo = async (req, res) => {
 
 /**
  * Change uses's role
- * 
- * @param {*} req 
- * @param {*} res 
- * 
- * @returns res 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns res
  */
 exports.changeRole = async (req, res) => {
   try {
