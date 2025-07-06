@@ -1,6 +1,3 @@
-// const swaggerJsDoc = require("swagger-jsdoc");
-// const swaggerUi = require("swagger-ui-express");
-// const path = require("path");
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express"
 import path from "path"
@@ -18,7 +15,7 @@ const configSwagger = (app: any) => {
       },
       servers: [{ url: "http://localhost:4000" }],
     },
-    apis: [path.join(__dirname, "../routers/v1/**/*.js")],
+    apis: [path.join(path.dirname("../routers/v1/**/*.js"))],
   });
   // Send request to this route for get api document
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
