@@ -1,12 +1,13 @@
 import app from "./app.js";
-const mongoose = require("mongoose");
-require("dotenv").config();
+import mongoose from "mongoose"
+import dotenv from "dotenv"
 
+dotenv.config()
 const port = process.env.PORT || 4000;
 
 // connect to database
 (async () => {
-  await mongoose.connect(process.env.MONGOOSE_URI);
+  await mongoose.connect(process.env.MONGOOSE_URI!);
   console.log("connected to the MongoDB ");
 })();
 
