@@ -1,7 +1,7 @@
-import express from "express"
+import express from "express";
 
-const authMiddleware = require("../../middlewares/auth.middleware");
-const walletController = require("../../controllers/v1/wallet.controller");
+import authMiddleware from "../../middlewares/auth.middleware.js";
+import * as walletController from "../../controllers/v1/wallet.controller.js";
 
 const router = express.Router();
 /**
@@ -75,4 +75,4 @@ router.route("/increase").post(authMiddleware, walletController.increase);
  */
 router.route("/decrease").post(authMiddleware, walletController.decrease);
 
-export default router
+export default router;
