@@ -12,6 +12,7 @@ export const get = async (req: Request, res: Response): Promise<void> => {
     });
 
     res.status(200).json(search);
+    return;
   } catch (error) {
     if (error) {
       throw error;
