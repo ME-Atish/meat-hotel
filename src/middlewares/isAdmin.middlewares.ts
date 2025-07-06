@@ -1,5 +1,8 @@
-const jwt = require("jsonwebtoken");
-const userModel = require("../models/user.model");
+import { Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+
+import authenticationRequest from "../utils/authReq.js";
+import userModel from "../models/user.model.js";
 
 /**
  * Check is the users that send request admin or not
@@ -10,17 +13,26 @@ const userModel = require("../models/user.model");
  *
  * @return void
  */
-module.exports = async (req, res, next) => {
+export default async (
+  req: authenticationRequest,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.cookies.refresh_token) {
     return res
       .status(403)
       .json({ message: "You have not access to this route" });
   }
 
+  interface refreshToken extends jwt.JwtPayload {
+    email: string;
+  }
+
   const token = jwt.verify(
     req.cookies.refresh_token,
-    process.env.REFRESH_TOKEN_SECRET
-  );
+    process.env.REFRESH_TOKEN_SECRET!
+  ) as refreshToken;
+  
   const user = await userModel.findOne({ email: token.email });
 
   if (!user) {

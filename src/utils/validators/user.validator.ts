@@ -1,6 +1,6 @@
-const z = require("zod/v4");
+import z from "zod";
 
-exports.login = (data) => {
+export const login = (data: Object) => {
   const z = require("zod");
 
   const schema = z.object({
@@ -12,7 +12,7 @@ exports.login = (data) => {
   return schema.safeParse(data);
 };
 
-exports.register = (data) => {
+export const register = (data: object) => {
   const schema = z
     .object({
       username: z.string().min(5).max(25),

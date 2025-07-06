@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express"
 
 const searchController = require("../../controllers/v1/search.controller");
 
@@ -26,4 +26,4 @@ const router = express.Router();
  */
 router.route("/:keyword").get(searchController.get);
 
-module.exports = router;
+export default router

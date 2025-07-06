@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express"
 
-const authController = require("../../controllers/v1/auth.controller");
-
-const router = express.Router();
+// const authController = require("../../controllers/v1/auth.controller");
+import * as authController from "../../controllers/v1/auth.controller.js"
+const router = express.Router()
 
 /**
  * @swagger
@@ -95,4 +95,4 @@ router.route("/login").post(authController.login);
 
 router.route("/refresh-token").post(authController.refreshToken);
 
-module.exports = router;
+export default router

@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express"
 
 const authMiddleware = require("../../middlewares/auth.middleware");
 const walletController = require("../../controllers/v1/wallet.controller");
@@ -75,4 +75,4 @@ router.route("/increase").post(authMiddleware, walletController.increase);
  */
 router.route("/decrease").post(authMiddleware, walletController.decrease);
 
-module.exports = router;
+export default router

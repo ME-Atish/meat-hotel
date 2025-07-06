@@ -1,6 +1,6 @@
-const z = require("zod/v4");
+import z from "zod";
 
-exports.increase = (data) => {
+export const increase = (data: Object) => {
   const schema = z.object({
     amount: z.number(),
   });

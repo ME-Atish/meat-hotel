@@ -1,17 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                         // Modern JS output
-    "module": "es6",                       // Required for Node.js (CommonJS)
-    "lib": ["ES2020"],                          // Built-in APIs
-    "moduleResolution": "node",                 // Node-style module resolution
-    "outDir": "./dist",                         // Output directory
-    "rootDir": "./src",                         // Your source files
-    "strict": true,                             // Enable all strict type checks
-    "esModuleInterop": true,                    // Allow default imports from CommonJS
-    "forceConsistentCasingInFileNames": true,   // Avoid case errors across OS
-    "noImplicitAny": true,                      // Disallow `any` unless specified
-    "skipLibCheck": true                        // Speed up compilation by skipping type checks on node_modules
+    "module": "ES2020",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
   },
-  "include": ["src"],                           // Include only source files
-  "exclude": ["node_modules", "dist"]           // Exclude build and deps
+  "preserveExtensions": true,
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

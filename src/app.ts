@@ -1,16 +1,17 @@
-const express = require("express");
+import express from "express";
 const app = express();
 
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
+import { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import session from "express-session";
 
-const authRouter = require("./routers/v1/auth.router");
-const userRouter = require("./routers/v1/user.router");
-const placeRouter = require("./routers/v1/place.router");
-const searchRouter = require("./routers/v1/search.router");
-const walletRouter = require("./routers/v1/wallet.router");
-const configSwagger = require("./config/swagger");
+import authRouter from "./routers/v1/auth.router.js";
+import userRouter from "./routers/v1/user.router.js";
+import placeRouter from "./routers/v1/place.router.js";
+import searchRouter from "./routers/v1/search.router.js";
+import walletRouter from "./routers/v1/wallet.router.js";
+import configSwagger from "./config/swagger.js";
 
 configSwagger(app);
 
@@ -35,15 +36,15 @@ app.use("/v1/search", searchRouter);
 app.use("/v1/wallet", walletRouter);
 
 // When path incorrect, these codes will run
-app.use((req, res) => {
+app.use((req: Request, res: any) => {
   return res.status(404).json({ message: "Page not found" });
 });
 
 // When project got internal error, these codes will run
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: any, next: NextFunction) => {
   return res.status(500).json({
     message: err.message || "Server Error",
   });
 });
 
-module.exports = app;
+export default app;

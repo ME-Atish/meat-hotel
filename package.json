@@ -2,11 +2,13 @@
   "name": "meat-hotel",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon",
-    "start": "node server.js"
+    "dev": "npx tsc && node dist/server.js",
+    "start": "node dist/server.js",
+    "build": "npx tsc"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/ME-Atish/meat-hotel"

@@ -1,5 +1,5 @@
-const express = require("express");
-const multer = require("multer");
+import express from "express"
+import multer from "multer"
 
 const placeController = require("../../controllers/v1/place.controller");
 const authMiddleware = require("../../middlewares/auth.middleware.js");
@@ -253,4 +253,4 @@ router
   .route("/:id")
   .put(authMiddleware, isAdminMiddlewares, placeController.update);
 
-module.exports = router;
+export default router

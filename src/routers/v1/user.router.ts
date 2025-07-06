@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express"
 
 const isAdminMiddleware = require("../../middlewares/isAdmin.middlewares");
 const authMiddleware = require("../../middlewares/auth.middleware");
@@ -210,4 +210,4 @@ router
   .route("/:id")
   .delete(authMiddleware, isAdminMiddleware, userController.remove);
 
-module.exports = router;
+export default router

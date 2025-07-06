@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const schema = mongoose.Schema(
+const schema = new mongoose.Schema(
   {
     place: {
       type: mongoose.Types.ObjectId,
@@ -14,10 +14,10 @@ const schema = mongoose.Schema(
     },
   },
   {
-    timestamp: true,
+    timestamps: true,
   }
 );
 
 const model = mongoose.model("reserve", schema);
 
-module.exports = model;
+export default model

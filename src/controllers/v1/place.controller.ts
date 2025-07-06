@@ -1,10 +1,12 @@
-const placeModel = require("../../models/place.model");
-const userModel = require("../../models/user.model");
-const reserveModel = require("../../models/reserve.model");
-const placeValidator = require("../../utils/validators/place.validator");
+import { Request, Response } from "express";
+
+import placeModel from "../../models/place.model.js";
+import userModel from "../../models/user.model.js";
+import reserveModel from "../../models/reserve.model.js";
+import * as placeValidator from "../../utils/validators/place.validator.js"
 const isValidObjectId = require("../../utils/isValidObjectId");
 
-exports.getAll = async (req, res) => {
+export const getAll = async (req: Request, res:Response):Promise<void> => {
   try {
     // find all places
     const places = await placeModel.find({});
@@ -16,23 +18,23 @@ exports.getAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
+export const create = async (req:Request, res:Response):Promise<void> => {
   try {
     // check req.body with Zod
     const validationResult = placeValidator.create(req.body);
 
     if (!validationResult.success) {
-      return res.status(422).json({ errors: validationResult.error.errors });
+       res.status(422).json({ errors: validationResult.error.errors });
     }
 
     const { name, address, description, facilities, price, province, city } =
       req.body;
 
     // Check if the user who created the place owns it.
-    const ownerExist = await userModel.findOne({ email: req.user.email });
+    const ownerExist = await userModel.findOne({ email: req.user!.email });
 
     // If the user who created the place is not the owner, its role will change to owner.
-    if (!ownerExist.isOwner) {
+    if (!ownerExist!.isOwner) {
       await userModel.findByIdAndUpdate(
         { _id: req.user._id },
         { isOwner: true }

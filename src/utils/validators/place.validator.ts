@@ -1,6 +1,6 @@
-const z = require("zod/v4");
+import z from "zod";
 
-exports.create = (data) => {
+export const create = (data: Object) => {
   const schema = z.object({
     name: z.string().min(2).max(100),
     address: z.string().min(8).max(100),

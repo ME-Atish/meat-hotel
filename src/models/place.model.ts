@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const schema = mongoose.Schema(
+const schema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -44,10 +44,10 @@ const schema = mongoose.Schema(
     },
   },
   {
-    timestamp: true,
+    timestamps: true,
   }
 );
 
 const model = mongoose.model("place", schema);
 
-module.exports = model;
+export default model

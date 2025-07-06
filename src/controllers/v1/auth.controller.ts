@@ -1,11 +1,12 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { Request, Response } from "express";
 
-const userModel = require("../../models/user.model");
-const walletModel = require("../../models/wallet.model");
-const userValidator = require("../../utils/validators/user.validator");
-const { generateAccessToken } = require("../../utils/auth");
-const { generateRefreshToken } = require("../../utils/auth");
+import userModel from "../../models/user.model.js";
+import walletModel from "../../models/wallet.model.js";
+import * as userValidator from "../../utils/validators/user.validator.js";
+import { generateAccessToken } from "../../utils/auth.js";
+import { generateRefreshToken } from "../../utils/auth.js";
 
 /**
  * Register the users into website
@@ -15,13 +16,13 @@ const { generateRefreshToken } = require("../../utils/auth");
  *
  * @returns res
  */
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     // Validate req.body
     const validationResult = userValidator.register(req.body);
 
     if (!validationResult.success) {
-      return res.status(422).json({ error: validationResult.error.errors });
+      res.status(422).json({ error: validationResult.error.errors });
     }
 
     const { username, firstName, lastName, email, password, phone } = req.body;
@@ -31,7 +32,7 @@ exports.register = async (req, res) => {
 
     if (isUserBan) {
       if (isUserBan.isBan) {
-        return res.status(409).json({ message: "This phone number is ban" });
+        res.status(409).json({ message: "This phone number is ban" });
       }
     }
     // Check is user exist (with username and email)
@@ -40,9 +41,7 @@ exports.register = async (req, res) => {
     });
 
     if (isUserExist) {
-      return res
-        .status(403)
-        .json({ message: "The username or email already exist" });
+      res.status(403).json({ message: "The username or email already exist" });
     }
     // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -66,7 +65,7 @@ exports.register = async (req, res) => {
       userId: user._id,
     });
 
-    return res.json(user);
+    res.json(user);
   } catch (error) {
     if (error) {
       throw error;
@@ -82,27 +81,31 @@ exports.register = async (req, res) => {
  *
  * @returns res
  */
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
+    interface refreshTokenPayload extends jwt.JwtPayload {
+      email: string;
+    }
+
     // If the user's tick the remember me these codes for next time will work
     if (req.cookies.refresh_token) {
       const jwtPayload = jwt.verify(
         req.cookies.refresh_token,
-        process.env.REFRESH_TOKEN_SECRET
-      );
+        process.env.REFRESH_TOKEN_SECRET!
+      ) as refreshTokenPayload;
       // Find user
       const user = await userModel.findOne({ email: jwtPayload.email });
 
       if (!user) {
-        return res.status(403).json({ message: "User not found" });
+        res.status(403).json({ message: "User not found" });
       }
-      return res.json({ message: "Login successfully" });
+      res.json({ message: "Login successfully" });
     }
 
     const validationResult = userValidator.login(req.body);
 
     if (!validationResult.success) {
-      return res.status(422).json({ error: validationResult.error.errors });
+      res.status(422).json({ error: validationResult.error.errors });
     }
 
     // Identifier include username or email (either is one)
@@ -114,28 +117,26 @@ exports.login = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(403)
-        .json({ message: "The username or email not found" });
+      res.status(403).json({ message: "The username or email not found" });
     }
     // Checking for pass word correction
     const isPasswordCorrect = await bcrypt.compare(
       password.toString(),
-      user.password
+      user!.password
     );
 
     if (!isPasswordCorrect) {
-      return res.status(401).json({ message: "The password is not correct" });
+      res.status(401).json({ message: "The password is not correct" });
     }
     // Generate access token
-    const accessToken = generateAccessToken(user.email);
+    const accessToken = generateAccessToken(user!.email);
 
-    const email = user.email;
+    const email = user!.email;
 
     // Find user for get user's refresh token
     const findUser = await userModel.findOne({ email });
     // Get user's refresh token
-    const refreshToken = findUser.refreshToken;
+    const refreshToken = findUser!.refreshToken;
 
     // Generate access token
     res.cookie("access_token", accessToken, { httpOnly: true });
@@ -146,7 +147,7 @@ exports.login = async (req, res) => {
       res.cookie("refresh_token", refreshToken, { httpOnly: true });
     }
 
-    return res.json({ message: "Login successfully" });
+    res.json({ message: "Login successfully" });
   } catch (error) {
     if (error) {
       throw error;
@@ -162,27 +163,30 @@ exports.login = async (req, res) => {
  *
  * @returns res
  */
-exports.refreshToken = async (req, res) => {
+export const refreshToken = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     // Check if refresh token is exist or not (in cookie)
     const refreshToken = req.cookies.refresh_token;
     if (!refreshToken) {
-      return res.status(401).json({ message: "The refresh token expired" });
+      res.status(401).json({ message: "The refresh token expired" });
     }
     // Find user with refresh token
     const user = await userModel.findOne({ refreshToken });
 
     if (!user) {
-      return res.status(403).json({ message: "User not found" });
+      res.status(403).json({ message: "User not found" });
     }
     // Verifying refresh token
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
     // Generate new access token
-    const newAccessToken = generateAccessToken(user.email);
+    const newAccessToken = generateAccessToken(user!.email);
     // Set new access token in cookie
     res.cookie("access_token", newAccessToken);
 
-    return res.status(204).json({});
+    res.status(204).json({});
   } catch (error) {
     if (error) {
       throw error;
