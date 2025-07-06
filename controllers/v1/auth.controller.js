@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const userModel = require("../../models/user.model");
+const walletModel = require("../../models/wallet.model");
 const userValidator = require("../../utils/validators/user.validator");
 const { generateAccessToken } = require("../../utils/auth");
 const { generateRefreshToken } = require("../../utils/auth");
@@ -58,6 +59,11 @@ exports.register = async (req, res) => {
       role: "USER",
       isReserved: 0,
       refreshToken,
+    });
+
+    // Create wallet for each user who register to project
+    await walletModel.create({
+      userId: user._id,
     });
 
     return res.json(user);
