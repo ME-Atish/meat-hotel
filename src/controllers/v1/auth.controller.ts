@@ -23,6 +23,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (!validationResult.success) {
       res.status(422).json({ error: validationResult.error.errors });
+      return;
     }
 
     const { username, firstName, lastName, email, password, phone } = req.body;
@@ -33,6 +34,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     if (isUserBan) {
       if (isUserBan.isBan) {
         res.status(409).json({ message: "This phone number is ban" });
+        return;
       }
     }
     // Check is user exist (with username and email)
@@ -42,6 +44,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (isUserExist) {
       res.status(403).json({ message: "The username or email already exist" });
+      return;
     }
     // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -65,7 +68,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       userId: user._id,
     });
 
-    res.json(user);
+    res.status(201).json(user);
+    return;
   } catch (error) {
     if (error) {
       throw error;
@@ -98,14 +102,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
       if (!user) {
         res.status(403).json({ message: "User not found" });
+        return;
       }
       res.json({ message: "Login successfully" });
+      return;
     }
 
     const validationResult = userValidator.login(req.body);
 
     if (!validationResult.success) {
       res.status(422).json({ error: validationResult.error.errors });
+      return;
     }
 
     // Identifier include username or email (either is one)
@@ -118,6 +125,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     if (!user) {
       res.status(403).json({ message: "The username or email not found" });
+      return;
     }
     // Checking for pass word correction
     const isPasswordCorrect = await bcrypt.compare(
@@ -127,6 +135,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     if (!isPasswordCorrect) {
       res.status(401).json({ message: "The password is not correct" });
+      return;
     }
     // Generate access token
     const accessToken = generateAccessToken(user!.email);
@@ -148,6 +157,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.json({ message: "Login successfully" });
+    return;
   } catch (error) {
     if (error) {
       throw error;
@@ -172,12 +182,14 @@ export const refreshToken = async (
     const refreshToken = req.cookies.refresh_token;
     if (!refreshToken) {
       res.status(401).json({ message: "The refresh token expired" });
+      return;
     }
     // Find user with refresh token
     const user = await userModel.findOne({ refreshToken });
 
     if (!user) {
       res.status(403).json({ message: "User not found" });
+      return;
     }
     // Verifying refresh token
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
@@ -187,6 +199,7 @@ export const refreshToken = async (
     res.cookie("access_token", newAccessToken);
 
     res.status(204).json({});
+    return;
   } catch (error) {
     if (error) {
       throw error;

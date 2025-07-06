@@ -1,27 +1,18 @@
-import { Response, NextFunction } from "express";
+import { RequestHandler, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-
-import AuthenticationRequest from "../utils/authReq.js";
+import  AuthenticationRequest from "../utils/authReq.js";
 import userModel from "../models/user.model.js";
 
-/**
- * Check is the user login to this website or not
- *
- * @param {*} req
- * @param {*} res
- * @param {*} next
- *
- * @return void
- */
-export default async (
-  req: AuthenticationRequest,
+const authMiddleware: RequestHandler = async (
+  req,
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.cookies.access_token) {
-    return res
-      .status(403)
-      .json({ message: "You have not access to this route" });
+  const typedReq = req as AuthenticationRequest;
+  
+  if (!typedReq.cookies.access_token) {
+    res.status(403).json({ message: "You have not access to this route" });
+    return;
   }
 
   interface AccessToken extends jwt.JwtPayload {
@@ -29,18 +20,19 @@ export default async (
   }
 
   const token = jwt.verify(
-    req.cookies.access_token,
+    typedReq.cookies.access_token,
     process.env.ACCESS_TOKEN_SECRET!
   ) as AccessToken;
 
   const user = await userModel.findOne({ email: token.email });
 
   if (!user) {
-    return res.status(403).json({ message: "User not found" });
+    res.status(403).json({ message: "User not found" });
+    return;
   }
 
-  // Save user's/admin's information into req.user
-  req.user = user;
-
+  typedReq.user = user;
   next();
 };
+
+export default authMiddleware;

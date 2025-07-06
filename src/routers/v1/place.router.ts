@@ -1,10 +1,10 @@
 import express from "express"
 import multer from "multer"
 
-const placeController = require("../../controllers/v1/place.controller");
-const authMiddleware = require("../../middlewares/auth.middleware.js");
-const isAdminMiddlewares = require("../../middlewares/isAdmin.middlewares.js");
-const multerStorage = require("../../utils/uploader.js");
+import * as placeController from "../../controllers/v1/place.controller.js";
+import authMiddleware from "../../middlewares/auth.middleware.js";
+import isAdminMiddlewares from "../../middlewares/isAdmin.middleware.js";
+import multerStorage from "../../utils/uploader.js";
 
 const router = express.Router();
 
@@ -212,7 +212,7 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddlewares, placeController.delete);
+  .delete(authMiddleware, isAdminMiddlewares, placeController.remove);
 
 /**
  * @swagger

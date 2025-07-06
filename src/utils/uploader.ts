@@ -2,7 +2,7 @@ import multer from "multer";
 import path from "path";
 import crypto from "crypto";
 
-module.exports = multer.diskStorage({
+export default multer.diskStorage({
   // destination of file/image that client send
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "..", "public", "hotels", "images"));
