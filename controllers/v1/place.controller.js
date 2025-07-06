@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
     const ownerExist = await userModel.findOne({ email: req.user.email });
 
     // If the user who created the place is not the owner, its role will change to owner.
-    if (!ownerExist.owner) {
+    if (!ownerExist.isOwner) {
       await userModel.findByIdAndUpdate(
         { _id: req.user._id },
         { isOwner: true }
