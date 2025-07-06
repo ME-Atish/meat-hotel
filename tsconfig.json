@@ -9,9 +9,11 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "allowJs": true,
+    "checkJs": true,
     "paths": {
       "~/*": ["./*"],
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src/**/*"],
