@@ -1,10 +1,8 @@
-const z = require("zod/v4");
+import * as z from "zod/v4";
 
-exports.login = (data) => {
-  const z = require("zod");
-
+export const login = (data: any) => {
   const schema = z.object({
-    identifier: z.union([z.string().email(), z.string().min(5).max(25)]),
+    identifier: z.union([z.email(), z.string().min(5).max(25)]),
     password: z.string().min(5).max(16),
     rememberMe: z.boolean(),
   });
@@ -12,13 +10,13 @@ exports.login = (data) => {
   return schema.safeParse(data);
 };
 
-exports.register = (data) => {
+export const register = (data: any) => {
   const schema = z
     .object({
       username: z.string().min(5).max(25),
       firstName: z.string().min(3).max(25),
       lastName: z.string().min(3).max(25),
-      email: z.string().email(),
+      email: z.email(),
       phone: z.string(),
       isReserved: z.boolean(),
       password: z.string().min(5).max(16),

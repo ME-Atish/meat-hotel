@@ -1,26 +1,26 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+import { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const userModel = require("../../models/user.model");
-const userValidator = require("../../utils/validators/user.validator");
-const { generateAccessToken } = require("../../utils/auth");
-const { generateRefreshToken } = require("../../utils/auth");
+import userModel from "@/models/user.model";
+import * as userValidator from "@/utils/validators/user.validator";
+import { generateAccessToken, generateRefreshToken } from "@/utils/auth";
+import { getRefreshTokenSecret } from "@/utils/tokens";
 
 /**
  * Register the users into website
  *
- * @param {*} req
- * @param {*} res
+ * @param {Request} req
+ * @param {Response} res
  *
- * @returns res
+ * @returns Register response
  */
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
   try {
-    // Validate req.body
+    // Validate request body
     const validationResult = userValidator.register(req.body);
-
     if (!validationResult.success) {
-      return res.status(422).json({ error: validationResult.error.errors });
+      return res.status(422).json({ error: validationResult.error.message });
     }
 
     const { username, firstName, lastName, email, password, phone } = req.body;
@@ -71,21 +71,24 @@ exports.register = async (req, res) => {
 /**
  * Login to the website into website
  *
- * @param {*} req
- * @param {*} res
+ * @param {Request} req
+ * @param {Response} res
  *
- * @returns res
+ * @returns response
  */
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   try {
+    const refreshTokenSecret = getRefreshTokenSecret();
+
     // If the user's tick the remember me these codes for next time will work
     if (req.cookies.refresh_token) {
       const jwtPayload = jwt.verify(
         req.cookies.refresh_token,
-        process.env.REFRESH_TOKEN_SECRET
+        refreshTokenSecret
       );
-      // Find user
-      const user = await userModel.findOne({ email: jwtPayload.email });
+
+      // Find user (TEST PLZ)
+      const user = await userModel.findOne({ email: jwtPayload });
 
       if (!user) {
         return res.status(403).json({ message: "User not found" });
@@ -96,7 +99,7 @@ exports.login = async (req, res) => {
     const validationResult = userValidator.login(req.body);
 
     if (!validationResult.success) {
-      return res.status(422).json({ error: validationResult.error.errors });
+      return res.status(422).json({ error: validationResult.error.message });
     }
 
     // Identifier include username or email (either is one)
@@ -112,6 +115,7 @@ exports.login = async (req, res) => {
         .status(403)
         .json({ message: "The username or email not found" });
     }
+
     // Checking for pass word correction
     const isPasswordCorrect = await bcrypt.compare(
       password.toString(),
@@ -128,6 +132,13 @@ exports.login = async (req, res) => {
 
     // Find user for get user's refresh token
     const findUser = await userModel.findOne({ email });
+
+    if (!findUser) {
+      return res
+        .status(404)
+        .json({ message: "We couldn't find a user with this credentials!" });
+    }
+
     // Get user's refresh token
     const refreshToken = findUser.refreshToken;
 
@@ -142,37 +153,41 @@ exports.login = async (req, res) => {
 
     return res.json({ message: "Login successfully" });
   } catch (error) {
-    if (error) {
-      throw error;
-    }
+    throw error
   }
 };
 
 /**
  * Client send request to this route each 20s and give new access token in cookies
  *
- * @param {*} req
- * @param {*} res
+ * @param {Request} req
+ * @param {Response} res
  *
- * @returns res
+ * @returns response
  */
-exports.refreshToken = async (req, res) => {
+export const refreshToken = async (req: Request, res: Response) => {
   try {
     // Check if refresh token is exist or not (in cookie)
     const refreshToken = req.cookies.refresh_token;
     if (!refreshToken) {
       return res.status(401).json({ message: "The refresh token expired" });
     }
+
     // Find user with refresh token
     const user = await userModel.findOne({ refreshToken });
 
     if (!user) {
       return res.status(403).json({ message: "User not found" });
     }
+
+    const refreshTokenSecret = getRefreshTokenSecret();
+
     // Verifying refresh token
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    jwt.verify(refreshToken, refreshTokenSecret);
+
     // Generate new access token
     const newAccessToken = generateAccessToken(user.email);
+
     // Set new access token in cookie
     res.cookie("access_token", newAccessToken);
 
