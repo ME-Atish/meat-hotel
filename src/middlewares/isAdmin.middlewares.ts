@@ -24,14 +24,14 @@ export default async (
       .json({ message: "You have not access to this route" });
   }
 
-  interface refreshToken extends jwt.JwtPayload {
+  interface RefreshToken extends jwt.JwtPayload {
     email: string;
   }
 
   const token = jwt.verify(
     req.cookies.refresh_token,
     process.env.REFRESH_TOKEN_SECRET!
-  ) as refreshToken;
+  ) as RefreshToken;
   
   const user = await userModel.findOne({ email: token.email });
 

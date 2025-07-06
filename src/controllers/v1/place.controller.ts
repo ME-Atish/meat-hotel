@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
 
+import authenticationRequest from "../../utils/authReq";
 import placeModel from "../../models/place.model.js";
 import userModel from "../../models/user.model.js";
 import reserveModel from "../../models/reserve.model.js";
-import * as placeValidator from "../../utils/validators/place.validator.js"
-const isValidObjectId = require("../../utils/isValidObjectId");
+import * as placeValidator from "../../utils/validators/place.validator.js";
+import isValidObjectid from "../../utils/isValidObjectId";
 
-export const getAll = async (req: Request, res:Response):Promise<void> => {
+export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
     // find all places
     const places = await placeModel.find({});
-    return res.status(200).json(places);
+    res.status(200).json(places);
   } catch (error) {
     if (error) {
       throw error;
@@ -18,20 +19,23 @@ export const getAll = async (req: Request, res:Response):Promise<void> => {
   }
 };
 
-export const create = async (req:Request, res:Response):Promise<void> => {
+export const create = async (
+  req: authenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
     // check req.body with Zod
     const validationResult = placeValidator.create(req.body);
 
     if (!validationResult.success) {
-       res.status(422).json({ errors: validationResult.error.errors });
+      res.status(422).json({ errors: validationResult.error.errors });
     }
 
     const { name, address, description, facilities, price, province, city } =
       req.body;
 
     // Check if the user who created the place owns it.
-    const ownerExist = await userModel.findOne({ email: req.user!.email });
+    const ownerExist = await userModel.findOne({ email: req.user.email });
 
     // If the user who created the place is not the owner, its role will change to owner.
     if (!ownerExist!.isOwner) {
@@ -54,7 +58,7 @@ export const create = async (req:Request, res:Response):Promise<void> => {
       owner: req.user,
     });
 
-    return res.status(201).json(createPlace);
+    res.status(201).json(createPlace);
   } catch (error) {
     if (error) {
       throw error;
@@ -62,22 +66,22 @@ export const create = async (req:Request, res:Response):Promise<void> => {
   }
 };
 
-exports.delete = async (req, res) => {
+export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
     if (isValidObjectId(id)) {
-      return res.status(422).json({ message: "Id is not valid" });
+      res.status(422).json({ message: "Id is not valid" });
     }
 
     // delete place
     const deletePlace = await placeModel.findByIdAndDelete({ _id: id });
 
     if (!deletePlace) {
-      return res.status(403).json({ message: "The place not found" });
+      res.status(403).json({ message: "The place not found" });
     }
 
-    return res.status(200).json({ message: "Place deleted successfully" });
+    res.status(200).json({ message: "Place deleted successfully" });
   } catch (error) {
     if (error) {
       throw error;
@@ -85,7 +89,7 @@ exports.delete = async (req, res) => {
   }
 };
 
-exports.update = async (req, res) => {
+export const update = async (req: authenticationRequest, res: Response) => {
   try {
     // validate body with Zod
 
@@ -131,41 +135,44 @@ exports.update = async (req, res) => {
   }
 };
 
-exports.reserve = async (req, res) => {
+export const reserve = async (
+  req: authenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
     if (isValidObjectId(id)) {
-      return res.status(422).json({ message: "Id is not valid" });
+      res.status(422).json({ message: "Id is not valid" });
     }
 
     // Find place that client want to reserve
     const placeInfo = await placeModel.findOne({ _id: id });
 
     // If place reserved these codes will run
-    if (placeInfo.isReserved) {
-      return res.status(409).json({ message: "Place already reserved" });
+    if (placeInfo!.isReserved) {
+      res.status(409).json({ message: "Place already reserved" });
     }
     // Find user who want reserve a palace
     const userInfo = await userModel.findOne({ _id: req.user._id });
     // These codes will be executed if the user who submitted the request has reserved a place.
-    if (userInfo.isReserved) {
-      return res.status(409).json({ message: "User already reserved place" });
+    if (userInfo!.isReserved) {
+      res.status(409).json({ message: "User already reserved place" });
     }
 
     // Turn isReserved field in database to true (reservation operation completed)
     await placeModel.findByIdAndUpdate(
-      { _id: placeInfo._id },
+      { _id: placeInfo!._id },
       { isReserved: true }
     );
     await userModel.findByIdAndUpdate(
-      { _id: userInfo._id },
+      { _id: userInfo!._id },
       { isReserved: true }
     );
 
-    await reserveModel.create({ place: placeInfo._id, user: req.user._id });
+    await reserveModel.create({ place: placeInfo!._id, user: req.user._id });
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Place reserved successfully",
     });
   } catch (error) {
@@ -175,12 +182,15 @@ exports.reserve = async (req, res) => {
   }
 };
 
-exports.cancelReservation = async (req, res) => {
+export const cancelReservation = async (
+  req: authenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
     if (isValidObjectId(id)) {
-      return res.status(422).json({ message: "Id is not valid" });
+      res.status(422).json({ message: "Id is not valid" });
     }
 
     // Cancel reservation operation
@@ -198,7 +208,7 @@ exports.cancelReservation = async (req, res) => {
       }
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "The reservation operation was successfully canceled.",
     });
   } catch (error) {

@@ -83,7 +83,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
  */
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    interface refreshTokenPayload extends jwt.JwtPayload {
+    interface RefreshTokenPayload extends jwt.JwtPayload {
       email: string;
     }
 
@@ -92,7 +92,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       const jwtPayload = jwt.verify(
         req.cookies.refresh_token,
         process.env.REFRESH_TOKEN_SECRET!
-      ) as refreshTokenPayload;
+      ) as RefreshTokenPayload;
       // Find user
       const user = await userModel.findOne({ email: jwtPayload.email });
 
