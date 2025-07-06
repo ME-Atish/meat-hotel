@@ -9,9 +9,10 @@ const authRouter = require("./routers/v1/auth.router");
 const userRouter = require("./routers/v1/user.router");
 const placeRouter = require("./routers/v1/place.router");
 const searchRouter = require("./routers/v1/search.router");
+const walletRouter = require("./routers/v1/wallet.router");
 const configSwagger = require("./config/swagger");
 
-configSwagger(app)
+configSwagger(app);
 
 app.use(cors());
 app.use(express.json());
@@ -31,6 +32,7 @@ app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
 app.use("/v1/place", placeRouter);
 app.use("/v1/search", searchRouter);
+app.use("/v1/wallet", walletRouter);
 
 // When path incorrect, these codes will run
 app.use((req, res) => {

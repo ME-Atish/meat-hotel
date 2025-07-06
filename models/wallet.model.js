@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const schema = mongoose.Schema(
   {
-    payment: {
+    amount: {
       type: Number,
       default: 0,
     },
