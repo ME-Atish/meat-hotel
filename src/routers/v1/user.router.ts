@@ -1,8 +1,8 @@
-import express from "express"
+import express from "express";
 
-const isAdminMiddleware = require("../../middlewares/isAdmin.middlewares");
-const authMiddleware = require("../../middlewares/auth.middleware");
-const userController = require("../../controllers/v1/user.controller");
+import * as userController from "../../controllers/v1/user.controller.js";
+import authMiddleware from "../../middlewares/auth.middleware.js";
+import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
 
 const router = express.Router();
 
@@ -210,4 +210,4 @@ router
   .route("/:id")
   .delete(authMiddleware, isAdminMiddleware, userController.remove);
 
-export default router
+export default router;

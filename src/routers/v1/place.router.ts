@@ -3,7 +3,7 @@ import multer from "multer"
 
 import * as placeController from "../../controllers/v1/place.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
-import isAdminMiddlewares from "../../middlewares/isAdmin.middleware.js";
+import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
 import multerStorage from "../../utils/uploader.js";
 
 const router = express.Router();
@@ -33,7 +33,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(authMiddleware, isAdminMiddlewares, placeController.getAll);
+  .get(authMiddleware, isAdminMiddleware, placeController.getAll);
 
 /**
  * @swagger
@@ -212,7 +212,7 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddlewares, placeController.remove);
+  .delete(authMiddleware, isAdminMiddleware, placeController.remove);
 
 /**
  * @swagger
@@ -251,6 +251,6 @@ router
  */
 router
   .route("/:id")
-  .put(authMiddleware, isAdminMiddlewares, placeController.update);
+  .put(authMiddleware, isAdminMiddleware, placeController.update);
 
 export default router
