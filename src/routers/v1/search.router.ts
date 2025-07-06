@@ -1,6 +1,6 @@
 import express from "express"
 
-const searchController = require("../../controllers/v1/search.controller");
+import * as searchController from "../../controllers/v1/search.controller"
 
 const router = express.Router();
 
