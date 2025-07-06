@@ -1,9 +1,11 @@
-const bcrypt = require("bcrypt");
+import { Request, Response } from "express";
+import AuthenticationRequest from "../../utils/authReq.js";
+import bcrypt from "bcrypt";
 
-const userModel = require("../../models/user.model");
-const isValidObjectId = require("../../utils/isValidObjectId");
-const userValidator = require("../../utils/validators/user.validator");
-const { generateRefreshToken } = require("../../utils/auth");
+import userModel from "../../models/user.model.js";
+import isValidObjectId from "../../utils/isValidObjectId.js";
+import * as userValidator from "../../utils/validators/user.validator.js";
+import { generateRefreshToken } from "../../utils/auth.js";
 
 /**
  * Get all the users information
@@ -13,10 +15,10 @@ const { generateRefreshToken } = require("../../utils/auth");
  *
  * @return res
  */
-exports.getAll = async (req, res) => {
+export const getAll = async (req: Request, res: Response): Promise<void> => {
   const users = await userModel.find({}).select("-password");
 
-  return res.json(users);
+  res.json(users);
 };
 
 /**
@@ -27,23 +29,23 @@ exports.getAll = async (req, res) => {
  *
  * @returns res
  */
-exports.banUser = async (req, res) => {
+export const banUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
     if (isValidObjectId(id)) {
-      return res.status(422).json({ message: "The id not valid" });
+      res.status(422).json({ message: "The id not valid" });
     }
 
     // Find user for ban
     const mainUser = await userModel.findOne({ _id: id }).lean();
     if (!mainUser) {
-      return res.status(403).json({ message: "User not found" });
+      res.status(403).json({ message: "User not found" });
     }
     // Ban user process
-    await userModel.findByIdAndUpdate({ _id: mainUser._id }, { isBan: true });
+    await userModel.findByIdAndUpdate({ _id: mainUser!._id }, { isBan: true });
 
-    return res.status(200).json({ message: "The user baned successfully" });
+    res.status(200).json({ message: "The user baned successfully" });
   } catch (error) {
     if (error) {
       throw error;
@@ -59,21 +61,21 @@ exports.banUser = async (req, res) => {
  *
  * @returns res
  */
-exports.remove = async (req, res) => {
+export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
     if (isValidObjectId(id)) {
-      return res.status(422).json({ message: "Id is not valid" });
+      res.status(422).json({ message: "Id is not valid" });
     }
 
     const removeUser = await userModel.findByIdAndDelete({ _id: id });
 
     if (!removeUser) {
-      return res.status(403).json({ message: "User not found" });
+      res.status(403).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ message: "User delete successfully" });
+    res.status(200).json({ message: "User delete successfully" });
   } catch (error) {
     if (error) {
       throw error;
@@ -89,12 +91,15 @@ exports.remove = async (req, res) => {
  *
  * @returns res
  */
-exports.updateInfo = async (req, res) => {
+export const updateInfo = async (
+  req: AuthenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
     const validationResult = userValidator.register(req.body);
 
     if (!validationResult.success) {
-      return res.status(422).json({ error: validationResult.error.errors });
+      res.status(422).json({ error: validationResult.error.errors });
     }
 
     const { name, username, email, phone, password } = req.body;
@@ -124,7 +129,7 @@ exports.updateInfo = async (req, res) => {
     // Set refresh token in cookie
     res.cookie("refresh_token", newRefreshToken, { httpOnly: true });
 
-    return res.status(200).json({ updateUser });
+    res.status(200).json({ updateUser });
   } catch (error) {
     if (error) {
       throw error;
@@ -140,17 +145,20 @@ exports.updateInfo = async (req, res) => {
  *
  * @returns res
  */
-exports.changeRole = async (req, res) => {
+export const changeRole = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.body;
     // Validate id
     if (isValidObjectId(id)) {
-      return res.status(422).json({ message: "Id is not valid" });
+      res.status(422).json({ message: "Id is not valid" });
     }
     // Find user to change role
     const user = await userModel.findOne({ _id: id });
     if (!user) {
-      return res.status(403).json({ message: "User not found" });
+      res.status(403).json({ message: "User not found" });
     }
     // If user's role is admin, it change to user and on the contrary
     let newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
@@ -158,9 +166,7 @@ exports.changeRole = async (req, res) => {
     // Set new role in database
     await userModel.findByIdAndUpdate({ _id: id }, { role: newRole });
 
-    return res
-      .status(200)
-      .json({ message: "User's role changed successfully" });
+    res.status(200).json({ message: "User's role changed successfully" });
   } catch (error) {
     if (error) {
       throw error;

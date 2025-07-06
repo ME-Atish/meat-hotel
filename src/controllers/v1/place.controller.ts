@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
-import authenticationRequest from "../../utils/authReq";
+import AuthenticationRequest from "../../utils/authReq";
 import placeModel from "../../models/place.model.js";
 import userModel from "../../models/user.model.js";
 import reserveModel from "../../models/reserve.model.js";
 import * as placeValidator from "../../utils/validators/place.validator.js";
-import isValidObjectid from "../../utils/isValidObjectId";
+import isValidObjectId from "../../utils/isValidObjectId.js";
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -20,7 +20,7 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const create = async (
-  req: authenticationRequest,
+  req: AuthenticationRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -89,7 +89,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const update = async (req: authenticationRequest, res: Response) => {
+export const update = async (req: AuthenticationRequest, res: Response) => {
   try {
     // validate body with Zod
 
@@ -136,7 +136,7 @@ export const update = async (req: authenticationRequest, res: Response) => {
 };
 
 export const reserve = async (
-  req: authenticationRequest,
+  req: AuthenticationRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -183,7 +183,7 @@ export const reserve = async (
 };
 
 export const cancelReservation = async (
-  req: authenticationRequest,
+  req: AuthenticationRequest,
   res: Response
 ): Promise<void> => {
   try {

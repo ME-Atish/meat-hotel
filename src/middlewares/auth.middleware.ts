@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-import authenticationRequest from "../utils/authReq.js";
+import AuthenticationRequest from "../utils/authReq.js";
 import userModel from "../models/user.model.js";
 
 /**
@@ -14,7 +14,7 @@ import userModel from "../models/user.model.js";
  * @return void
  */
 export default async (
-  req: authenticationRequest,
+  req: AuthenticationRequest,
   res: Response,
   next: NextFunction
 ) => {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import placeModel from "../../models/place.model";
+import placeModel from "../../models/place.model.js";
 
 export const get = async (req: Request, res: Response): Promise<void> => {
   try {
