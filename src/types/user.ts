@@ -1,3 +1,8 @@
+enum Role {
+  USER,
+  ADMIN
+}
+
 export interface User {
   _id: string,
   username: string,
@@ -5,5 +10,6 @@ export interface User {
   lastName: string,
   email: string,
   password: string,
-  owner: boolean,
+  isOwner: boolean,
+  role: Role 
 }

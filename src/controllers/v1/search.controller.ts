@@ -1,6 +1,8 @@
-const placeModel = require("../../models/place.model");
+import { Request, Response } from "express";
 
-exports.get = async (req, res) => {
+import placeModel from "@/models/place.model";
+
+export const get = async (req: Request, res: Response) =>  {
   try {
     const { keyword } = req.params;
 

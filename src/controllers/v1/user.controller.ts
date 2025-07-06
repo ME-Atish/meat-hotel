@@ -1,19 +1,21 @@
-const bcrypt = require("bcrypt");
+import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
-const userModel = require("../../models/user.model");
-const isValidObjectId = require("../../utils/isValidObjectId");
-const userValidator = require("../../utils/validators/user.validator");
-const { generateRefreshToken } = require("../../utils/auth");
+import userModel from "@/models/user.model";
+import isValidObjectId from "@/utils/isValidObjectId";
+import * as userValidator from "@/utils/validators/user.validator";
+import { generateRefreshToken } from "~/src/utils/auth";
+import { ValidatedRequest } from "~/src/types/validated-request";
 
 /**
  * Get all the users information
  *
- * @param {*} req
- * @param {*} res
+ * @param {Request} req
+ * @param {Response} res
  *
  * @return res
  */
-exports.getAll = async (req, res) => {
+export const getAll = async (_: Request, res: Response) => {
   const users = await userModel.find({}).select("-password");
 
   return res.json(users);
@@ -22,12 +24,12 @@ exports.getAll = async (req, res) => {
 /**
  * Ban users with id
  *
- * @param {*} req
- * @param {*} res
+ * @param {Request} req
+ * @param {Response} res
  *
  * @returns res
  */
-exports.banUser = async (req, res) => {
+export const banUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     // Validate id
@@ -54,12 +56,12 @@ exports.banUser = async (req, res) => {
 /**
  * Remove the users from website
  *
- * @param {*} req
- * @param {*} res
+ * @param {Request} req
+ * @param {Response} res
  *
  * @returns res
  */
-exports.remove = async (req, res) => {
+export const remove = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     // Validate id
@@ -84,17 +86,17 @@ exports.remove = async (req, res) => {
 /**
  * Updating the user information
  *
- * @param {*} req
- * @param {*} res
+ * @param {ValidatedRequest} req
+ * @param {Response} res
  *
  * @returns res
  */
-exports.updateInfo = async (req, res) => {
+export const updateInfo = async (req: ValidatedRequest, res: Response) => {
   try {
     const validationResult = userValidator.register(req.body);
 
     if (!validationResult.success) {
-      return res.status(422).json({ error: validationResult.error.errors });
+      return res.status(422).json({ error: validationResult.error.message });
     }
 
     const { name, username, email, phone, password } = req.body;
@@ -135,12 +137,12 @@ exports.updateInfo = async (req, res) => {
 /**
  * Change uses's role
  *
- * @param {*} req
- * @param {*} res
+ * @param {ValidatedRequest} req
+ * @param {Response} res
  *
  * @returns res
  */
-exports.changeRole = async (req, res) => {
+export const changeRole = async (req: ValidatedRequest, res: Response) => {
   try {
     const { id } = req.body;
     // Validate id
