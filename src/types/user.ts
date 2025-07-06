@@ -1,15 +1,21 @@
+import { ObjectId } from "mongoose";
+
 enum Role {
   USER,
   ADMIN
 }
 
 export interface User {
-  _id: string,
-  username: string,
-  firstName: string,
-  lastName: string,
-  email: string,
-  password: string,
-  isOwner: boolean,
-  role: Role 
+  _id: ObjectId;
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  phone: string;
+  email: string;
+  role: "ADMIN" | "USER";
+  isReserved: boolean;
+  isOwner: boolean;
+  isBan: boolean;
+  refreshToken: string;
 }

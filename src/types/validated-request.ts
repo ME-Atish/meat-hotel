@@ -1,6 +1,7 @@
 import { Request } from "express";
-import { User } from "@/types/user";
+import { User as UserType } from "@/types/user";
+import { HydratedDocument } from "mongoose";
 
 export interface ValidatedRequest extends Request {
-  user: User
+  user: UserType | HydratedDocument<UserType>
 }

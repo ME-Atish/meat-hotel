@@ -1,6 +1,9 @@
-const jwt = require("jsonwebtoken");
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
-const userModel = require("../models/user.model");
+import userModel from "@/models/user.model";
+import { getAccessTokenSecret } from "~/src/utils/tokens";
+import { ValidatedRequest } from "~/src/types/validated-request";
 
 /**
  * Check is the user login to this website or not 
@@ -11,16 +14,18 @@ const userModel = require("../models/user.model");
  * 
  * @return void
  */
-module.exports = async (req, res, next) => {
+export default async function AuthMiddleware(req: ValidatedRequest, res: Response, next: NextFunction) {
   if (!req.cookies.access_token) {
     return res
       .status(403)
       .json({ message: "You have not access to this route" });
   }
 
+  const accessTokenSecret = getAccessTokenSecret();
+
   const token = jwt.verify(
     req.cookies.access_token,
-    process.env.ACCESS_TOKEN_SECRET
+    accessTokenSecret
   );
 
   const user = await userModel.findOne({ email: token.email });
@@ -30,7 +35,7 @@ module.exports = async (req, res, next) => {
   }
 
   // Save user's/admin's information into req.user
-  req.user = user;
+  req.user = user.toObject();
 
   next();
 };
