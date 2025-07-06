@@ -7,8 +7,9 @@ import mongoose from "mongoose";
  *
  * @return void
  */
-const isValidObjectid = (id: mongoose.Types.ObjectId) => {
-   mongoose.Types.ObjectId.isValid(id);
+const isValidObjectid = (id:string) => {
+   const resultValidation = mongoose.Types.ObjectId.isValid(id);
+   return resultValidation;
 };
 
 export default isValidObjectid;
