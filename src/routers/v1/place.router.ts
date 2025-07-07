@@ -117,7 +117,7 @@ router
  *     summary: Reserve a place
  *     description: Reserve a place by its ID. Requires access token in cookie for authentication.
  *     tags:
- *       - Reservation
+ *       - place
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -148,7 +148,7 @@ router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
  *     summary: Cancel a place reservation
  *     description: Cancels an existing place reservation by place ID. Requires access token in cookie for authentication.
  *     tags:
- *       - Reservation
+ *       - place
  *     parameters:
  *       - in: cookie
  *         name: access_token

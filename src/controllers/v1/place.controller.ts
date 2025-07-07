@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 
 import AuthenticationRequest from "../../utils/authReq";
 import placeModel from "../../models/place.model.js";
@@ -215,20 +215,37 @@ export const cancelReservation = async (
       return;
     }
 
+    const findReservation = await reserveModel.findById(id);
+
+    if (!findReservation) {
+      res.status(403).json({ message: "Reservation not found" });
+      return;
+    }
+
     // Cancel reservation operation
-    await placeModel.findByIdAndUpdate(
-      { _id: id },
+    const cancelPlaceReservationResult = await placeModel.findByIdAndUpdate(
+      { _id: findReservation?.place },
       {
         isReserved: false,
       }
     );
 
-    await userModel.findByIdAndUpdate(
+    if (!cancelPlaceReservationResult) {
+      res.status(403).json({ message: "Place not found" });
+      return;
+    }
+
+    const cancelUserReservationResult = await userModel.findByIdAndUpdate(
       { _id: typedReq.user._id },
       {
         isReserved: false,
       }
     );
+
+    if (!cancelUserReservationResult) {
+      res.status(403).json({ message: "User not found" });
+      return;
+    }
 
     res.status(200).json({
       message: "The reservation operation was successfully canceled.",
