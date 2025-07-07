@@ -1,8 +1,6 @@
 import z from "zod";
 
 export const login = (data: Object) => {
-  const z = require("zod");
-
   const schema = z.object({
     identifier: z.union([z.string().email(), z.string().min(5).max(25)]),
     password: z.string().min(5).max(16),
