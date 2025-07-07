@@ -18,13 +18,17 @@ const router = express.Router()
  *             properties:
  *               username:
  *                 type: string
- *               name:
+ *               firstName:
  *                  type: string
+ *               lastName:
+ *                  type: string
+ *               phone:
+ *                   type: string
  *               email:
  *                  type: string
  *               password:
- *                 type: string
- *               phone:
+ *                  type: string
+ *               repeatPassword:
  *                  type: string
  *     responses:
  *       200:
@@ -45,6 +49,7 @@ router.route("/register").post(authController.register);
  *   post:
  *     summary: login user
  *     tags: [Auth]
+ *     description: Login user in website (For get refreshToken set rememberMe in request body to true)
  *     requestBody:
  *       required: true
  *       content:
@@ -57,7 +62,7 @@ router.route("/register").post(authController.register);
  *               password:
  *                 type: string
  *               rememberMe:
- *                  type: number (0 or 1)
+ *                  type: boolean
  *     responses:
  *       200:
  *         description: User log in successfully
@@ -82,7 +87,7 @@ router.route("/login").post(authController.login);
  *         required: true
  *         schema:
  *           type: string
- *         description: Refresh token stored in HttpOnly cookie
+ *         description: Refresh token stored in HttpOnly cookie (Each 20s should send request to this route)
  *     responses:
  *       204:
  *         description: Set new access token in cookies
