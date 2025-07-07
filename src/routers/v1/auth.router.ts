@@ -1,15 +1,16 @@
-import express from "express"
+import express from "express";
 
-import * as authController from "../../controllers/v1/auth.controller.js"
-const router = express.Router()
+import * as authController from "../../controllers/v1/auth.controller.js";
+const router = express.Router();
 
 /**
  * @swagger
  * /v1/auth/register:
  *   post:
  *     summary: Register user
- *     tags: 
+ *     tags:
  *      - auth
+ *     description: Register (sign up) user into website (after user register should direct to login page)
  *     requestBody:
  *       required: true
  *       content:
@@ -49,9 +50,9 @@ router.route("/register").post(authController.register);
  * /v1/auth/login:
  *   post:
  *     summary: login user
- *     tags: 
+ *     tags:
  *      - auth
- *     description: Login user in website (For get refreshToken set rememberMe in request body to true)
+ *     description: Login user in website
  *     requestBody:
  *       required: true
  *       content:
@@ -82,7 +83,7 @@ router.route("/login").post(authController.login);
  * /v1/auth/refresh-token:
  *   post:
  *     summary: Refresh access token using refresh token cookie
- *     tags: 
+ *     tags:
  *      - auth
  *     parameters:
  *       - in: cookie
@@ -102,4 +103,4 @@ router.route("/login").post(authController.login);
 
 router.route("/refresh-token").post(authController.refreshToken);
 
-export default router
+export default router;
