@@ -11,7 +11,7 @@ const router = express.Router();
  *     summary: Search the website
  *     description: Searches the website using the provided keyword.
  *     tags:
- *       - Search
+ *       - search
  *     parameters:
  *       - in: path
  *         name: keyword

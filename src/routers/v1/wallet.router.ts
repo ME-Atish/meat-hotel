@@ -11,7 +11,7 @@ const router = express.Router();
  *     summary: Charge user account
  *     description: Charges the authenticated user's account. Requires access token in cookie for authentication.
  *     tags:
- *       - Wallet
+ *       - wallet
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -44,7 +44,7 @@ router.route("/increase").post(authMiddleware, walletController.increase);
  *     summary: Deduct amount from user account
  *     description: Deducts a specified amount from the authenticated user's account. Requires access token in cookie for authentication.
  *     tags:
- *       - Wallet
+ *       - wallet
  *     parameters:
  *       - in: cookie
  *         name: access_token

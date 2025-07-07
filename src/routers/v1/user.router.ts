@@ -13,7 +13,7 @@ const router = express.Router();
  *     summary: Get all users' information
  *     description: Retrieves information of all users. Only accessible by admins with valid access and refresh tokens in cookies.
  *     tags:
- *       - User
+ *       - user
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -42,7 +42,7 @@ router.route("/").get(authMiddleware, isAdminMiddleware, userController.getAll);
  *     summary: Ban a user by ID
  *     description: Bans a user specified by their ID. Only accessible by admins with valid access and refresh tokens in cookies.
  *     tags:
- *       - User
+ *       - user
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -81,7 +81,7 @@ router
  *     summary: Update user's information
  *     description: Updates the authenticated user's information. Requires access token in cookie for authentication.
  *     tags:
- *       - User
+ *       - user
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -132,7 +132,7 @@ router.route("/").put(authMiddleware, userController.updateInfo);
  *     summary: Change user role
  *     description: Change a user's role between admin and user. Only accessible by admins with valid access and refresh tokens in cookies.
  *     tags:
- *       - User
+ *       - user
  *     parameters:
  *       - in: cookie
  *         name: access_token
@@ -178,7 +178,7 @@ router
  *     summary: Remove a user by ID
  *     description: Deletes a user specified by their ID. Only accessible by admins with valid access and refresh tokens in cookies.
  *     tags:
- *       - User
+ *       - user
  *     parameters:
  *       - in: cookie
  *         name: access_token

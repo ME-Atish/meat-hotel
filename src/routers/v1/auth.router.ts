@@ -8,7 +8,8 @@ const router = express.Router()
  * /v1/auth/register:
  *   post:
  *     summary: Register user
- *     tags: [Auth]
+ *     tags: 
+ *      - auth
  *     requestBody:
  *       required: true
  *       content:
@@ -48,7 +49,8 @@ router.route("/register").post(authController.register);
  * /v1/auth/login:
  *   post:
  *     summary: login user
- *     tags: [Auth]
+ *     tags: 
+ *      - auth
  *     description: Login user in website (For get refreshToken set rememberMe in request body to true)
  *     requestBody:
  *       required: true
@@ -80,7 +82,8 @@ router.route("/login").post(authController.login);
  * /v1/auth/refresh-token:
  *   post:
  *     summary: Refresh access token using refresh token cookie
- *     tags: [Auth]
+ *     tags: 
+ *      - auth
  *     parameters:
  *       - in: cookie
  *         name: refresh_token
