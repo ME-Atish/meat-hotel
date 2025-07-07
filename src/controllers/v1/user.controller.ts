@@ -40,7 +40,7 @@ export const banUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "The id not valid" });
       return;
     }
@@ -75,7 +75,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "Id is not valid" });
       return;
     }
@@ -171,7 +171,7 @@ export const changeRole = async (
   try {
     const { id } = req.body;
     // Validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "Id is not valid" });
       return;
     }

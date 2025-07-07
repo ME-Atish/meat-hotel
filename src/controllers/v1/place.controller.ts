@@ -71,7 +71,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     // Validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "Id is not valid" });
       return;
     }
@@ -108,7 +108,7 @@ export const update = async (req: Request, res: Response): Promise<void> => {
 
     const { id } = req.params;
     // validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "Id is not valid" });
       return;
     }
@@ -154,7 +154,7 @@ export const reserve = async (
 
     const { id } = req.params;
     // Validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "Id is not valid" });
     }
 
@@ -206,7 +206,7 @@ export const cancelReservation = async (
 
     const { id } = req.params;
     // Validate id
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       res.status(422).json({ message: "Id is not valid" });
       return;
     }
