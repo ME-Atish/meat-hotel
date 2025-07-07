@@ -109,8 +109,8 @@ export const updateInfo = async (
   res: Response
 ): Promise<void> => {
   try {
-
-    const typedReq = req as AuthenticationRequest
+    // Cast request to typedReq for use costume Request
+    const typedReq = req as AuthenticationRequest;
 
     // Validate data with Zod
     const validationResult = userValidator.register(req.body);

@@ -22,8 +22,9 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
-    // check req.body with Zod
+    // Cast request to typedReq for use costume Request
     const typedReq = req as AuthenticationRequest;
+    // check req.body with Zod
     const validationResult = placeValidator.create(req.body);
 
     if (!validationResult.success) {
@@ -95,6 +96,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
 
 export const update = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Cast request to typedReq for use costume Request
     const typedReq = req as AuthenticationRequest;
 
     // validate body with Zod
@@ -145,12 +147,10 @@ export const update = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const reserve = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const reserve = async (req: Request, res: Response): Promise<void> => {
   try {
-    const typedReq = req as AuthenticationRequest
+    // Cast request to typedReq for use costume Request
+    const typedReq = req as AuthenticationRequest;
 
     const { id } = req.params;
     // Validate id
@@ -184,7 +184,10 @@ export const reserve = async (
       { isReserved: true }
     );
 
-    await reserveModel.create({ place: placeInfo!._id, user: typedReq.user._id });
+    await reserveModel.create({
+      place: placeInfo!._id,
+      user: typedReq.user._id,
+    });
 
     res.status(200).json({
       message: "Place reserved successfully",
@@ -202,7 +205,8 @@ export const cancelReservation = async (
   res: Response
 ): Promise<void> => {
   try {
-    const typedReq = req as AuthenticationRequest
+    // Cast request to typedReq for use costume Request
+    const typedReq = req as AuthenticationRequest;
 
     const { id } = req.params;
     // Validate id

@@ -1,16 +1,13 @@
-import { Request,Response } from "express";
+import { Request, Response } from "express";
 import AuthenticationRequest from "../../utils/authReq.js";
 
 import walletModel from "../../models/wallet.model.js";
 import * as walletValidator from "../../utils/validators/wallet.validator.js";
 
-export const increase = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const increase = async (req: Request, res: Response): Promise<void> => {
   try {
-
-    const typedReq = req as AuthenticationRequest
+    // Cast request to typedReq for use costume Request
+    const typedReq = req as AuthenticationRequest;
 
     // Validate data with Zod
     const validationResult = walletValidator.increase(req.body);
@@ -41,13 +38,10 @@ export const increase = async (
   }
 };
 
-export const decrease = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const decrease = async (req: Request, res: Response): Promise<void> => {
   try {
-
-    const typedReq = req as AuthenticationRequest
+    // Cast request to typedReq for use costume Request
+    const typedReq = req as AuthenticationRequest;
 
     // Validate data with Zod
     const validationResult = walletValidator.increase(req.body);
