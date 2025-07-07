@@ -59,7 +59,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       password: hashedPassword,
       phone,
       role: "USER",
-      isReserved: 0,
+      isReserved: false,
       refreshToken,
     });
 

@@ -18,14 +18,18 @@ export const register = (data: object) => {
       lastName: z.string().min(3).max(25),
       email: z.string().email(),
       phone: z.string(),
-      isReserved: z.boolean(),
       password: z.string().min(5).max(16),
       repeatPassword: z.string(),
     })
-    .refine((data) => data.password === data.repeatPassword, {
-      message: "Password do not match",
-      path: ["repeatPassword"],
-    });
+    .refine(
+      (data) => {
+        return data.password.toString() === data.repeatPassword.toString();
+      },
+      {
+        message: "Password do not match",
+        path: ["repeatPassword"],
+      }
+    );
 
   return schema.safeParse(data);
 };
