@@ -31,3 +31,17 @@ export const generateRefreshToken = (email: string) => {
   });
   return token;
 };
+
+/**
+ * Generating remember me token
+ * @param string email
+ *
+ * @return remember me token
+ */
+export const generateRememberMeToken = (email: string) => {
+  const token = jwt.sign({ email }, process.env.REMEMBER_ME_TOKEN_SECRET!, {
+    algorithm: "HS512",
+    expiresIn: "30d",
+  });
+  return token;
+};

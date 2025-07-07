@@ -7,6 +7,7 @@ import walletModel from "../../models/wallet.model.js";
 import * as userValidator from "../../utils/validators/user.validator.js";
 import { generateAccessToken } from "../../utils/auth.js";
 import { generateRefreshToken } from "../../utils/auth.js";
+import { generateRememberMeToken } from "../../utils/auth.js";
 
 /**
  * Register the users into website
@@ -87,16 +88,16 @@ export const register = async (req: Request, res: Response): Promise<void> => {
  */
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    interface RefreshTokenPayload extends jwt.JwtPayload {
+    interface rememberMePayload extends jwt.JwtPayload {
       email: string;
     }
 
     // If the user's tick the remember me these codes for next time will work
-    if (req.cookies.refresh_token) {
+    if (req.cookies.rememberMe_token) {
       const jwtPayload = jwt.verify(
-        req.cookies.refresh_token,
-        process.env.REFRESH_TOKEN_SECRET!
-      ) as RefreshTokenPayload;
+        req.cookies.rememberMe_token,
+        process.env.REMEMBER_ME_TOKEN_SECRET!
+      ) as rememberMePayload;
       // Find user
       const user = await userModel.findOne({ email: jwtPayload.email });
 
@@ -146,14 +147,16 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const findUser = await userModel.findOne({ email });
     // Get user's refresh token
     const refreshToken = findUser!.refreshToken;
+    // Refresh token will set in cookie
+    res.cookie("refresh_token", refreshToken, { httpOnly: true });
 
     // Generate access token
     res.cookie("access_token", accessToken, { httpOnly: true });
 
     // check if the remember me is ticked
     if (rememberMe) {
-      // Refresh token will set in cookie
-      res.cookie("refresh_token", refreshToken, { httpOnly: true });
+      const rememberMeToken = generateRememberMeToken(email);
+      res.cookie("rememberMe_token", rememberMeToken, { httpOnly: true });
     }
 
     res.json({ message: "Login successfully" });
