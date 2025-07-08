@@ -4,11 +4,11 @@ import AuthenticationRequest from "../../utils/authReq.js";
 import walletModel from "../../models/wallet.model.js";
 import * as walletValidator from "../../utils/validators/wallet.validator.js";
 
-export const increase = async (req: Request, res: Response): Promise<void> => {
+export const increase = async (
+  req: AuthenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
-
     // Validate data with Zod
     const validationResult = walletValidator.increase(req.body);
 
@@ -22,7 +22,7 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
     // Increase the account charge
     await walletModel.findOneAndUpdate(
       {
-        userId: typedReq.user._id,
+        userId: req.user._id,
       },
       {
         amount,
@@ -38,11 +38,11 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const decrease = async (req: Request, res: Response): Promise<void> => {
+export const decrease = async (
+  req: AuthenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
-
     // Validate data with Zod
     const validationResult = walletValidator.increase(req.body);
 
@@ -53,7 +53,7 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
 
     const { amount } = req.body;
     // Find wallet for deducted amount
-    const findWallet = await walletModel.findOne({ userId: typedReq.user._id });
+    const findWallet = await walletModel.findOne({ userId: req.user._id });
     // Check if the amount being sent is less than the account balance.
     if (findWallet!.amount < amount) {
       res.status(406).json({
@@ -65,7 +65,7 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
     const deductedAmount = findWallet!.amount - amount;
     // Update model
     const updateAmount = await walletModel.findOneAndUpdate(
-      { userId: typedReq.user._id },
+      { userId: req.user._id },
       { amount: deductedAmount }
     );
 

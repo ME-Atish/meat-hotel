@@ -105,13 +105,10 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
  * @returns res
  */
 export const updateInfo = async (
-  req: Request,
+  req: AuthenticationRequest,
   res: Response
 ): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
-
     // Validate data with Zod
     const validationResult = userValidator.register(req.body);
 
@@ -131,14 +128,14 @@ export const updateInfo = async (
     // Update user's info
     const updateUser = await userModel
       .findByIdAndUpdate(
-        { _id: typedReq.user._id },
+        { _id: req.user._id },
         {
           name,
           username,
           email,
           phone,
           password: hashedPassword,
-          role: typedReq.user.role,
+          role: req.user.role,
           refreshToken: newRefreshToken,
         }
       )

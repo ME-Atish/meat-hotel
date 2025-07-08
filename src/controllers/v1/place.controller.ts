@@ -20,10 +20,8 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const create = async (req: Request, res: Response): Promise<void> => {
+export const create = async (req: AuthenticationRequest, res: Response): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
     // check req.body with Zod
     const validationResult = placeValidator.create(req.body);
 
@@ -36,12 +34,12 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       req.body;
 
     // Check if the user who created the place owns it.
-    const ownerExist = await userModel.findOne({ email: typedReq.user.email });
+    const ownerExist = await userModel.findOne({ email: req.user.email });
 
     // If the user who created the place is not the owner, its role will change to owner.
     if (!ownerExist!.isOwner) {
       await userModel.findByIdAndUpdate(
-        { _id: typedReq.user._id },
+        { _id: req.user._id },
         { isOwner: true }
       );
     }
@@ -55,8 +53,8 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       province,
       city,
       isReserved: false,
-      image: typedReq.files,
-      owner: typedReq.user,
+      image: req.files,
+      owner: req.user,
     });
 
     res.status(201).json(createPlace);
@@ -94,13 +92,9 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const update = async (req: Request, res: Response): Promise<void> => {
+export const update = async (req: AuthenticationRequest, res: Response): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
-
     // validate body with Zod
-
     const validationResult = placeValidator.create(req.body);
 
     if (!validationResult.success) {
@@ -129,8 +123,8 @@ export const update = async (req: Request, res: Response): Promise<void> => {
         price,
         province,
         city,
-        image: typedReq.files,
-        owner: typedReq.user._id,
+        image: req.files,
+        owner: req.user._id,
       }
     );
     if (!updatePlace) {
@@ -147,11 +141,11 @@ export const update = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const reserve = async (req: Request, res: Response): Promise<void> => {
+export const reserve = async (
+  req: AuthenticationRequest,
+  res: Response
+): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
-
     const { id } = req.params;
     // Validate id
     if (!isValidObjectId(id)) {
@@ -167,7 +161,7 @@ export const reserve = async (req: Request, res: Response): Promise<void> => {
       return;
     }
     // Find user who want reserve a palace
-    const userInfo = await userModel.findOne({ _id: typedReq.user._id });
+    const userInfo = await userModel.findOne({ _id: req.user._id });
     // These codes will be executed if the user who submitted the request has reserved a place.
     if (userInfo!.isReserved) {
       res.status(409).json({ message: "User already reserved place" });
@@ -186,7 +180,7 @@ export const reserve = async (req: Request, res: Response): Promise<void> => {
 
     await reserveModel.create({
       place: placeInfo!._id,
-      user: typedReq.user._id,
+      user: req.user._id,
     });
 
     res.status(200).json({
@@ -201,13 +195,10 @@ export const reserve = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const cancelReservation = async (
-  req: Request,
+  req: AuthenticationRequest,
   res: Response
 ): Promise<void> => {
   try {
-    // Cast request to typedReq for use costume Request
-    const typedReq = req as AuthenticationRequest;
-
     const { id } = req.params;
     // Validate id
     if (!isValidObjectId(id)) {
@@ -236,7 +227,7 @@ export const cancelReservation = async (
     }
 
     const cancelUserReservationResult = await userModel.findByIdAndUpdate(
-      { _id: typedReq.user._id },
+      { _id: req.user._id },
       {
         isReserved: false,
       }
