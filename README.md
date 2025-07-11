@@ -51,6 +51,7 @@ http://localhost:4000/api-docs
    MONGOOSE_URI=mongodb://localhost:27017/meathotel
    ACCESS_TOKEN_SECRET=your-secret
    REFRESH_TOKEN_SECRET=your-refresh-secret
+   REMEMBER_ME_TOKEN_SECRET=your-remember-token
    ```
 
 4. **Start MongoDB** (if not running already).
