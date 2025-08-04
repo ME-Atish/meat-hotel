@@ -11,7 +11,7 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
     // find all places
     const places = await placeModel.findAll({});
 
-    const placesData = places.forEach((place) => {
+    const placesData = places.map((place) => {
       return place.dataValues;
     });
 
@@ -47,7 +47,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     });
 
     // If the user who created the place is not the owner, its role will change to owner.
-    if (!ownerExist!.dataValues.is_owner) {
+    if (!ownerExist?.dataValues.isOwner) {
       const findOwner = await userModel.findOne({
         where: {
           id: typedReq.user.id,
@@ -55,8 +55,11 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       });
 
       if (findOwner?.dataValues) {
-        findOwner.dataValues.is_owner = 1;
-        findOwner.save();
+        findOwner.set({
+          isOwner: 1,
+        });
+
+        await findOwner.save();
       }
     }
 
@@ -70,7 +73,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       city,
       isReserved: false,
       image: typedReq.files,
-      owner: typedReq.user,
+      ownerId: typedReq.user.id,
     });
 
     res.status(201).json(createPlace);
@@ -119,12 +122,10 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     const validationResult = placeValidator.create(req.body);
 
     if (!validationResult.success) {
-      res.status(422).json({ error: validationResult.error.errors });
+      res.status(422).json({ errors: validationResult.error.errors });
       return;
     }
-
     const { id } = req.params;
-    // validate id
 
     const { name, address, description, facilities, price, province, city } =
       req.body;
@@ -136,15 +137,17 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (findPlace?.dataValues) {
-      findPlace.dataValues.name = name;
-      findPlace.dataValues.address = address;
-      findPlace.dataValues.description = description;
-      findPlace.dataValues.facilities = facilities;
-      findPlace.dataValues.price = price;
-      findPlace.dataValues.province = province;
-      findPlace.dataValues.city = city;
-      findPlace.dataValues.image = typedReq.files;
-      findPlace.dataValues.owner = typedReq.user.id;
+      findPlace.set({
+        name,
+        address,
+        description,
+        facilities,
+        price,
+        province,
+        city,
+        image: typedReq.files,
+        ownerId: typedReq.user.id,
+      });
       findPlace.save();
     }
 
@@ -188,13 +191,17 @@ export const reserve = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const updateReservedFiled = await placeModel.findOne({
+    const updateReservedField = await placeModel.findOne({
       where: {
         id: placeInfo?.dataValues.id,
       },
     });
-    if (updateReservedFiled?.dataValues) {
-      updateReservedFiled.dataValues.is_reserved = 1;
+    if (updateReservedField?.dataValues) {
+      updateReservedField.set({
+        isReserved: 1,
+      });
+
+      updateReservedField.save();
     }
 
     const updateUserReservedField = await userModel.findOne({
@@ -203,12 +210,15 @@ export const reserve = async (req: Request, res: Response): Promise<void> => {
       },
     });
     if (updateUserReservedField?.dataValues) {
-      updateUserReservedField.dataValues.is_reserved = 1;
+      updateUserReservedField.set({
+        isReserved: 1,
+      });
+      updateUserReservedField.save();
     }
 
     await reserveModel.create({
-      place_id: placeInfo?.dataValues.Id,
-      user_id: typedReq.user.id,
+      placeId: placeInfo?.dataValues.id,
+      userId: typedReq.user.id,
     });
 
     res.status(200).json({
@@ -251,7 +261,9 @@ export const cancelReservation = async (
     });
 
     if (cancelPlaceReservationResult?.dataValues) {
-      cancelPlaceReservationResult.dataValues.is_reserved = 0;
+      cancelPlaceReservationResult.set({
+        isReserved: 0,
+      });
       cancelPlaceReservationResult.save();
     }
 
@@ -266,14 +278,24 @@ export const cancelReservation = async (
       },
     });
 
-    if (cancelUserReservationResult?.dataValues) {
-      cancelUserReservationResult.dataValues.is_reserved = 0;
-    }
-
     if (!cancelUserReservationResult) {
       res.status(403).json({ message: "User not found" });
       return;
     }
+    if (cancelUserReservationResult?.dataValues) {
+      cancelUserReservationResult.set({
+        isReserved: 0,
+      });
+      cancelUserReservationResult.save();
+    }
+
+    const findReservationForDelete = await reserveModel.findOne({
+      where: {
+        id,
+      },
+    });
+
+    await findReservationForDelete?.destroy();
 
     res.status(200).json({
       message: "The reservation operation was successfully canceled.",

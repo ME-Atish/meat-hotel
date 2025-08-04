@@ -7,6 +7,11 @@ import Place from "./place.model.js";
 const Reserve = db.define(
   "Reserve",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     placeId: {
       type: DataTypes.INTEGER,
       references: {
@@ -39,7 +44,17 @@ const Reserve = db.define(
   }
 );
 
-User.belongsToMany(Place, { through: "Reserves" });
-Place.belongsToMany(User, { through: "Reserves" });
+User.belongsToMany(Place, {
+  foreignKey: "userId",
+  sourceKey: "id",
+  as: "user",
+  through: Reserve,
+});
+Place.belongsToMany(User, {
+  foreignKey: "placeId",
+  sourceKey: "id",
+  as: "place",
+  through: Reserve,
+});
 
 export default Reserve;

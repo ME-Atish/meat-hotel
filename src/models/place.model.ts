@@ -55,7 +55,9 @@ const Place = db.define(
   }
 );
 
-User.hasMany(Place);
-Place.belongsTo(User);
+User.hasMany(Place , {foreignKey: "owner_id", sourceKey: "id", as: "places"});
+Place.belongsTo(User,{
+  foreignKey: "ownerId", targetKey: "id", as: "owner"
+});
 
 export default Place;
