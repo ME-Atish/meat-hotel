@@ -5,13 +5,17 @@ import placeModel from "../../models/place.model.js";
 import userModel from "../../models/user.model.js";
 import reserveModel from "../../models/reserve.model.js";
 import * as placeValidator from "../../utils/validators/place.validator.js";
-import isValidObjectId from "../../utils/isValidObjectId.js";
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
     // find all places
-    const places = await placeModel.find({});
-    res.status(200).json(places);
+    const places = await placeModel.findAll({});
+
+    const placesData = places.forEach((place) => {
+      return place.dataValues;
+    });
+
+    res.status(200).json(placesData);
     return;
   } catch (error) {
     if (error) {
@@ -36,14 +40,24 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       req.body;
 
     // Check if the user who created the place owns it.
-    const ownerExist = await userModel.findOne({ email: typedReq.user.email });
+    const ownerExist = await userModel.findOne({
+      where: {
+        email: typedReq.user.email,
+      },
+    });
 
     // If the user who created the place is not the owner, its role will change to owner.
-    if (!ownerExist!.isOwner) {
-      await userModel.findByIdAndUpdate(
-        { _id: typedReq.user._id },
-        { isOwner: true }
-      );
+    if (!ownerExist!.dataValues.is_owner) {
+      const findOwner = await userModel.findOne({
+        where: {
+          id: typedReq.user.id,
+        },
+      });
+
+      if (findOwner?.dataValues) {
+        findOwner.dataValues.is_owner = 1;
+        findOwner.save();
+      }
     }
 
     const createPlace = await placeModel.create({
@@ -71,19 +85,20 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    // Validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "Id is not valid" });
-      return;
-    }
 
     // delete place
-    const deletePlace = await placeModel.findByIdAndDelete({ _id: id });
+    const deletePlace = await placeModel.findOne({
+      where: {
+        id,
+      },
+    });
 
     if (!deletePlace) {
       res.status(403).json({ message: "The place not found" });
       return;
     }
+
+    await deletePlace.destroy();
 
     res.status(200).json({ message: "Place deleted successfully" });
     return;
@@ -110,32 +125,27 @@ export const update = async (req: Request, res: Response): Promise<void> => {
 
     const { id } = req.params;
     // validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "Id is not valid" });
-      return;
-    }
 
     const { name, address, description, facilities, price, province, city } =
       req.body;
 
-    // update place's information
-    const updatePlace = await placeModel.findByIdAndUpdate(
-      { _id: id },
-      {
-        name,
-        address,
-        description,
-        facilities,
-        price,
-        province,
-        city,
-        image: typedReq.files,
-        owner: typedReq.user._id,
-      }
-    );
-    if (!updatePlace) {
-      res.status(403).json({ message: "Place not found" });
-      return;
+    const findPlace = await placeModel.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (findPlace?.dataValues) {
+      findPlace.dataValues.name = name;
+      findPlace.dataValues.address = address;
+      findPlace.dataValues.description = description;
+      findPlace.dataValues.facilities = facilities;
+      findPlace.dataValues.price = price;
+      findPlace.dataValues.province = province;
+      findPlace.dataValues.city = city;
+      findPlace.dataValues.image = typedReq.files;
+      findPlace.dataValues.owner = typedReq.user.id;
+      findPlace.save();
     }
 
     res.status(200).json({ message: "Place updated successfully" });
@@ -153,40 +163,52 @@ export const reserve = async (req: Request, res: Response): Promise<void> => {
     const typedReq = req as AuthenticationRequest;
 
     const { id } = req.params;
-    // Validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "Id is not valid" });
-    }
 
     // Find place that client want to reserve
-    const placeInfo = await placeModel.findOne({ _id: id });
+    const placeInfo = await placeModel.findOne({
+      where: {
+        id,
+      },
+    });
 
     // If place reserved these codes will run
-    if (placeInfo!.isReserved) {
+    if (placeInfo?.dataValues.isReserved) {
       res.status(409).json({ message: "Place already reserved" });
       return;
     }
     // Find user who want reserve a palace
-    const userInfo = await userModel.findOne({ _id: typedReq.user._id });
+    const userInfo = await userModel.findOne({
+      where: {
+        id: typedReq.user.id,
+      },
+    });
     // These codes will be executed if the user who submitted the request has reserved a place.
-    if (userInfo!.isReserved) {
+    if (userInfo?.dataValues.isReserved) {
       res.status(409).json({ message: "User already reserved place" });
       return;
     }
 
-    // Turn isReserved field in database to true (reservation operation completed)
-    await placeModel.findByIdAndUpdate(
-      { _id: placeInfo!._id },
-      { isReserved: true }
-    );
-    await userModel.findByIdAndUpdate(
-      { _id: userInfo!._id },
-      { isReserved: true }
-    );
+    const updateReservedFiled = await placeModel.findOne({
+      where: {
+        id: placeInfo?.dataValues.id,
+      },
+    });
+    if (updateReservedFiled?.dataValues) {
+      updateReservedFiled.dataValues.is_reserved = 1;
+    }
+
+    const updateUserReservedField = await userModel.findOne({
+      where: {
+        id: userInfo?.dataValues.id,
+      },
+    });
+    if (updateUserReservedField?.dataValues) {
+      updateUserReservedField.dataValues.is_reserved = 1;
+    }
 
     await reserveModel.create({
-      place: placeInfo!._id,
-      user: typedReq.user._id,
+      place_id: placeInfo?.dataValues.Id,
+      user_id: typedReq.user.id,
     });
 
     res.status(200).json({
@@ -209,38 +231,44 @@ export const cancelReservation = async (
     const typedReq = req as AuthenticationRequest;
 
     const { id } = req.params;
-    // Validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "Id is not valid" });
-      return;
-    }
 
-    const findReservation = await reserveModel.findById(id);
+    const findReservation = await reserveModel.findOne({
+      where: {
+        id,
+      },
+    });
 
-    if (!findReservation) {
+    if (!findReservation?.dataValues) {
       res.status(403).json({ message: "Reservation not found" });
       return;
     }
 
     // Cancel reservation operation
-    const cancelPlaceReservationResult = await placeModel.findByIdAndUpdate(
-      { _id: findReservation?.place },
-      {
-        isReserved: false,
-      }
-    );
+    const cancelPlaceReservationResult = await placeModel.findOne({
+      where: {
+        id: findReservation.dataValues.id,
+      },
+    });
 
-    if (!cancelPlaceReservationResult) {
+    if (cancelPlaceReservationResult?.dataValues) {
+      cancelPlaceReservationResult.dataValues.is_reserved = 0;
+      cancelPlaceReservationResult.save();
+    }
+
+    if (!cancelPlaceReservationResult?.dataValues) {
       res.status(403).json({ message: "Place not found" });
       return;
     }
 
-    const cancelUserReservationResult = await userModel.findByIdAndUpdate(
-      { _id: typedReq.user._id },
-      {
-        isReserved: false,
-      }
-    );
+    const cancelUserReservationResult = await userModel.findOne({
+      where: {
+        id: typedReq.user.id,
+      },
+    });
+
+    if (cancelUserReservationResult?.dataValues) {
+      cancelUserReservationResult.dataValues.is_reserved = 0;
+    }
 
     if (!cancelUserReservationResult) {
       res.status(403).json({ message: "User not found" });

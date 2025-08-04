@@ -24,6 +24,7 @@ const Place = db.define(
       type: DataTypes.TINYINT,
       defaultValue: 0,
       allowNull: false,
+      field: "is_reserved"
     },
     province: {
       type: DataTypes.STRING,
