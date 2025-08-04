@@ -38,7 +38,7 @@ const Place = db.define(
     ownerId: {
       type: DataTypes.INTEGER,
       references: {
-        model: "Owners",
+        model: "Users",
         key: "id",
       },
       field: "owner_id",
@@ -48,8 +48,8 @@ const Place = db.define(
   },
   {
     timestamps: true,
-    modelName: "User",
-    tableName: "Users",
+    modelName: "Place",
+    tableName: "Places",
     createdAt: "created_at",
     updatedAt: "updated_at",
   }
