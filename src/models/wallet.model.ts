@@ -1,20 +1,32 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const schema = new mongoose.Schema(
+import db from "../config/db.js";
+
+const Wallet = db.define(
+  "Wallet",
   {
     amount: {
-      type: Number,
-      default: 0,
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     userId: {
-      type: mongoose.Types.ObjectId,
-      ref: "user",
-      required: true,
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      field: "user_id",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
   },
-  { timestamps: true }
+  {
+    modelName: "Wallet",
+    tableName: "Wallets",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  }
 );
 
-const model = mongoose.model("wallet", schema);
-
-export default model;
+export default Wallet;

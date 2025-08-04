@@ -1,23 +1,45 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const schema = new mongoose.Schema(
+import db from "../config/db.js";
+import User from "./user.model.js";
+import Place from "./place.model.js";
+
+const Reserve = db.define(
+  "Reserve",
   {
-    place: {
-      type: mongoose.Types.ObjectId,
-      ref: "place",
-      required: true,
+    placeId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Places",
+        key: "id",
+      },
+      field: "place_id",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: "user",
-      required: true,
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      field: "user_id",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
   },
   {
+    modelName: "Reserve",
+    tableName: "Reserves",
     timestamps: true,
+    paranoid: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
   }
 );
 
-const model = mongoose.model("reserve", schema);
+User.belongsToMany(Place, { through: "Reserves" });
+Place.belongsToMany(User, { through: "Reserves" });
 
-export default model
+export default Reserve;

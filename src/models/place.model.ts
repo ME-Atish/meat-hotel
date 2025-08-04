@@ -1,53 +1,60 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const schema = new mongoose.Schema(
+import db from "../config/db.js";
+import User from "./user.model.js";
+
+const Place = db.define(
+  "Place",
   {
     name: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     address: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    description: {
-      type: String,
-      required: true,
-    },
-    facilities: {
-      type: String,
-      required: true,
-    },
+    description: DataTypes.STRING,
+    facilities: DataTypes.STRING,
     price: {
-      type: Number,
-      required: true,
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
     },
     isReserved: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      allowNull: false,
     },
     province: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     city: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    image: {
-      type: Object,
-    },
-    owner: {
-      type: mongoose.Types.ObjectId,
-      ref: "owner",
-      required: true,
+    image: DataTypes.JSON,
+    ownerId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Owners",
+        key: "id",
+      },
+      field: "owner_id",
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
     },
   },
   {
     timestamps: true,
+    modelName: "User",
+    tableName: "Users",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 
-const model = mongoose.model("place", schema);
+User.hasMany(Place);
+Place.belongsTo(User);
 
-export default model
+export default Place;
