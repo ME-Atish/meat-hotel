@@ -4,7 +4,7 @@ const sequelize = new Sequelize({
   host: "localhost",
   username: "root",
   password: "",
-  database: "hotel",
+  database: "place",
   dialect: "mysql",
   logging: false,
 });
