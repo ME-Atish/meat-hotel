@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
+import { Op } from "sequelize";
 
 import userModel from "../../models/user.model.js";
 import walletModel from "../../models/wallet.model.js";
@@ -30,20 +31,29 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const { username, firstName, lastName, email, password, phone } = req.body;
 
     // Find user for check is the user ban or not
-    const isUserBan = await userModel.findOne({ phone });
+    const isUserBan = await userModel.findOne({
+      where: {
+        phone,
+      },
+    });
 
-    if (isUserBan) {
-      if (isUserBan.isBan) {
+    if (isUserBan?.dataValues) {
+      if (isUserBan.dataValues.isBan) {
         res.status(409).json({ message: "This phone number is ban" });
         return;
       }
     }
-    // Check is user exist (with username and email)
+
     const isUserExist = await userModel.findOne({
-      $or: [{ username }, { email }],
+      where: {
+        [Op.or]: {
+          username,
+          email,
+        },
+      },
     });
 
-    if (isUserExist) {
+    if (isUserExist?.dataValues) {
       res.status(403).json({ message: "The username or email already exist" });
       return;
     }
@@ -66,7 +76,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     // Create wallet for each user who register to project
     await walletModel.create({
-      userId: user._id,
+      userId: user.dataValues.id,
     });
 
     res.status(201).json(user);
@@ -99,9 +109,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         process.env.REMEMBER_ME_TOKEN_SECRET!
       ) as rememberMePayload;
       // Find user
-      const user = await userModel.findOne({ email: jwtPayload.email });
+      const user = await userModel.findOne({
+        where: {
+          email: jwtPayload.email,
+        },
+      });
 
-      if (!user) {
+      if (!user?.dataValues) {
         res.status(403).json({ message: "User not found" });
         return;
       }
@@ -121,7 +135,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Check for find username or email in database
     const user = await userModel.findOne({
-      $or: [{ username: identifier }],
+      where: {
+        [Op.or]: {
+          username: identifier,
+          email: identifier,
+        },
+      },
     });
 
     if (!user) {
@@ -131,7 +150,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // Checking for pass word correction
     const isPasswordCorrect = await bcrypt.compare(
       password.toString(),
-      user!.password
+      user!.dataValues.password
     );
 
     if (!isPasswordCorrect) {
@@ -139,14 +158,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
     // Generate access token
-    const accessToken = generateAccessToken(user!.email);
+    const accessToken = generateAccessToken(user!.dataValues.email);
 
-    const email = user!.email;
+    const email = user!.dataValues.email;
 
     // Find user for get user's refresh token
-    const findUser = await userModel.findOne({ email });
+    const findUser = await userModel.findOne({
+      where: {
+        email,
+      },
+    });
     // Get user's refresh token
-    const refreshToken = findUser!.refreshToken;
+    const refreshToken = findUser!.dataValues.refreshToken;
     // Refresh token will set in cookie
     res.cookie("refresh_token", refreshToken, { httpOnly: true });
 
@@ -188,16 +211,20 @@ export const refreshToken = async (
       return;
     }
     // Find user with refresh token
-    const user = await userModel.findOne({ refreshToken });
+    const user = await userModel.findOne({
+      where: {
+        refreshToken,
+      },
+    });
 
-    if (!user) {
+    if (!user?.dataValues) {
       res.status(403).json({ message: "User not found" });
       return;
     }
     // Verifying refresh token
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
     // Generate new access token
-    const newAccessToken = generateAccessToken(user!.email);
+    const newAccessToken = generateAccessToken(user!.dataValues.email);
     // Set new access token in cookie
     res.cookie("access_token", newAccessToken);
 
