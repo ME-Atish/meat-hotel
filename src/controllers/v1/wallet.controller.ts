@@ -21,7 +21,7 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
 
     const findUserWallet = await walletModel.findOne({
       where: {
-        user_id: typedReq.user.id,
+        userId: typedReq.user.id,
       },
     });
 
@@ -33,7 +33,9 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
 
     // Increase the account charge
     if (findUserWallet?.dataValues) {
-      findUserWallet.dataValues.amount = amount;
+      findUserWallet.set({
+        amount,
+      });
       findUserWallet.save();
     }
 
@@ -61,10 +63,9 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
 
     const { amount } = req.body;
     // Find wallet for deducted amount
-    // const findWallet = await walletModel.findOne({ userId: typedReq.user._id });
     const findWallet = await walletModel.findOne({
       where: {
-        user_id: typedReq.user.id,
+        userId: typedReq.user.id,
       },
     });
     // Check if the amount being sent is less than the account balance.
@@ -78,7 +79,9 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
     const deductedAmount = findWallet!.dataValues.amount - amount;
 
     if (findWallet?.dataValues) {
-      findWallet.dataValues.amount = deductedAmount;
+      findWallet.set({
+        amount: deductedAmount,
+      });
       findWallet.save();
     }
 
