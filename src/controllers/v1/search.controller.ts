@@ -8,17 +8,13 @@ export const get = async (req: Request, res: Response): Promise<void> => {
     const { keyword } = req.params;
 
     // The keyword that the client sends is searched in the place descriptions.
-    // const search = await placeModel.find({
-    //   description: { $regex: ".*" + keyword + ".*" },
-    // });
-
     const search = await placeModel.findAll({
       where: {
         description: { [Op.like]: `%${keyword}%` },
       },
     });
 
-    const searchResult = search.forEach((items) => {
+    const searchResult = search.map((items) => {
       return items.dataValues;
     });
 
