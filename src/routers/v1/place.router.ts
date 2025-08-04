@@ -110,7 +110,7 @@ router
 
 /**
  * @swagger
- * /v1/reserve/{id}:
+ * /v1/place/reserve/{id}:
  *   post:
  *     summary: Reserve a place
  *     description: Reserve a place by its ID. Requires access token in cookie for authentication.
@@ -141,7 +141,7 @@ router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
 
 /**
  * @swagger
- * /v1/reserve/{id}/cancel:
+ * /v1/place/reserve/{id}/cancel:
  *   post:
  *     summary: Cancel a place reservation
  *     description: Cancels an existing place reservation by place ID. Requires access token in cookie for authentication.
@@ -221,29 +221,70 @@ router
  *     tags:
  *       - place
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the place to update
  *       - in: cookie
  *         name: access_token
  *         required: true
  *         schema:
  *           type: string
- *         description: Access token cookie for authentication
+ *         description: Access token for authentication
  *       - in: cookie
  *         name: refresh_token
  *         required: true
  *         schema:
  *           type: string
- *         description: Refresh token cookie for authentication
- *       - in: query
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: place ID to update
+ *         description: Refresh token for authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the place
+ *                 example: place Sunshine
+ *               address:
+ *                 type: string
+ *                 description: Address of the place
+ *                 example: 123 Main St
+ *               description:
+ *                 type: string
+ *                 description: Description of the place
+ *                 example: A cozy and comfortable place
+ *               facilities:
+ *                 type: string
+ *                 description: Facilities of the place
+ *                 example: pool, bedroom, kitchen
+ *               price:
+ *                 type: number
+ *                 description: Price per night
+ *                 example: 150000
+ *               province:
+ *                 type: string
+ *                 description: Province where the place is located
+ *                 example: Ontario
+ *               city:
+ *                 type: string
+ *                 description: City where the place is located
+ *                 example: Toronto
+ *               image:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Up to 5 images of the place
  *     responses:
  *       200:
  *         description: Successfully updated
  *       403:
- *         description: You have not access to this route or place not found
+ *         description: You do not have access to this route or place not found
  *       422:
  *         description: Validation error
  */

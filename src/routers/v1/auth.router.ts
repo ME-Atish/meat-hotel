@@ -18,12 +18,12 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               username:
- *                 type: string
  *               firstName:
  *                  type: string
  *               lastName:
  *                  type: string
+ *               username:
+ *                 type: string
  *               phone:
  *                   type: string
  *               email:

@@ -96,27 +96,20 @@ router
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *                 description: User's full name
- *                 example: John Doe
+ *               firstName:
+ *                  type: string
+ *               lastName:
+ *                  type: string
  *               username:
  *                 type: string
- *                 description: User's username
- *                 example: johndoe123
- *               email:
- *                 type: string
- *                 format: email
- *                 description: User's email address
- *                 example: johndoe@example.com
  *               phone:
- *                 type: string
- *                 description: User's phone number
- *                 example: +1234567890
+ *                   type: string
+ *               email:
+ *                  type: string
  *               password:
- *                 type: string
- *                 description: User's new password
- *                 example: StrongPassword123
+ *                  type: string
+ *               repeatPassword:
+ *                  type: string
  *     responses:
  *       200:
  *         description: User's info updated successfully
