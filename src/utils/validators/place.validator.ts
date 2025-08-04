@@ -12,7 +12,10 @@ export const create = (data: Object) => {
       .refine((val) => !isNaN(val), { message: "Price must be a number" }),
     isReserved: z
       .string()
-      .transform((val) => val == "false")
+      .transform((val) => Number(val))
+      .refine((val) => val === 0 || val === 1, {
+        message: "Is reserved must be a 0 or 1",
+      })
       .optional(),
     province: z.string().min(2).max(20),
   });

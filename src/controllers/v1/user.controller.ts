@@ -3,9 +3,9 @@ import AuthenticationRequest from "../../utils/authReq.js";
 import bcrypt from "bcrypt";
 
 import userModel from "../../models/user.model.js";
-import isValidObjectId from "../../utils/isValidObjectId.js";
 import * as userValidator from "../../utils/validators/user.validator.js";
 import { generateRefreshToken } from "../../utils/auth.js";
+import { refreshToken } from "./auth.controller.js";
 
 /**
  * Get all the users information
@@ -17,9 +17,15 @@ import { generateRefreshToken } from "../../utils/auth.js";
  */
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
-    const users = await userModel.find({}).select("-password");
+    const users = await userModel.findAll({
+      attributes: { exclude: ["password"] },
+    });
 
-    res.json(users);
+    const usersData = users.map((user) => {
+      return user.dataValues;
+    });
+
+    res.json(usersData);
     return;
   } catch (error) {
     if (error) {
@@ -39,20 +45,30 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 export const banUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    // Validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "The id not valid" });
-      return;
-    }
 
     // Find user for ban
-    const mainUser = await userModel.findOne({ _id: id }).lean();
-    if (!mainUser) {
+    const mainUser = await userModel.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!mainUser?.dataValues) {
       res.status(403).json({ message: "User not found" });
       return;
     }
     // Ban user process
-    await userModel.findByIdAndUpdate({ _id: mainUser!._id }, { isBan: true });
+    const findUser = await userModel.findOne({
+      where: {
+        id: mainUser.dataValues.id,
+      },
+    });
+
+    if (findUser?.dataValues) {
+      findUser.set({
+        isBan: 1,
+      });
+      findUser.save();
+    }
 
     res.status(200).json({ message: "The user baned successfully" });
     return;
@@ -74,18 +90,19 @@ export const banUser = async (req: Request, res: Response): Promise<void> => {
 export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    // Validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "Id is not valid" });
-      return;
-    }
 
-    const removeUser = await userModel.findByIdAndDelete({ _id: id });
+    const findUser = await userModel.findOne({
+      where: {
+        id,
+      },
+    });
 
-    if (!removeUser) {
+    if (!findUser?.dataValues) {
       res.status(403).json({ message: "User not found" });
       return;
     }
+
+    findUser.destroy();
 
     res.status(200).json({ message: "User delete successfully" });
     return;
@@ -120,7 +137,7 @@ export const updateInfo = async (
       return;
     }
 
-    const { name, username, email, phone, password } = req.body;
+    const { username, firstName, lastName, email, phone, password } = req.body;
 
     // Password hashing process
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -128,26 +145,40 @@ export const updateInfo = async (
     // Generate new refresh token
     const newRefreshToken = generateRefreshToken(email);
 
+    // Find user for update information
+
+    const findUser = await userModel.findOne({
+      where: {
+        id: typedReq.user.id,
+      },
+    });
+
+    if (!findUser?.dataValues) {
+      res.status(403).json({
+        message: "User not found",
+      });
+    }
+
     // Update user's info
-    const updateUser = await userModel
-      .findByIdAndUpdate(
-        { _id: typedReq.user._id },
-        {
-          name,
-          username,
-          email,
-          phone,
-          password: hashedPassword,
-          role: typedReq.user.role,
-          refreshToken: newRefreshToken,
-        }
-      )
-      .select("-password");
+    if (findUser?.dataValues) {
+      findUser.set({
+        username,
+        firstName,
+        lastName,
+        email,
+        phone,
+        password: hashedPassword,
+        role: typedReq.user.role,
+        refreshToken: newRefreshToken,
+      });
+
+      findUser.save();
+    }
 
     // Set refresh token in cookie
     res.cookie("refresh_token", newRefreshToken, { httpOnly: true });
 
-    res.status(200).json({ updateUser });
+    res.status(200).json({ message: "User updated successfully" });
     return;
   } catch (error) {
     if (error) {
@@ -170,22 +201,30 @@ export const changeRole = async (
 ): Promise<void> => {
   try {
     const { id } = req.body;
-    // Validate id
-    if (!isValidObjectId(id)) {
-      res.status(422).json({ message: "Id is not valid" });
-      return;
-    }
+
     // Find user to change role
-    const user = await userModel.findOne({ _id: id });
-    if (!user) {
+
+    const user = await userModel.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user?.dataValues) {
       res.status(403).json({ message: "User not found" });
       return;
     }
     // If user's role is admin, it change to user and on the contrary
-    let newRole = user!.role === "ADMIN" ? "USER" : "ADMIN";
+    let newRole = user!.dataValues.role === "ADMIN" ? "USER" : "ADMIN";
 
     // Set new role in database
-    await userModel.findByIdAndUpdate({ _id: id }, { role: newRole });
+
+    if (user?.dataValues) {
+      user.set({
+        role: newRole,
+      });
+      user.save();
+    }
 
     res.status(200).json({ message: "User's role changed successfully" });
     return;

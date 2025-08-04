@@ -1,56 +1,68 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const schema = new mongoose.Schema(
+import db from "../config/db.js";
+
+const User = db.define(
+  "User",
   {
     username: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     firstName: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "first_name",
     },
     lastName: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "last_name",
     },
     password: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     phone: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     role: {
-      type: String,
-      enum: ["ADMIN", "USER"],
-      default: "USER",
+      type: DataTypes.ENUM("USER", "ADMIN"),
+      defaultValue: "USER",
     },
     isReserved: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      field: "is_reserved",
     },
     isOwner: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      field: "is_owner",
     },
     isBan: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      field: "is_ban",
     },
     refreshToken: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "refresh_token",
     },
   },
-  { timestamps: true }
+  {
+    modelName: "User",
+    tableName: "Users",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  }
 );
 
-const model = mongoose.model("user", schema);
-
-export default model;
+export default User;

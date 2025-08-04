@@ -1,5 +1,5 @@
-import express from "express"
-import multer from "multer"
+import express from "express";
+import multer from "multer";
 
 import * as placeController from "../../controllers/v1/place.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
@@ -31,9 +31,7 @@ const router = express.Router();
  *          description: User not found or you have not access to this route
  */
 
-router
-  .route("/")
-  .get(authMiddleware, isAdminMiddleware, placeController.getAll);
+router.route("/").get(authMiddleware, placeController.getAll);
 
 /**
  * @swagger
@@ -251,6 +249,13 @@ router
  */
 router
   .route("/:id")
-  .put(authMiddleware, isAdminMiddleware, placeController.update);
+  .put(
+    authMiddleware,
+    isAdminMiddleware,
+    multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
+      { name: "image", maxCount: 5 },
+    ]),
+    placeController.update
+  );
 
-export default router
+export default router;

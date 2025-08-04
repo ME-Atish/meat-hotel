@@ -1,53 +1,63 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const schema = new mongoose.Schema(
+import db from "../config/db.js";
+import User from "./user.model.js";
+
+const Place = db.define(
+  "Place",
   {
     name: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     address: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    description: {
-      type: String,
-      required: true,
-    },
-    facilities: {
-      type: String,
-      required: true,
-    },
+    description: DataTypes.STRING,
+    facilities: DataTypes.STRING,
     price: {
-      type: Number,
-      required: true,
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
     },
     isReserved: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      allowNull: false,
+      field: "is_reserved"
     },
     province: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     city: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    image: {
-      type: Object,
-    },
-    owner: {
-      type: mongoose.Types.ObjectId,
-      ref: "owner",
-      required: true,
+    image: DataTypes.JSON,
+    ownerId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      field: "owner_id",
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
     },
   },
   {
     timestamps: true,
+    modelName: "Place",
+    tableName: "Places",
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 
-const model = mongoose.model("place", schema);
+User.hasMany(Place , {foreignKey: "owner_id", sourceKey: "id", as: "places"});
+Place.belongsTo(User,{
+  foreignKey: "ownerId", targetKey: "id", as: "owner"
+});
 
-export default model
+export default Place;

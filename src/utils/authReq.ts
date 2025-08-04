@@ -1,21 +1,18 @@
 import { Request } from "express";
-import mongoose from "mongoose";
-
-
 
 interface AuthenticationRequest extends Request {
   user: {
-    _id: mongoose.Types.ObjectId;
+    id: number;
     username: string;
     firstName: String;
     lastName: string;
     password: string;
     phone: string;
-    email: string,
+    email: string;
     role: string;
-    isReserved: boolean;
-    isOwner: boolean;
-    isBan: boolean;
+    isReserved: number;
+    isOwner: number;
+    isBan: number;
     refreshToken: string;
   };
 }

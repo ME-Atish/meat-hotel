@@ -34,20 +34,24 @@ const isAdminMiddleware: RequestHandler = async (
     return;
   }
 
-  const user = await userModel.findOne({ email: token.email });
+  const user = await userModel.findOne({
+    where: {
+      email: token.email,
+    },
+  });
 
   if (!user) {
     res.status(403).json({ message: "User not found" });
     return;
   }
 
-  if (user.role === "USER") {
+  if (user.dataValues.role === "USER") {
     res.status(403).json({ message: "You have not access to this route" });
     return;
   }
 
   // Save the user's/admin's information in req.user
-  typedReq.user = user;
+  typedReq.user = user.dataValues;
 
   next();
 };

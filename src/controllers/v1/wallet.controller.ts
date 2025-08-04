@@ -19,15 +19,25 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
 
     const { amount } = req.body;
 
-    // Increase the account charge
-    await walletModel.findOneAndUpdate(
-      {
-        userId: typedReq.user._id,
+    const findUserWallet = await walletModel.findOne({
+      where: {
+        userId: typedReq.user.id,
       },
-      {
+    });
+
+    if (!findUserWallet?.dataValues) {
+      res
+        .status(403)
+        .json({ message: "Wallet not found. Maybe user id is not correct" });
+    }
+
+    // Increase the account charge
+    if (findUserWallet?.dataValues) {
+      findUserWallet.set({
         amount,
-      }
-    );
+      });
+      findUserWallet.save();
+    }
 
     res.status(200).json({ message: "Account successfully charged." });
     return;
@@ -53,25 +63,26 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
 
     const { amount } = req.body;
     // Find wallet for deducted amount
-    const findWallet = await walletModel.findOne({ userId: typedReq.user._id });
+    const findWallet = await walletModel.findOne({
+      where: {
+        userId: typedReq.user.id,
+      },
+    });
     // Check if the amount being sent is less than the account balance.
-    if (findWallet!.amount < amount) {
+    if (findWallet!.dataValues.amount < amount) {
       res.status(406).json({
         message: "The amount to be deducted is less than the account balance.",
       });
       return;
     }
     // Decrease amount
-    const deductedAmount = findWallet!.amount - amount;
-    // Update model
-    const updateAmount = await walletModel.findOneAndUpdate(
-      { userId: typedReq.user._id },
-      { amount: deductedAmount }
-    );
+    const deductedAmount = findWallet!.dataValues.amount - amount;
 
-    if (!updateAmount) {
-      res.status(500).json({ message: "Something wrong..." });
-      return;
+    if (findWallet?.dataValues) {
+      findWallet.set({
+        amount: deductedAmount,
+      });
+      findWallet.save();
     }
 
     res.status(200).json({ message: "The amount was successfully deducted." });
@@ -82,3 +93,5 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
     }
   }
 };
+
+
