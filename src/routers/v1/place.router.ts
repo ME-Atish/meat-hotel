@@ -33,7 +33,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(authMiddleware, isAdminMiddleware, placeController.getAll);
+  .get(authMiddleware, placeController.getAll);
 
 /**
  * @swagger
