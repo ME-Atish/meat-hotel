@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import userModel from "../../models/user.model.js";
 import * as userValidator from "../../utils/validators/user.validator.js";
 import { generateRefreshToken } from "../../utils/auth.js";
+import { refreshToken } from "./auth.controller.js";
 
 /**
  * Get all the users information
@@ -20,7 +21,7 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
       attributes: { exclude: ["password"] },
     });
 
-    const usersData = users.forEach((user) => {
+    const usersData = users.map((user) => {
       return user.dataValues;
     });
 
@@ -63,7 +64,9 @@ export const banUser = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (findUser?.dataValues) {
-      findUser.dataValues.is_ban = 1;
+      findUser.set({
+        isBan: 1,
+      });
       findUser.save();
     }
 
@@ -134,7 +137,7 @@ export const updateInfo = async (
       return;
     }
 
-    const { name, username, email, phone, password } = req.body;
+    const { username, firstName, lastName, email, phone, password } = req.body;
 
     // Password hashing process
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -158,12 +161,16 @@ export const updateInfo = async (
 
     // Update user's info
     if (findUser?.dataValues) {
-      findUser.dataValues.name = name;
-      findUser.dataValues.username = username;
-      (findUser.dataValues.email = email), (findUser.dataValues.phone = phone);
-      findUser.dataValues.password = hashedPassword;
-      findUser.dataValues.role = typedReq.user.role;
-      findUser.dataValues.refresh_token = newRefreshToken;
+      findUser.set({
+        username,
+        firstName,
+        lastName,
+        email,
+        phone,
+        password: hashedPassword,
+        role: typedReq.user.role,
+        refreshToken: newRefreshToken,
+      });
 
       findUser.save();
     }
@@ -213,7 +220,9 @@ export const changeRole = async (
     // Set new role in database
 
     if (user?.dataValues) {
-      user.dataValues.role = newRole;
+      user.set({
+        role: newRole,
+      });
       user.save();
     }
 
