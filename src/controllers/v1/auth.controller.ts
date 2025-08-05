@@ -116,7 +116,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       });
 
       if (!user?.dataValues) {
-        res.status(403).json({ message: "User not found" });
+        res
+          .status(403)
+          .json({ message: "User not found. Delete cookies to continue" });
         return;
       }
       res.json({ message: "Login successfully" });
@@ -170,16 +172,25 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
     // Get user's refresh token
     const refreshToken = findUser!.dataValues.refreshToken;
-    // Refresh token will set in cookie
-    res.cookie("refresh_token", refreshToken, { httpOnly: true });
 
-    // Generate access token
-    res.cookie("access_token", accessToken, { httpOnly: true });
+    // Set access token in cookie
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
 
+    // Set refresh token in cookie
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
     // check if the remember me is ticked
     if (rememberMe) {
       const rememberMeToken = generateRememberMeToken(email);
-      res.cookie("rememberMe_token", rememberMeToken, { httpOnly: true });
+      res.cookie("rememberMe_token", rememberMeToken, {
+        httpOnly: true,
+        maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+      });
     }
 
     res.json({ message: "Login successfully" });
