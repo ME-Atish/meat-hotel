@@ -1,6 +1,10 @@
 import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize(process.env.MYSQL_URI, {
+const sequelize = new Sequelize({
+  host: "localhost",
+  username: "root",
+  password: "",
+  database: "place",
   dialect: "mysql",
   logging: false,
 });
