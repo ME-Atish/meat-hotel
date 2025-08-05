@@ -19,13 +19,10 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await userModel.findAll({
       attributes: { exclude: ["password"] },
+      raw: true,
     });
 
-    const usersData = users.map((user) => {
-      return user.dataValues;
-    });
-
-    res.json(usersData);
+    res.json(users);
     return;
   } catch (error) {
     if (error) {

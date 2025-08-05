@@ -9,13 +9,8 @@ import * as placeValidator from "../../utils/validators/place.validator.js";
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
     // find all places
-    const places = await placeModel.findAll({});
-
-    const placesData = places.map((place) => {
-      return place.dataValues;
-    });
-
-    res.status(200).json(placesData);
+    const places = await placeModel.findAll({ raw: true });
+    res.status(200).json(places);
     return;
   } catch (error) {
     if (error) {

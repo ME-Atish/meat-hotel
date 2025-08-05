@@ -12,13 +12,10 @@ export const get = async (req: Request, res: Response): Promise<void> => {
       where: {
         description: { [Op.like]: `%${keyword}%` },
       },
+      raw: true,
     });
 
-    const searchResult = search.map((items) => {
-      return items.dataValues;
-    });
-
-    res.status(200).json(searchResult);
+    res.status(200).json(search);
     return;
   } catch (error) {
     if (error) {
