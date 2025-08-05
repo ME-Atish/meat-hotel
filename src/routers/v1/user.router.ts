@@ -67,13 +67,44 @@ router.route("/").get(authMiddleware, isAdminMiddleware, userController.getAll);
  *         description: User banned successfully
  *       403:
  *         description: You have not access to this route or user not found
- *       422:
- *         description: Validation error
  */
 router
   .route("/ban/:id")
   .post(authMiddleware, isAdminMiddleware, userController.banUser);
 
+/**
+ * @swagger
+ * /v1/user/un-ban/{id}:
+ *   post:
+ *     summary: Un-ban a user by ID
+ *     description: Un-bans a user specified by their ID. Only accessible by admins with valid access and refresh tokens in cookies.
+ *     tags:
+ *       - user
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *       - in: cookie
+ *         name: refresh_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Refresh token cookie for authentication
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to un-ban
+ *     responses:
+ *       200:
+ *         description: User un-banned successfully
+ *       403:
+ *         description: You have not access to this route or user not found
+ */
 router
   .route("/un-ban/:id")
   .post(authMiddleware, isAdminMiddleware, userController.unBanUser);
