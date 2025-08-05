@@ -74,6 +74,10 @@ router
   .route("/ban/:id")
   .post(authMiddleware, isAdminMiddleware, userController.banUser);
 
+router
+  .route("/un-ban/:id")
+  .post(authMiddleware, isAdminMiddleware, userController.unBanUser);
+
 /**
  * @swagger
  * /v1/user/:

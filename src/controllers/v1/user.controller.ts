@@ -76,6 +76,38 @@ export const banUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const unBanUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Get id from request param
+    const { id } = req.params;
+
+    const user = await userModel.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user?.dataValues) {
+      res.status(403).json({
+        message: "User not found",
+      });
+      return;
+    }
+
+    user.set({
+      isBan: 0,
+    });
+    user.save();
+
+    res.status(200).json({ message: "User unbanned successfully" });
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
 /**
  * Remove the users from website
  *
