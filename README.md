@@ -1,6 +1,6 @@
-# Meat Hotel
+# Meat Place
 
-A RESTful API project named **meat-hotel** for hotel management, built with Node.js, Express.js, and MongoDB.
+A RESTful API project named **meat-place** for hotel management, built with Node.js, Express.js, and MySQL.
 
 ## Features
 
@@ -25,15 +25,16 @@ http://localhost:4000/api-docs
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v14+ recommended)
-- [MongoDB](https://www.mongodb.com/)
+- [MySQL](https://www.mysql.com/)
 - [npm](https://www.npmjs.com/)
+- Having a database named `place`
 
 ### Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/ME-Atish/meat-hotel.git
-   cd meat-hotel
+   git clone https://github.com/ME-Atish/meat-place.git
+   cd meat-place
    ```
 
 2. **Install dependencies:**
@@ -48,13 +49,13 @@ http://localhost:4000/api-docs
    Example:
    ```
    PORT=4000
-   MONGOOSE_URI=mongodb://localhost:27017/meathotel
+   MYSQL_URI=mysql://username:password@localhost:3306/place
    ACCESS_TOKEN_SECRET=your-secret
    REFRESH_TOKEN_SECRET=your-refresh-secret
    REMEMBER_ME_TOKEN_SECRET=your-remember-token
    ```
 
-4. **Start MongoDB** (if not running already).
+4. **Start MySQL** (if not running already) and make sure you have created a database named `place`.
 
 5. **Run the application:**
    ```bash
@@ -67,11 +68,11 @@ http://localhost:4000/api-docs
 
 ## Project Structure
 
-- `server.js` - Entry point, connects to MongoDB and starts the server.
+- `server.js` - Entry point, connects to MySQL and starts the server.
 - `app.js` - Sets up Express, middleware, routes, session, and Swagger docs.
 - `routers/v1/` - Versioned API routers (auth, user, owner, hotel, search).
 - `controllers/v1/` - Business logic for handling requests.
-- `models/` - Mongoose schemas for users, hotels, owners, reservations.
+- `models/` - Sequelize models for users, hotels, owners, reservations.
 - `middlewares/` - Auth and role-based access control.
 - `utils/` - Helper utilities (e.g., file uploader, validators).
 - `config/swagger.js` - Swagger API docs configuration.
