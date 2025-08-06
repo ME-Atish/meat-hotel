@@ -24,8 +24,10 @@ export const getOwnerPlace = async (
   res: Response
 ): Promise<void> => {
   try {
+    // Cast request to typedReq for use costume Request
     const typeReq = req as AuthenticationRequest;
 
+    // find all owner's place
     const places = await placeModel.findAll({
       where: {
         ownerId: typeReq.user.id,
@@ -47,10 +49,12 @@ export const getOneOwnerPlace = async (
   res: Response
 ): Promise<void> => {
   try {
+    // Cast request to typedReq for use costume Request
     const typedReq = req as AuthenticationRequest;
 
     const { id } = req.params;
 
+    // find one owner's places or villas
     const place = await placeModel.findOne({
       where: {
         id,

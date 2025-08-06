@@ -25,6 +25,7 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
+    // find owner to get it
     const owner = await userModel.findOne({
       where: {
         id,
@@ -49,6 +50,7 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
 
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Cast request to typedReq for use costume Request
     const typedReq = req as AuthenticationRequest;
 
     const findUser = await userModel.findOne({
@@ -62,11 +64,13 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // check if user already owner or not
     if (findUser.dataValues.isOwner) {
       res.status(403).json({ message: "You are already owner" });
       return;
     }
 
+    // update isOwner field for convert user to owner
     findUser.set({
       isOwner: 1,
     });
@@ -97,6 +101,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // update isOwner field in database for convert owner to user
     findUser.set({
       isOwner: 0,
     });
