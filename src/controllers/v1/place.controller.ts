@@ -19,6 +19,31 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const getOne = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const place = await placeModel.findOne({
+      where: {
+        id,
+      },
+      raw: true,
+    });
+
+    if (!place) {
+      res.status(403).json({ message: "Place not found" });
+      return;
+    }
+
+    res.status(200).json(place);
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
 export const getOwnerPlace = async (
   req: Request,
   res: Response
