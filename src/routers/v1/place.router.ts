@@ -33,6 +33,8 @@ const router = express.Router();
 
 router.route("/").get(authMiddleware, placeController.getAll);
 
+router.route("/get-one/:id").get(authMiddleware, placeController.getOne)
+
 /**
  * @swagger
  * /v1/place:
