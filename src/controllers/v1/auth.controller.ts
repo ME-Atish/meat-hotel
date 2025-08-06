@@ -1,14 +1,17 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 
 import userModel from "../../models/user.model.js";
 import walletModel from "../../models/wallet.model.js";
 import * as userValidator from "../../utils/validators/user.validator.js";
+import emailValidator from "../../utils/validators/email.validator.js";
 import { generateAccessToken } from "../../utils/auth.js";
 import { generateRefreshToken } from "../../utils/auth.js";
 import { generateRememberMeToken } from "../../utils/auth.js";
+import generateRandomCode from "../../utils/generateRandomCode.js";
 
 /**
  * Register the users into website
@@ -195,6 +198,128 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     res.json({ message: "Login successfully" });
     return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+let randomCode: string;
+export const loginWithEmail = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { to } = req.body;
+
+    const isEmailValid = emailValidator(to);
+
+    if (!isEmailValid) {
+      res.status(400).json({ message: "Email is not valid" });
+      return;
+    }
+
+    randomCode = generateRandomCode();
+
+    const findUser = await userModel.findOne({
+      where: {
+        email: to,
+      },
+      raw: true,
+    });
+
+    if (!findUser) {
+      res.status(200).json({ message: "Code sent successfully" });
+      return;
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOption = {
+      from: process.env.EMAIL!,
+      to: `${to}`,
+      subject: "You're code to login",
+      text: `Code is ${randomCode}`,
+    };
+
+    res.cookie("email", to);
+
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        throw error.message;
+      }
+      res.status(200).json({ message: "Code sent successfully" });
+      return;
+    });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const verifyEmailCode = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { code } = req.body;
+
+    const isEmailValid = emailValidator(req.cookies.email);
+
+    if (!isEmailValid) {
+      res.status(400).json({ message: "Email is not valid" });
+      return;
+    }
+
+    const findUser = await userModel.findOne({
+      where: {
+        email: req.cookies.email,
+      },
+    });
+
+    if (!findUser?.dataValues) {
+      res.status(403).json({ message: "Please try again" });
+      return;
+    }
+
+    if (code === randomCode) {
+      const accessToken = generateAccessToken(req.cookies.email);
+      const refreshToken = generateRefreshToken(req.cookies.email);
+
+      findUser.set({
+        refreshToken,
+      });
+
+      findUser.save();
+
+      // Set access token in cookie
+      res.cookie("access_token", accessToken, {
+        httpOnly: true,
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+
+      // Set refresh token in cookie
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      });
+
+      res.clearCookie("email");
+
+      res.status(200).json({ message: "Login successfully" });
+    } else {
+      res.status(403).json({ message: "Code is invalid" });
+    }
   } catch (error) {
     if (error) {
       throw error;

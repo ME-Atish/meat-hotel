@@ -78,6 +78,10 @@ router.route("/register").post(authController.register);
  */
 
 router.route("/login").post(authController.login);
+
+router.route("/login-with-email").post(authController.loginWithEmail)
+
+router.route("/verify-email-code").post(authController.verifyEmailCode)
 /**
  * @swagger
  * /v1/auth/refresh-token:
