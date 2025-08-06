@@ -23,7 +23,7 @@ app.use(cookieParser("dpajaedafqep."));
 // using session for use use cookie and session in project
 app.use(
   session({
-    secret: "dawpjdawjp",
+    secret: process.env.SESSION_SECRET! || "fallback-secret",
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
