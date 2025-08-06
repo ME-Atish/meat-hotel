@@ -45,6 +45,11 @@ const isAdminMiddleware: RequestHandler = async (
     return;
   }
 
+  if (user.dataValues.isBan) {
+    res.status(403).json({ message: "The user is ban" });
+    return;
+  }
+
   if (user.dataValues.role === "USER") {
     res.status(403).json({ message: "You have not access to this route" });
     return;
