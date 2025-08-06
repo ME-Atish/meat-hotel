@@ -1,7 +1,10 @@
 import express from "express";
 
 import * as authController from "../../controllers/v1/auth.controller.js";
+import authMiddleware from "../../middlewares/auth.middleware.js";
 const router = express.Router();
+
+router.route("/me").get(authMiddleware, authController.me);
 
 /**
  * @swagger

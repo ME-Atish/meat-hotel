@@ -12,6 +12,7 @@ import { generateAccessToken } from "../../utils/auth.js";
 import { generateRefreshToken } from "../../utils/auth.js";
 import { generateRememberMeToken } from "../../utils/auth.js";
 import generateRandomCode from "../../utils/generateRandomCode.js";
+import AuthenticationRequest from "../../utils/authReq.js";
 
 /**
  * Register the users into website
@@ -391,6 +392,17 @@ export const logOut = async (req: Request, res: Response): Promise<void> => {
 
     res.status(204).json({});
     return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const me = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const typedReq = req as AuthenticationRequest;
+    res.status(200).json(typedReq.user);
   } catch (error) {
     if (error) {
       throw error;
