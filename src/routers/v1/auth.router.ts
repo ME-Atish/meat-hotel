@@ -42,7 +42,6 @@ const router = express.Router();
  *       403:
  *         description: username or email already exist
  */
-
 router.route("/register").post(authController.register);
 
 /**
@@ -76,13 +75,73 @@ router.route("/register").post(authController.register);
  *       401:
  *          description: Password is not correct
  */
-
 router.route("/login").post(authController.login);
 
+/**
+ * @swagger
+ * /v1/auth/login-with-email:
+ *   post:
+ *     summary: Send login email
+ *     description: Sends a login link or token to the user's email address.
+ *     tags:
+ *       - auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               to:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *                 description: The email address to send the login message to
+ *     responses:
+ *       200:
+ *         description: Email successfully sent
+ *       422:
+ *         description: Email is not valid
+ */
+router.route("/login-with-email").post(authController.loginWithEmail);
 
-router.route("/login-with-email").post(authController.loginWithEmail)
+/**
+ * @swagger
+ * /v1/auth/verify-email-code:
+ *   post:
+ *     summary: Verify email login code
+ *     description: Verifies the code sent to the user's email and completes login. Requires `email` cookie set by the previous login request.
+ *     tags:
+ *       - auth
+ *     parameters:
+ *       - in: cookie
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *         description: Email address (automatically set in cookie by login-with-email route)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *                 description: Code sent via email for verification
+ *     responses:
+ *       200:
+ *         description: Login successfully
+ *       403:
+ *         description: Please try again (user not found) OR code is invalid
+ *       422:
+ *         description: Email validation error OR email is not valid
+ */
+router.route("/verify-email-code").post(authController.verifyEmailCode);
 
-router.route("/verify-email-code").post(authController.verifyEmailCode)
 /**
  * @swagger
  * /v1/auth/refresh-token:
@@ -105,7 +164,6 @@ router.route("/verify-email-code").post(authController.verifyEmailCode)
  *       403:
  *         description: User not found or unauthorized
  */
-
 router.route("/refresh-token").post(authController.refreshToken);
 
 export default router;
