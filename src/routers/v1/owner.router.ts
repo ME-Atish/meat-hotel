@@ -8,7 +8,8 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(authMiddleware, isAdminMiddleware, ownerController.getAll);
+  .get(authMiddleware, isAdminMiddleware, ownerController.getAll)
+  .post(authMiddleware, ownerController.create);
 
 router
   .route("/get-one/:id")

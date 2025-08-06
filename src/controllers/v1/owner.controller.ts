@@ -46,3 +46,37 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
     }
   }
 };
+
+export const create = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const typedReq = req as AuthenticationRequest;
+
+    const findUser = await userModel.findOne({
+      where: {
+        id: typedReq.user.id,
+      },
+    });
+
+    if (!findUser?.dataValues) {
+      res.status(403).json({ message: "User not found" });
+      return;
+    }
+
+    if (findUser.dataValues.isOwner === 1) {
+      res.status(403).json({ message: "You are already owner" });
+      return;
+    }
+
+    findUser.set({
+      isOwner: 1,
+    });
+
+    findUser.save();
+
+    res.status(201).json({ message: "From now on, the user is an owner." });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
