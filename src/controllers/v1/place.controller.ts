@@ -42,6 +42,37 @@ export const getOwnerPlace = async (
   }
 };
 
+export const getOneOwnerPlace = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const typedReq = req as AuthenticationRequest;
+
+    const { id } = req.params;
+
+    const place = await placeModel.findOne({
+      where: {
+        id,
+        ownerId: typedReq.user.id,
+      },
+      raw: true,
+    });
+
+    if (!place) {
+      res.status(403).json({ message: "Place not found" });
+      return;
+    }
+
+    res.status(200).json(place);
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
     // Cast request to typedReq for use costume Request

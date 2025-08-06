@@ -38,6 +38,10 @@ router
   .route("/get-owner-places")
   .get(authMiddleware, isOwnerMiddleware, placeController.getOwnerPlace);
 
+router
+  .route("/get-one-owner-place/:id")
+  .get(authMiddleware, isOwnerMiddleware, placeController.getOneOwnerPlace);
+
 /**
  * @swagger
  * /v1/place:
