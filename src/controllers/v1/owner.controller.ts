@@ -1,4 +1,4 @@
-import { Request, Response, text } from "express";
+import { Request, Response } from "express";
 
 import userModel from "../../models/user.model.js";
 import AuthenticationRequest from "../../utils/authReq";
@@ -62,7 +62,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (findUser.dataValues.isOwner === 1) {
+    if (findUser.dataValues.isOwner) {
       res.status(403).json({ message: "You are already owner" });
       return;
     }

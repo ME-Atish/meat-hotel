@@ -34,9 +34,48 @@ const router = express.Router();
 
 router.route("/").get(authMiddleware, placeController.getAll);
 
+/**
+ * @swagger
+ * /v1/place/get-owner-places:
+ *   get:
+ *     summary: Get places owned by the authenticated owner
+ *     description: Returns all places created by the currently authenticated owner. Requires an access token in cookies. Only users with owner access can access this route.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved list of owner's places
+ */
 router
   .route("/get-owner-places")
   .get(authMiddleware, isOwnerMiddleware, placeController.getOwnerPlace);
+
+/**
+ * @swagger
+ * /v1/place/get-one-owner-place/{id}:
+ *   get:
+ *     summary: Get place owned by the authenticated owner
+ *     description: Returns one place created by the currently authenticated owner. Requires an access token in cookies. Only users with owner access can access this route.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved list of owner's place
+ */
 
 router
   .route("/get-one-owner-place/:id")
