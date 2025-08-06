@@ -1,4 +1,4 @@
-## Password Of Email
+# Password Of Email
 
 for get password of email and use it in login with email follow this steps:
 
