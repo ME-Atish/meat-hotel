@@ -205,14 +205,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// use it for store random code that send to client's email
 let randomCode: string;
 export const loginWithEmail = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
+    // to: email
     const { to } = req.body;
 
+    // validate email
     const isEmailValid = emailValidator(to);
 
     if (!isEmailValid) {
@@ -220,6 +223,7 @@ export const loginWithEmail = async (
       return;
     }
 
+    // generate random code and store it
     randomCode = generateRandomCode();
 
     const findUser = await userModel.findOne({
@@ -234,6 +238,7 @@ export const loginWithEmail = async (
       return;
     }
 
+    // create transporter for using Nodemailer service
     const transporter = nodemailer.createTransport({
       service: "gmail",
       port: 587,
@@ -244,15 +249,18 @@ export const loginWithEmail = async (
       },
     });
 
+    // Email option that have to sent it
     const mailOption = {
-      from: process.env.EMAIL!,
-      to: `${to}`,
-      subject: "You're code to login",
-      text: `Code is ${randomCode}`,
+      from: process.env.EMAIL!, // You're Email
+      to: `${to}`, // You'er Email password (explained in emailPassword.md)
+      subject: "You're code to login", // Random subject of Email
+      text: `Code is ${randomCode}`, // Random text for send in Email
     };
 
+    // Store email in cookie to use it
     res.cookie("email", to);
 
+    // send email with nodemailer
     transporter.sendMail(mailOption, (error, info) => {
       if (error) {
         throw error.message;
@@ -274,6 +282,7 @@ export const verifyEmailCode = async (
   try {
     const { code } = req.body;
 
+    // Email validation
     const isEmailValid = emailValidator(req.cookies.email);
 
     if (!isEmailValid) {
@@ -313,7 +322,8 @@ export const verifyEmailCode = async (
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
-
+      
+      // clear extra cookie
       res.clearCookie("email");
 
       res.status(200).json({ message: "Login successfully" });
