@@ -35,6 +35,10 @@ const authMiddleware: RequestHandler = async (
     return;
   }
 
+  if (user.dataValues.isBan) {
+    res.status(403).json({ message: "The user is ban" });
+  }
+
   typedReq.user = user.dataValues;
   next();
 };

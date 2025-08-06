@@ -4,6 +4,7 @@ import multer from "multer";
 import * as placeController from "../../controllers/v1/place.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
 import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
+import isOwnerMiddleware from "../../middlewares/isOwner.middleware.js";
 import multerStorage from "../../utils/uploader.js";
 
 const router = express.Router();
@@ -32,6 +33,53 @@ const router = express.Router();
  */
 
 router.route("/").get(authMiddleware, placeController.getAll);
+
+/**
+ * @swagger
+ * /v1/place/get-owner-places:
+ *   get:
+ *     summary: Get places owned by the authenticated owner
+ *     description: Returns all places created by the currently authenticated owner. Requires an access token in cookies. Only users with owner access can access this route.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved list of owner's places
+ */
+router
+  .route("/get-owner-places")
+  .get(authMiddleware, isOwnerMiddleware, placeController.getOwnerPlace);
+
+/**
+ * @swagger
+ * /v1/place/get-one-owner-place/{id}:
+ *   get:
+ *     summary: Get place owned by the authenticated owner
+ *     description: Returns one place created by the currently authenticated owner. Requires an access token in cookies. Only users with owner access can access this route.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved list of owner's place
+ */
+
+router
+  .route("/get-one-owner-place/:id")
+  .get(authMiddleware, isOwnerMiddleware, placeController.getOneOwnerPlace);
 
 /**
  * @swagger
@@ -102,6 +150,7 @@ router
   .route("/")
   .post(
     authMiddleware,
+    isOwnerMiddleware,
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },
     ]),
@@ -210,7 +259,7 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddleware, placeController.remove);
+  .delete(authMiddleware, isOwnerMiddleware, placeController.remove);
 
 /**
  * @swagger
@@ -292,7 +341,7 @@ router
   .route("/:id")
   .put(
     authMiddleware,
-    isAdminMiddleware,
+    isOwnerMiddleware,
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },
     ]),
