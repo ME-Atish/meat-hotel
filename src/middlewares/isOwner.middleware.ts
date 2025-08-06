@@ -2,7 +2,7 @@ import { RequestHandler, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 import AuthenticationRequest from "../utils/authReq.js";
-import userModel from "../models/user.model";
+import userModel from "../models/user.model.js";
 
 const isOwnerMiddleware: RequestHandler = async (
   req,

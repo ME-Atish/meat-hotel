@@ -4,6 +4,7 @@ import multer from "multer";
 import * as placeController from "../../controllers/v1/place.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
 import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
+import isOwnerMiddleware from "../../middlewares/isOwner.middleware.js";
 import multerStorage from "../../utils/uploader.js";
 
 const router = express.Router();
@@ -102,6 +103,7 @@ router
   .route("/")
   .post(
     authMiddleware,
+    isOwnerMiddleware,
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },
     ]),
@@ -210,7 +212,7 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddleware, placeController.remove);
+  .delete(authMiddleware, isOwnerMiddleware, placeController.remove);
 
 /**
  * @swagger
@@ -292,7 +294,7 @@ router
   .route("/:id")
   .put(
     authMiddleware,
-    isAdminMiddleware,
+    isOwnerMiddleware,
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },
     ]),
