@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 
 import AuthenticationRequest from "../../utils/authReq";
 import placeModel from "../../models/place.model.js";
@@ -34,30 +34,6 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     const { name, address, description, facilities, price, province, city } =
       req.body;
 
-    // Check if the user who created the place owns it.
-    const ownerExist = await userModel.findOne({
-      where: {
-        email: typedReq.user.email,
-      },
-    });
-
-    // If the user who created the place is not the owner, its role will change to owner.
-    if (!ownerExist?.dataValues.isOwner) {
-      const findOwner = await userModel.findOne({
-        where: {
-          id: typedReq.user.id,
-        },
-      });
-
-      if (findOwner?.dataValues) {
-        findOwner.set({
-          isOwner: 1,
-        });
-
-        await findOwner.save();
-      }
-    }
-
     const createPlace = await placeModel.create({
       name,
       address,
@@ -84,10 +60,13 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
+    const typedReq = req as AuthenticationRequest;
+
     // delete place
     const deletePlace = await placeModel.findOne({
       where: {
         id,
+        ownerId: typedReq.user.id,
       },
     });
 
@@ -128,8 +107,14 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     const findPlace = await placeModel.findOne({
       where: {
         id,
+        ownerId: typedReq.user.id,
       },
     });
+
+    if (!findPlace?.dataValues) {
+      res.status(403).json({ message: "Place or villa not found" });
+      return;
+    }
 
     if (findPlace?.dataValues) {
       findPlace.set({
