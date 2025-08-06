@@ -34,6 +34,10 @@ const router = express.Router();
 
 router.route("/").get(authMiddleware, placeController.getAll);
 
+router
+  .route("/get-owner-places")
+  .get(authMiddleware, isOwnerMiddleware, placeController.getOwnerPlace);
+
 /**
  * @swagger
  * /v1/place:

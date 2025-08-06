@@ -19,6 +19,29 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const getOwnerPlace = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const typeReq = req as AuthenticationRequest;
+
+    const places = await placeModel.findAll({
+      where: {
+        ownerId: typeReq.user.id,
+      },
+      raw: true,
+    });
+
+    res.status(200).json(places);
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
     // Cast request to typedReq for use costume Request
