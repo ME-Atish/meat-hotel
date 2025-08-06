@@ -1,14 +1,17 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 
 import userModel from "../../models/user.model.js";
 import walletModel from "../../models/wallet.model.js";
 import * as userValidator from "../../utils/validators/user.validator.js";
+import emailValidator from "../../utils/validators/email.validator.js";
 import { generateAccessToken } from "../../utils/auth.js";
 import { generateRefreshToken } from "../../utils/auth.js";
 import { generateRememberMeToken } from "../../utils/auth.js";
+import generateRandomCode from "../../utils/generateRandomCode.js";
 
 /**
  * Register the users into website
@@ -195,6 +198,138 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     res.json({ message: "Login successfully" });
     return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+// use it for store random code that send to client's email
+let randomCode: string;
+export const loginWithEmail = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // to: email
+    const { to } = req.body;
+
+    // validate email
+    const isEmailValid = emailValidator(to);
+
+    if (!isEmailValid) {
+      res.status(422).json({ message: "Email is not valid" });
+      return;
+    }
+
+    // generate random code and store it
+    randomCode = generateRandomCode();
+
+    const findUser = await userModel.findOne({
+      where: {
+        email: to,
+      },
+      raw: true,
+    });
+
+    if (!findUser) {
+      res.status(200).json({ message: "Code sent successfully" });
+      return;
+    }
+
+    // create transporter for using Nodemailer service
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    // Email option that have to sent it
+    const mailOption = {
+      from: process.env.EMAIL!, // You're Email
+      to: `${to}`, // You'er Email password (explained in emailPassword.md)
+      subject: "You're code to login", // Random subject of Email
+      text: `Code is ${randomCode}`, // Random text for send in Email
+    };
+
+    // Store email in cookie to use it
+    res.cookie("email", to);
+
+    // send email with nodemailer
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        throw error.message;
+      }
+      res.status(200).json({ message: "Code sent successfully" });
+      return;
+    });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const verifyEmailCode = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { code } = req.body;
+
+    // Email validation
+    const isEmailValid = emailValidator(req.cookies.email);
+
+    if (!isEmailValid) {
+      res.status(422).json({ message: "Email is not valid" });
+      return;
+    }
+
+    const findUser = await userModel.findOne({
+      where: {
+        email: req.cookies.email,
+      },
+    });
+
+    if (!findUser?.dataValues) {
+      res.status(403).json({ message: "Please try again" });
+      return;
+    }
+
+    if (code === randomCode) {
+      const accessToken = generateAccessToken(req.cookies.email);
+      const refreshToken = generateRefreshToken(req.cookies.email);
+
+      findUser.set({
+        refreshToken,
+      });
+
+      findUser.save();
+
+      // Set access token in cookie
+      res.cookie("access_token", accessToken, {
+        httpOnly: true,
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+
+      // Set refresh token in cookie
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      });
+      
+      // clear extra cookie
+      res.clearCookie("email");
+
+      res.status(200).json({ message: "Login successfully" });
+    } else {
+      res.status(403).json({ message: "Code is invalid" });
+    }
   } catch (error) {
     if (error) {
       throw error;
