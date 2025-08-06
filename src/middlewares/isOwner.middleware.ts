@@ -48,6 +48,11 @@ const isOwnerMiddleware: RequestHandler = async (
       return;
     }
 
+    if (!user.dataValues.isBan) {
+      res.status(403).json({ message: "The user is ban" });
+      return;
+    }
+
     typedReq.user = user.dataValues;
 
     next();
