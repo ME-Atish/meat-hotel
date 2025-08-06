@@ -15,4 +15,8 @@ router
   .route("/get-one/:id")
   .get(authMiddleware, isAdminMiddleware, ownerController.getOne);
 
+router
+  .route("/:id")
+  .delete(authMiddleware, isAdminMiddleware, ownerController.remove);
+
 export default router;

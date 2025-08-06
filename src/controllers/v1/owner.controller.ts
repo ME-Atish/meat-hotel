@@ -80,3 +80,34 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     }
   }
 };
+
+export const remove = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const findUser = await userModel.findOne({
+      where: {
+        id,
+        isOwner: 1,
+      },
+    });
+
+    if (!findUser?.dataValues) {
+      res.status(403).json({ message: "owner not found" });
+      return;
+    }
+
+    findUser.set({
+      isOwner: 0,
+    });
+    
+    findUser.save()
+
+    res.status(200).json({ message: "From now on, owner become user" });
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
