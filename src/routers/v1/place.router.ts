@@ -33,7 +33,34 @@ const router = express.Router();
 
 router.route("/").get(authMiddleware, placeController.getAll);
 
-router.route("/get-one/:id").get(authMiddleware, placeController.getOne)
+/**
+ * @swagger
+ * /v1/place/get-one/{id}:
+ *   get:
+ *     summary: Get one place
+ *     description: Retrieves a specific place by its ID. Requires authentication with an access token in cookies.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token for authentication
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the place to retrieve
+ *     responses:
+ *       200:
+ *         description: Get one place
+ *       403:
+ *         description: You have not access to this route or place not found
+ */
+router.route("/get-one/:id").get(authMiddleware, placeController.getOne);
 
 /**
  * @swagger
