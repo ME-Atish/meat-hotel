@@ -166,4 +166,6 @@ router.route("/verify-email-code").post(authController.verifyEmailCode);
  */
 router.route("/refresh-token").post(authController.refreshToken);
 
+router.route("/logout").post(authController.logOut);
+
 export default router;
