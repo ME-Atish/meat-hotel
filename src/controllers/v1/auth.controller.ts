@@ -219,7 +219,7 @@ export const loginWithEmail = async (
     const isEmailValid = emailValidator(to);
 
     if (!isEmailValid) {
-      res.status(400).json({ message: "Email is not valid" });
+      res.status(422).json({ message: "Email is not valid" });
       return;
     }
 
@@ -286,7 +286,7 @@ export const verifyEmailCode = async (
     const isEmailValid = emailValidator(req.cookies.email);
 
     if (!isEmailValid) {
-      res.status(400).json({ message: "Email is not valid" });
+      res.status(422).json({ message: "Email is not valid" });
       return;
     }
 
