@@ -34,7 +34,7 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
     // Increase the account charge
     if (findUserWallet?.dataValues) {
       findUserWallet.set({
-        amount,
+        amount: findUserWallet.dataValues.amount + amount,
       });
       findUserWallet.save();
     }
@@ -93,5 +93,3 @@ export const decrease = async (req: Request, res: Response): Promise<void> => {
     }
   }
 };
-
-
