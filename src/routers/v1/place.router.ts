@@ -106,7 +106,6 @@ router
  *       200:
  *         description: Successfully retrieved list of owner's place
  */
-
 router
   .route("/get-one-owner-place/:id")
   .get(authMiddleware, isOwnerMiddleware, placeController.getOneOwnerPlace);
