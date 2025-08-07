@@ -4,6 +4,7 @@ import AuthenticationRequest from "../../utils/authReq";
 import placeModel from "../../models/place.model.js";
 import userModel from "../../models/user.model.js";
 import reserveModel from "../../models/reserve.model.js";
+import walletModel from "../../models/wallet.model.js";
 import * as placeValidator from "../../utils/validators/place.validator.js";
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
@@ -363,6 +364,100 @@ export const cancelReservation = async (
     res.status(200).json({
       message: "The reservation operation was successfully canceled.",
     });
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const reserveViaWallet = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const typedReq = req as AuthenticationRequest;
+
+    const { id } = req.params;
+
+    const findUserWallet = await walletModel.findOne({
+      where: {
+        userId: typedReq.user.id,
+      },
+    });
+
+    if (!findUserWallet?.dataValues) {
+      res
+        .status(403)
+        .json({ message: "Wallet not found; Check registration process" });
+      return;
+    }
+
+    const walletBalance = findUserWallet?.dataValues.amount;
+
+    const findPlace = await placeModel.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!findPlace?.dataValues) {
+      res.status(403).json({ message: "Place not found" });
+      return;
+    }
+
+    if (findPlace.dataValues.isReserved) {
+      res.status(409).json({ message: "Place already reserved" });
+      return;
+    }
+
+    const findUser = await userModel.findOne({
+      where: {
+        id: typedReq.user.id,
+      },
+    });
+
+    if (!findUser?.dataValues) {
+      res.status(403).json({ message: "User not found!" });
+      return;
+    }
+
+    if (findUser?.dataValues.isReserved) {
+      res.status(409).json({ message: "User already reserved another place" });
+      return;
+    }
+
+    const placePrice = findPlace.dataValues.price;
+
+    if (placePrice > walletBalance) {
+      res.status(402).json({ message: "Please charge wallet" });
+      return;
+    }
+
+    findUserWallet.set({
+      amount: placePrice - walletBalance,
+    });
+
+    findUserWallet.save();
+
+    findPlace.set({
+      isReserved: 1,
+    });
+    findPlace.save();
+
+    findUser.set({
+      isReserved: 1,
+    });
+
+    findUser.save();
+
+    await reserveModel.create({
+      placeId: id,
+      userId: typedReq.user.id,
+    });
+
+    res.status(200).json({ message: "Place reserved successfully" });
     return;
   } catch (error) {
     if (error) {

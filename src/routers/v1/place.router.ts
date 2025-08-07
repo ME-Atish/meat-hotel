@@ -249,6 +249,10 @@ router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
  */
 
 router
+  .route("/reserver-via-wallet/:id")
+  .post(authMiddleware, placeController.reserveViaWallet);
+
+router
   .route("/reserve/:id/cancel")
   .post(authMiddleware, placeController.cancelReservation);
 
