@@ -220,6 +220,41 @@ router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
 
 /**
  * @swagger
+ * /v1/place/reserver-via-wallet/{id}:
+ *   post:
+ *     summary: Reserve a place using wallet
+ *     description: Reserves a place using the user's wallet balance. Requires authentication and a valid place ID.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the place to reserve
+ *     responses:
+ *       200:
+ *         description: Place reserved successfully
+ *       402:
+ *         description: Please charge wallet
+ *       403:
+ *         description: You have not access to this route OR Wallet not found OR Place not found OR User not found
+ *       409:
+ *         description: Place already reserved OR User already reserved place
+ */
+router
+  .route("/reserver-via-wallet/:id")
+  .post(authMiddleware, placeController.reserveViaWallet);
+
+  /**
+ * @swagger
  * /v1/place/reserve/{id}/cancel:
  *   post:
  *     summary: Cancel a place reservation
@@ -247,11 +282,6 @@ router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
  *       403:
  *         description: You have not access to this route
  */
-
-router
-  .route("/reserver-via-wallet/:id")
-  .post(authMiddleware, placeController.reserveViaWallet);
-
 router
   .route("/reserve/:id/cancel")
   .post(authMiddleware, placeController.cancelReservation);
