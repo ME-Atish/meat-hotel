@@ -6,6 +6,7 @@ import { Op } from "sequelize";
 
 import userModel from "../../models/user.model.js";
 import walletModel from "../../models/wallet.model.js";
+import redis from "../../config/redis.js";
 import * as userValidator from "../../utils/validators/user.validator.js";
 import emailValidator from "../../utils/validators/email.validator.js";
 import { generateAccessToken } from "../../utils/auth.js";
@@ -207,7 +208,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 // use it for store random code that send to client's email
-let randomCode: string;
 export const loginWithEmail = async (
   req: Request,
   res: Response
@@ -225,7 +225,8 @@ export const loginWithEmail = async (
     }
 
     // generate random code and store it
-    randomCode = generateRandomCode();
+    const randomCode = generateRandomCode();
+    await redis.set("email-code", randomCode);
 
     const findUser = await userModel.findOne({
       where: {
@@ -302,7 +303,9 @@ export const verifyEmailCode = async (
       return;
     }
 
-    if (code === randomCode) {
+    const emailCode = await redis.get("email-code")
+
+    if (code === emailCode) {
       const accessToken = generateAccessToken(req.cookies.email);
       const refreshToken = generateRefreshToken(req.cookies.email);
 
@@ -326,6 +329,8 @@ export const verifyEmailCode = async (
 
       // clear extra cookie
       res.clearCookie("email");
+
+      await redis.del("email-code")
 
       res.status(200).json({ message: "Login successfully" });
     } else {
