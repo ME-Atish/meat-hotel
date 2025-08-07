@@ -1,7 +1,29 @@
 import express from "express";
 
 import * as authController from "../../controllers/v1/auth.controller.js";
+import authMiddleware from "../../middlewares/auth.middleware.js";
 const router = express.Router();
+
+/**
+ * @swagger
+ * /v1/auth/me:
+ *   get:
+ *     summary: Get authenticated user data
+ *     description: Retrieves the currently authenticated user's information. Requires access token in cookies.
+ *     tags:
+ *       - auth
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *     responses:
+ *       200:
+ *         description: User data retrieved successfully
+ */
+router.route("/me").get(authMiddleware, authController.me);
 
 /**
  * @swagger
@@ -165,5 +187,19 @@ router.route("/verify-email-code").post(authController.verifyEmailCode);
  *         description: User not found or unauthorized
  */
 router.route("/refresh-token").post(authController.refreshToken);
+
+/**
+ * @swagger
+ * /v1/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Logs the user out by clearing cookies or session. No response body returned.
+ *     tags:
+ *       - auth
+ *     responses:
+ *       204:
+ *         description: Logout successful - No content returned
+ */
+router.route("/logout").post(authController.logOut);
 
 export default router;

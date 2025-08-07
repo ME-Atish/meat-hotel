@@ -12,6 +12,7 @@ import { generateAccessToken } from "../../utils/auth.js";
 import { generateRefreshToken } from "../../utils/auth.js";
 import { generateRememberMeToken } from "../../utils/auth.js";
 import generateRandomCode from "../../utils/generateRandomCode.js";
+import AuthenticationRequest from "../../utils/authReq.js";
 
 /**
  * Register the users into website
@@ -322,7 +323,7 @@ export const verifyEmailCode = async (
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
-      
+
       // clear extra cookie
       res.clearCookie("email");
 
@@ -376,6 +377,32 @@ export const refreshToken = async (
 
     res.status(204).json({});
     return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const logOut = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.clearCookie("refresh_token");
+    res.clearCookie("access_token");
+    res.clearCookie("rememberMe_token");
+
+    res.status(204).json({});
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const me = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const typedReq = req as AuthenticationRequest;
+    res.status(200).json(typedReq.user);
   } catch (error) {
     if (error) {
       throw error;
