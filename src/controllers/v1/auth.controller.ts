@@ -140,6 +140,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const user = typedReq.user;
+
     const { rememberMe } = req.body;
 
     // Generate access token
