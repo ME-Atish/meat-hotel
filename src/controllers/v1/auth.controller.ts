@@ -130,6 +130,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const typedReq = req as AuthenticationRequest;
+
     const validationResult = userValidator.login(req.body);
 
     if (!validationResult.success) {
@@ -137,37 +139,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Identifier include username or email (either is one)
-    const { identifier, password, rememberMe } = req.body;
+    const user = typedReq.user;
+    const { rememberMe } = req.body;
 
-    // Check for find username or email in database
-    const user = await userModel.findOne({
-      where: {
-        [Op.or]: {
-          username: identifier,
-          email: identifier,
-        },
-      },
-    });
-
-    if (!user) {
-      res.status(403).json({ message: "The username or email not found" });
-      return;
-    }
-    // Checking for pass word correction
-    const isPasswordCorrect = await bcrypt.compare(
-      password.toString(),
-      user!.dataValues.password
-    );
-
-    if (!isPasswordCorrect) {
-      res.status(401).json({ message: "The password is not correct" });
-      return;
-    }
     // Generate access token
-    const accessToken = generateAccessToken(user!.dataValues.email);
+    const accessToken = generateAccessToken(user?.email);
 
-    const email = user!.dataValues.email;
+    const email = user?.email;
 
     // Find user for get user's refresh token
     const findUser = await userModel.findOne({
@@ -178,13 +156,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // Get user's refresh token
     const refreshToken = findUser!.dataValues.refreshToken;
 
-    // Set access token in cookie
+    // // Set access token in cookie
     res.cookie("access_token", accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    // Set refresh token in cookie
+    // // Set refresh token in cookie
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -303,7 +281,7 @@ export const verifyEmailCode = async (
       return;
     }
 
-    const emailCode = await redis.get("email-code")
+    const emailCode = await redis.get("email-code");
 
     if (code === emailCode) {
       const accessToken = generateAccessToken(req.cookies.email);
@@ -330,7 +308,7 @@ export const verifyEmailCode = async (
       // clear extra cookie
       res.clearCookie("email");
 
-      await redis.del("email-code")
+      await redis.del("email-code");
 
       res.status(200).json({ message: "Login successfully" });
     } else {
