@@ -318,22 +318,21 @@ export const cancelReservation = async (
     }
 
     // Cancel reservation operation
-    const cancelPlaceReservationResult = await placeModel.findOne({
+    const findPlaceForCancelReservation = await placeModel.findOne({
       where: {
-        id: findReservation.dataValues.id,
+        id: findReservation.dataValues.placeId,
       },
     });
 
-    if (cancelPlaceReservationResult?.dataValues) {
-      cancelPlaceReservationResult.set({
-        isReserved: 0,
-      });
-      cancelPlaceReservationResult.save();
-    }
-
-    if (!cancelPlaceReservationResult?.dataValues) {
+    if (!findPlaceForCancelReservation?.dataValues) {
       res.status(403).json({ message: "Place not found" });
       return;
+    }
+    if (findPlaceForCancelReservation?.dataValues) {
+      findPlaceForCancelReservation.set({
+        isReserved: 0,
+      });
+      findPlaceForCancelReservation.save();
     }
 
     const cancelUserReservationResult = await userModel.findOne({
@@ -361,8 +360,25 @@ export const cancelReservation = async (
 
     await findReservationForDelete?.destroy();
 
+    // pay back money to wallet with 20% penalty
+    const placePrice = findPlaceForCancelReservation.dataValues.price;
+
+    const penalty = placePrice * 0.8;
+
+    const userWallet = await walletModel.findOne({
+      where: {
+        userId: typedReq.user.id,
+      },
+    });
+
+    userWallet?.set({
+      amount: penalty,
+    });
+
+    userWallet?.save();
+
     res.status(200).json({
-      message: "The reservation operation was successfully canceled.",
+      message: "The reservation was successfully canceled.",
     });
     return;
   } catch (error) {
