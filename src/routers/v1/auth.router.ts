@@ -1,4 +1,5 @@
 import express from "express";
+import passport from "passport";
 
 import * as authController from "../../controllers/v1/auth.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
@@ -97,7 +98,12 @@ router.route("/register").post(authController.register);
  *       401:
  *          description: Password is not correct
  */
-router.route("/login").post(authController.login);
+router
+  .route("/login")
+  .post(
+    passport.authenticate("local", { session: false }),
+    authController.login
+  );
 
 /**
  * @swagger

@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import passport from "passport";
 
 import authRouter from "./routers/v1/auth.router.js";
 import userRouter from "./routers/v1/user.router.js";
@@ -13,6 +14,7 @@ import searchRouter from "./routers/v1/search.router.js";
 import walletRouter from "./routers/v1/wallet.router.js";
 import ownerRouter from "./routers/v1/owner.router.js";
 import configSwagger from "./config/swagger.js";
+import localStrategy from "./strategies/localStrategy.js";
 
 configSwagger(app);
 
@@ -30,12 +32,21 @@ app.use(
   })
 );
 
+passport.use(localStrategy);
+
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
 app.use("/v1/place", placeRouter);
 app.use("/v1/search", searchRouter);
 app.use("/v1/wallet", walletRouter);
 app.use("/v1/owner", ownerRouter);
+
+app.get("/", (req: Request, res: Response) => {
+  res.json({
+    message:
+      "Welcome to my project. Check this API-doc for help: http://localhost:4000/api-docs/",
+  });
+});
 
 // When path incorrect, these codes will run
 app.use((req: Request, res: any) => {
