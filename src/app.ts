@@ -37,6 +37,10 @@ app.use("/v1/search", searchRouter);
 app.use("/v1/wallet", walletRouter);
 app.use("/v1/owner", ownerRouter);
 
+app.get("/", (req: Request, res: Response) => {
+  res.json({message: "Welcome to my project. Check this API-doc for help: http://localhost:4000/api-docs/"})
+});
+
 // When path incorrect, these codes will run
 app.use((req: Request, res: any) => {
   return res.status(404).json({ message: "Page not found" });
