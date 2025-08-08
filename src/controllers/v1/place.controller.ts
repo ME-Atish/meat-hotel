@@ -481,3 +481,48 @@ export const reserveViaWallet = async (
     }
   }
 };
+
+export const getAllReserve = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const reserves = await reserveModel.findAll({
+      raw: true,
+    });
+
+    res.status(200).json(reserves);
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};
+
+export const getOneReserve = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const findReserve = await reserveModel.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!findReserve?.dataValues) {
+      res.status(403).json({ message: "reserve not found" });
+      return;
+    }
+
+    res.status(200).json(findReserve.dataValues)
+    return;
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};

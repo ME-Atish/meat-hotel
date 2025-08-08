@@ -112,6 +112,60 @@ router
 
 /**
  * @swagger
+ * /v1/place/reserve/:
+ *   get:
+ *     summary: Get all reserved places
+ *     description: Retrieves a list of all reserved places for the authenticated user. Requires a valid access token in cookies.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *     responses:
+ *       200:
+ *         description: List of reserved places retrieved successfully
+ *       403:
+ *         description: You have not access to this route
+ */
+router.route("/reserve/").get(authMiddleware, placeController.getAllReserve);
+
+/**
+ * @swagger
+ * /v1/place/reserve/get-one/{id}:
+ *   get:
+ *     summary: Get a single reserve by ID
+ *     description: Retrieves details of a specific reserve for the authenticated user. Requires a valid access token in cookies.
+ *     tags:
+ *       - place
+ *     parameters:
+ *       - in: cookie
+ *         name: access_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Access token cookie for authentication
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Reserve ID to retrieve
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved reserve details
+ *       403:
+ *         description: Reserve not found or you have not access to this route
+ */
+router
+  .route("/reserve/get-one/:id")
+  .get(authMiddleware, placeController.getOneReserve);
+
+/**
+ * @swagger
  * /v1/place:
  *   post:
  *     summary: Create a new place
@@ -252,7 +306,7 @@ router
   .route("/reserver-via-wallet/:id")
   .post(authMiddleware, placeController.reserveViaWallet);
 
-  /**
+/**
  * @swagger
  * /v1/place/reserve/{id}/cancel:
  *   post:
