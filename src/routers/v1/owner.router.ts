@@ -1,8 +1,8 @@
 import express from "express";
+import passport from "passport";
 
 import * as ownerController from "../../controllers/v1/owner.controller.js";
 import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
-import authMiddleware from "../../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -35,7 +35,11 @@ const router = express.Router();
  */
 router
   .route("/")
-  .get(authMiddleware, isAdminMiddleware, ownerController.getAll);
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    ownerController.getAll
+  );
 
 /**
  * @swagger
@@ -58,7 +62,12 @@ router
  *       403:
  *         description: User not found or you are already owner
  */
-router.route("/").post(authMiddleware, ownerController.create);
+router
+  .route("/")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    ownerController.create
+  );
 
 /**
  * @swagger
@@ -95,7 +104,11 @@ router.route("/").post(authMiddleware, ownerController.create);
  */
 router
   .route("/get-one/:id")
-  .get(authMiddleware, isAdminMiddleware, ownerController.getOne);
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    ownerController.getOne
+  );
 
 /**
  * @swagger
@@ -132,6 +145,10 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddleware, ownerController.remove);
+  .delete(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    ownerController.remove
+  );
 
 export default router;

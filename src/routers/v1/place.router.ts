@@ -1,9 +1,8 @@
 import express from "express";
 import multer from "multer";
+import passport from "passport";
 
 import * as placeController from "../../controllers/v1/place.controller.js";
-import authMiddleware from "../../middlewares/auth.middleware.js";
-import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
 import isOwnerMiddleware from "../../middlewares/isOwner.middleware.js";
 import multerStorage from "../../utils/uploader.js";
 
@@ -32,7 +31,12 @@ const router = express.Router();
  *          description: User not found or you have not access to this route
  */
 
-router.route("/").get(authMiddleware, placeController.getAll);
+router
+  .route("/")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.getAll
+  );
 
 /**
  * @swagger
@@ -62,7 +66,12 @@ router.route("/").get(authMiddleware, placeController.getAll);
  *         description: You have not access to this route or place not found
  */
 
-router.route("/get-one/:id").get(authMiddleware, placeController.getOne);
+router
+  .route("/get-one/:id")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.getOne
+  );
 
 /**
  * @swagger
@@ -85,7 +94,11 @@ router.route("/get-one/:id").get(authMiddleware, placeController.getOne);
  */
 router
   .route("/get-owner-places")
-  .get(authMiddleware, isOwnerMiddleware, placeController.getOwnerPlace);
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    isOwnerMiddleware,
+    placeController.getOwnerPlace
+  );
 
 /**
  * @swagger
@@ -108,7 +121,11 @@ router
  */
 router
   .route("/get-one-owner-place/:id")
-  .get(authMiddleware, isOwnerMiddleware, placeController.getOneOwnerPlace);
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    isOwnerMiddleware,
+    placeController.getOneOwnerPlace
+  );
 
 /**
  * @swagger
@@ -131,7 +148,12 @@ router
  *       403:
  *         description: You have not access to this route
  */
-router.route("/reserve/").get(authMiddleware, placeController.getAllReserve);
+router
+  .route("/reserve/")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.getAllReserve
+  );
 
 /**
  * @swagger
@@ -162,7 +184,10 @@ router.route("/reserve/").get(authMiddleware, placeController.getAllReserve);
  */
 router
   .route("/reserve/get-one/:id")
-  .get(authMiddleware, placeController.getOneReserve);
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.getOneReserve
+  );
 
 /**
  * @swagger
@@ -232,7 +257,7 @@ router
 router
   .route("/")
   .post(
-    authMiddleware,
+    passport.authenticate("accessToken", { session: false }),
     isOwnerMiddleware,
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },
@@ -269,7 +294,12 @@ router
  *       409:
  *         description: place already reserved or user already has a reservation for this place
  */
-router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
+router
+  .route("/reserve/:id")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.reserve
+  );
 
 /**
  * @swagger
@@ -304,7 +334,10 @@ router.route("/reserve/:id").post(authMiddleware, placeController.reserve);
  */
 router
   .route("/reserver-via-wallet/:id")
-  .post(authMiddleware, placeController.reserveViaWallet);
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.reserveViaWallet
+  );
 
 /**
  * @swagger
@@ -337,7 +370,10 @@ router
  */
 router
   .route("/reserve/:id/cancel")
-  .post(authMiddleware, placeController.cancelReservation);
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    placeController.cancelReservation
+  );
 
 /**
  * @swagger
@@ -376,7 +412,11 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isOwnerMiddleware, placeController.remove);
+  .delete(
+    passport.authenticate("accessToken", { session: false }),
+    isOwnerMiddleware,
+    placeController.remove
+  );
 
 /**
  * @swagger
@@ -457,7 +497,7 @@ router
 router
   .route("/:id")
   .put(
-    authMiddleware,
+    passport.authenticate("accessToken", { session: false }),
     isOwnerMiddleware,
     multer({ storage: multerStorage, limits: { fieldSize: 10000000 } }).fields([
       { name: "image", maxCount: 5 },

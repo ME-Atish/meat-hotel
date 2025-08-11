@@ -1,7 +1,7 @@
 import express from "express";
+import passport from "passport";
 
 import * as userController from "../../controllers/v1/user.controller.js";
-import authMiddleware from "../../middlewares/auth.middleware.js";
 import isAdminMiddleware from "../../middlewares/isAdmin.middleware.js";
 
 const router = express.Router();
@@ -33,7 +33,13 @@ const router = express.Router();
  *       403:
  *         description: You have not access to this route
  */
-router.route("/").get(authMiddleware, isAdminMiddleware, userController.getAll);
+router
+  .route("/")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    userController.getAll
+  );
 
 /**
  * @swagger
@@ -70,7 +76,11 @@ router.route("/").get(authMiddleware, isAdminMiddleware, userController.getAll);
  */
 router
   .route("/ban/:id")
-  .post(authMiddleware, isAdminMiddleware, userController.banUser);
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    userController.banUser
+  );
 
 /**
  * @swagger
@@ -107,7 +117,11 @@ router
  */
 router
   .route("/un-ban/:id")
-  .post(authMiddleware, isAdminMiddleware, userController.unBanUser);
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    userController.unBanUser
+  );
 
 /**
  * @swagger
@@ -151,7 +165,12 @@ router
  *       422:
  *         description: Validation error
  */
-router.route("/").put(authMiddleware, userController.updateInfo);
+router
+  .route("/")
+  .put(
+    passport.authenticate("accessToken", { session: false }),
+    userController.updateInfo
+  );
 
 /**
  * @swagger
@@ -197,7 +216,11 @@ router.route("/").put(authMiddleware, userController.updateInfo);
  */
 router
   .route("/role")
-  .put(authMiddleware, isAdminMiddleware, userController.changeRole);
+  .put(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    userController.changeRole
+  );
 
 /**
  * @swagger
@@ -236,6 +259,10 @@ router
  */
 router
   .route("/:id")
-  .delete(authMiddleware, isAdminMiddleware, userController.remove);
+  .delete(
+    passport.authenticate("accessToken", { session: false }),
+    isAdminMiddleware,
+    userController.remove
+  );
 
 export default router;

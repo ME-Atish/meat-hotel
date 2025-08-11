@@ -2,7 +2,6 @@ import express from "express";
 import passport from "passport";
 
 import * as authController from "../../controllers/v1/auth.controller.js";
-import authMiddleware from "../../middlewares/auth.middleware.js";
 const router = express.Router();
 
 /**
@@ -24,7 +23,12 @@ const router = express.Router();
  *       200:
  *         description: User data retrieved successfully
  */
-router.route("/me").get(authMiddleware, authController.me);
+router
+  .route("/me")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    authController.me
+  );
 
 /**
  * @swagger
@@ -206,6 +210,11 @@ router.route("/refresh-token").post(authController.refreshToken);
  *       204:
  *         description: Logout successful - No content returned
  */
-router.route("/logout").post(authController.logOut);
+router
+  .route("/logout")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    authController.logOut
+  );
 
 export default router;
