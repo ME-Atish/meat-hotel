@@ -1,8 +1,8 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
-import userModel from "../models/user.model";
+import userModel from "../models/user.model.js";
 
-const jwtStrategy = new JwtStrategy(
+const accessTokenStrategy = new JwtStrategy(
   {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.ACCESS_TOKEN_SECRET!,
@@ -21,4 +21,4 @@ const jwtStrategy = new JwtStrategy(
   }
 );
 
-export default jwtStrategy;
+export default accessTokenStrategy;

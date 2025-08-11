@@ -196,7 +196,12 @@ router.route("/verify-email-code").post(authController.verifyEmailCode);
  *       403:
  *         description: User not found or unauthorized
  */
-router.route("/refresh-token").post(authController.refreshToken);
+router
+  .route("/refresh-token")
+  .post(
+    passport.authenticate("refreshToken", { session: false }),
+    authController.refreshToken
+  );
 
 /**
  * @swagger
