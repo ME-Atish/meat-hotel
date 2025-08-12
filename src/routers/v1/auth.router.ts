@@ -2,7 +2,6 @@ import express from "express";
 import passport from "passport";
 
 import * as authController from "../../controllers/v1/auth.controller.js";
-import authMiddleware from "../../middlewares/auth.middleware.js";
 const router = express.Router();
 
 /**
@@ -24,7 +23,12 @@ const router = express.Router();
  *       200:
  *         description: User data retrieved successfully
  */
-router.route("/me").get(authMiddleware, authController.me);
+router
+  .route("/me")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    authController.me
+  );
 
 /**
  * @swagger
@@ -192,7 +196,12 @@ router.route("/verify-email-code").post(authController.verifyEmailCode);
  *       403:
  *         description: User not found or unauthorized
  */
-router.route("/refresh-token").post(authController.refreshToken);
+router
+  .route("/refresh-token")
+  .post(
+    passport.authenticate("refreshToken", { session: false }),
+    authController.refreshToken
+  );
 
 /**
  * @swagger
@@ -206,6 +215,22 @@ router.route("/refresh-token").post(authController.refreshToken);
  *       204:
  *         description: Logout successful - No content returned
  */
-router.route("/logout").post(authController.logOut);
+router
+  .route("/logout")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    authController.logOut
+  );
+
+router
+  .route("/google")
+  .get(passport.authenticate("google", { scope: ["profile", "email"] }));
+
+router
+  .route("/google/callback")
+  .get(
+    passport.authenticate("google", { session: false }),
+    authController.googleLogin
+  );
 
 export default router;

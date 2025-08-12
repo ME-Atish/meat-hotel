@@ -21,11 +21,11 @@ const User = db.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
@@ -52,9 +52,16 @@ const User = db.define(
     },
     refreshToken: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "refresh_token",
     },
+    provider: {
+      type: DataTypes.ENUM,
+      values: ["local", "google"],
+      allowNull: false,
+      defaultValue: "local"
+    },
+    
   },
   {
     modelName: "User",

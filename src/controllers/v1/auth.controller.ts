@@ -393,3 +393,39 @@ export const me = async (req: Request, res: Response): Promise<void> => {
     }
   }
 };
+
+export const googleLogin = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const typedReq = req as AuthenticationRequest;
+
+    const user = typedReq.user;
+
+    const accessToken = generateAccessToken(user.email);
+    const refreshToken = generateRefreshToken(user.email);
+    const rememberMeToken = generateRememberMeToken(user.email);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    res.cookie("rememberMe_token", rememberMeToken, {
+      httpOnly: true,
+      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+    });
+
+    res.status(200).json({ message: "Login successfully" });
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+};

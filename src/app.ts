@@ -14,7 +14,10 @@ import searchRouter from "./routers/v1/search.router.js";
 import walletRouter from "./routers/v1/wallet.router.js";
 import ownerRouter from "./routers/v1/owner.router.js";
 import configSwagger from "./config/swagger.js";
-import localStrategy from "./strategies/localStrategy.js";
+import localStrategy from "./strategies/local.Strategy.js";
+import accessTokenStrategy from "./strategies/JwtAccessToken.Strategy.js";
+import refreshTokenStrategy from "./strategies/JwtRefreshToken.Strategy.js"
+import googleStrategy from "./strategies/google.Strategy.js"
 
 configSwagger(app);
 
@@ -33,6 +36,9 @@ app.use(
 );
 
 passport.use(localStrategy);
+passport.use("accessToken", accessTokenStrategy);
+passport.use("refreshToken", refreshTokenStrategy)
+passport.use(googleStrategy)
 
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);

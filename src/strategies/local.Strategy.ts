@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import { Op } from "sequelize";
 
 import userModel from "../models/user.model.js";
-import AuthenticationRequest from "../utils/authReq.js";
 
 const localStrategy = new LocalStrategy(
   { usernameField: "identifier" },

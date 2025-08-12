@@ -1,6 +1,6 @@
 import express from "express";
+import passport from "passport";
 
-import authMiddleware from "../../middlewares/auth.middleware.js";
 import * as walletController from "../../controllers/v1/wallet.controller.js";
 
 const router = express.Router();
@@ -36,7 +36,12 @@ const router = express.Router();
  *       422:
  *         description: Validation error
  */
-router.route("/increase").post(authMiddleware, walletController.increase);
+router
+  .route("/increase")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    walletController.increase
+  );
 /**
  * @swagger
  * /v1/decrease:
@@ -73,6 +78,11 @@ router.route("/increase").post(authMiddleware, walletController.increase);
  *       422:
  *         description: Validation error
  */
-router.route("/decrease").post(authMiddleware, walletController.decrease);
+router
+  .route("/decrease")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    walletController.decrease
+  );
 
 export default router;
