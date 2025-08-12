@@ -27,7 +27,6 @@ http://localhost:4000/api-docs
 - [Node.js](https://nodejs.org/) (v14+ recommended)
 - [MySQL](https://www.mysql.com/)
 - [npm](https://www.npmjs.com/)
-- Having a database named `place`
 
 ### Installation
 
@@ -57,13 +56,18 @@ http://localhost:4000/api-docs
 
 4. **Start MySQL** (if not running already) and make sure you have created a database named `place`.
 
-5. **Run the application:**
+5. **Create database**
+   ```bash
+   npm run db
+   ```
+
+6. **Run the application:**
    ```bash
    npm run start
    ```
    The server should now be running at `http://localhost:4000`.
 
-6. **View API docs:**  
+7. **View API docs:**  
    Open [http://localhost:4000/api-docs](http://localhost:4000/api-docs) in your browser.
 
 ## Project Structure
