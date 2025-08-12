@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
+    "db": "dotenv -e .env -- sequelize-cli db:create --config ./dist/config/sequelizeConfig.js",
     "dev": "npx tsc && node dist/server.js",
     "start": "node dist/server.js",
     "build": "npx tsc"
@@ -52,7 +53,9 @@
     "@types/passport-local": "^1.0.38",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "dotenv-cli": "^10.0.0",
     "nodemon": "^3.1.10",
+    "sequelize-cli": "^6.6.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
