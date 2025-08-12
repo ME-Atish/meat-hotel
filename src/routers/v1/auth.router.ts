@@ -222,4 +222,15 @@ router
     authController.logOut
   );
 
+router
+  .route("/google")
+  .get(passport.authenticate("google", { scope: ["profile", "email"] }));
+
+router
+  .route("/google/callback")
+  .get(
+    passport.authenticate("google", { session: false }),
+    authController.googleLogin
+  );
+
 export default router;
