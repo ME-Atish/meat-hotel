@@ -121,9 +121,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       });
 
       if (!user?.dataValues) {
-        res
-          .status(403)
-          .json({ message: "User not found. Delete cookies to continue" });
+        res.clearCookie("rememberMe_token");
+        res.status(403).json({ message: "User not found" });
         return;
       }
       res.json({ message: "Login successfully" });
