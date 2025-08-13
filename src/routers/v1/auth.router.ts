@@ -222,10 +222,63 @@ router
     authController.logOut
   );
 
+/**
+ * @openapi
+ * /v1/auth/google:
+ *   get:
+ *     tags:
+ *       - auth
+ *     summary: Sign in with Google
+ *     description: Initiates Google OAuth 2.0 authentication flow using Passport.js.
+ *     responses:
+ *       302:
+ *         description: Redirect to Google login page
+ *       500:
+ *         description: Internal server error
+ */
 router
   .route("/google")
   .get(passport.authenticate("google", { scope: ["profile", "email"] }));
 
+/**
+ * @openapi
+ * /v1/auth/google/callback:
+ *   get:
+ *     tags:
+ *       - auth
+ *     summary: Google OAuth2 callback
+ *     description: Handles the Google OAuth2 callback and returns an authentication token.
+ *     responses:
+ *       200:
+ *         description: Successfully authenticated with Google
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 refreshToken:
+ *                   type: string
+ *                   example: 1//0gdfjsdfjsdkljfsldj
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: 64fabc1234567890abcdef12
+ *                     username:
+ *                       type: string
+ *                       example: johndoe
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *       401:
+ *         description: Unauthorized - Invalid or expired Google authentication
+ *       500:
+ *         description: Internal server error
+ */
 router
   .route("/google/callback")
   .get(
