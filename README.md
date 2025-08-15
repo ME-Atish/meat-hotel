@@ -54,7 +54,7 @@ http://localhost:4000/api-docs
    REMEMBER_ME_TOKEN_SECRET=your-remember-token
    ```
 
-4. **Start MySQL** (if not running already) and make sure you have created a database named `place`.
+4. **Start MySQL** (if not running already).
 
 5. **Create database**
    ```bash
