@@ -56,18 +56,23 @@ http://localhost:4000/api-docs
 
 4. **Start MySQL** (if not running already).
 
-5. **Create database**
+5. **Build project**
+   ```bash
+   npm run build
+   ```
+
+6. **Create database**
    ```bash
    npm run db
    ```
 
-6. **Run the application:**
+7. **Run the application:**
    ```bash
    npm run start
    ```
    The server should now be running at `http://localhost:4000`.
 
-7. **View API docs:**  
+8. **View API docs:**  
    Open [http://localhost:4000/api-docs](http://localhost:4000/api-docs) in your browser.
 
 ## Project Structure
