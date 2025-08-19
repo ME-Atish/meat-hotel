@@ -1,21 +1,30 @@
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as JwtStrategy } from "passport-jwt";
+import { Request } from "express";
+
+const cookieExtractor = (req: Request): string | null => {
+  const token = req?.cookies?.accessToken ?? null;
+  return token;
+}
+
 
 import userModel from "../models/user.model.js";
-
 const accessTokenStrategy = new JwtStrategy(
   {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: cookieExtractor,
     secretOrKey: process.env.ACCESS_TOKEN_SECRET!,
+    algorithms: ['HS512']
   },
   async (payload, done) => {
-    const user = await userModel.findByPk(payload.id, {
-      raw: true,
-      attributes: {
-        exclude: ["password"],
-      },
-    });
+    const email: string = payload.email
 
-    if (!user) done(null, false);
+    const user = await userModel.findOne({
+      where: {
+        email
+      },
+      raw: true,
+    })
+
+    console.log(payload)
 
     done(null, user);
   }

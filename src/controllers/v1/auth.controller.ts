@@ -157,13 +157,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const refreshToken = findUser!.dataValues.refreshToken;
 
     // // Set access token in cookie
-    res.cookie("access_token", accessToken, {
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     // // Set refresh token in cookie
-    res.cookie("refresh_token", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
@@ -294,13 +294,13 @@ export const verifyEmailCode = async (
       findUser.save();
 
       // Set access token in cookie
-      res.cookie("access_token", accessToken, {
+      res.cookie("accessToken", accessToken, {
         httpOnly: true,
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
       // Set refresh token in cookie
-      res.cookie("refresh_token", refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
@@ -335,7 +335,7 @@ export const refreshToken = async (
 ): Promise<void> => {
   try {
     // Check if refresh token is exist or not (in cookie)
-    const refreshToken = req.cookies.refresh_token;
+    const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       res.status(401).json({ message: "The refresh token expired" });
       return;
@@ -356,7 +356,7 @@ export const refreshToken = async (
     // Generate new access token
     const newAccessToken = generateAccessToken(user!.dataValues.email);
     // Set new access token in cookie
-    res.cookie("access_token", newAccessToken);
+    res.cookie("accessToken", newAccessToken);
 
     res.status(204).json({});
     return;
@@ -370,7 +370,7 @@ export const refreshToken = async (
 export const logOut = async (req: Request, res: Response): Promise<void> => {
   try {
     res.clearCookie("refresh_token");
-    res.clearCookie("access_token");
+    res.clearCookie("accessToken");
     res.clearCookie("rememberMe_token");
 
     res.status(204).json({});
@@ -406,12 +406,12 @@ export const googleLogin = async (
     const refreshToken = generateRefreshToken(user.email);
     const rememberMeToken = generateRememberMeToken(user.email);
 
-    res.cookie("access_token", accessToken, {
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    res.cookie("refresh_token", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });

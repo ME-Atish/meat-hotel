@@ -1,35 +1,34 @@
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import bcrypt from "bcrypt";
+import { Strategy as JwtStrategy } from "passport-jwt";
+import { Request } from "express";
 
 import userModel from "../models/user.model.js";
 
+const cookieExtractor = (req: Request): string | null => {
+  if (req && req.cookies) {
+    return req.cookies['refreshToken'] ?? null
+  }
+
+  return null;
+}
+
 const refreshTokenStrategy = new JwtStrategy(
   {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: cookieExtractor,
     secretOrKey: process.env.REFRESH_TOKEN_SECRET!,
+    algorithms: ['HS512'],
     passReqToCallback: true,
   },
   async (req, payload, done) => {
-    const refreshToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    const email: string = payload.email;
 
-    const user = await userModel.findByPk(payload.id, {
-      attributes: {
-        exclude: ["password"],
+    const user = await userModel.findOne({
+      where: {
+        email
       },
-    });
+      raw: true,
+    })
 
     if (!user) return done(null, false);
-
-    const hashedRefreshToken = user?.dataValues.refreshToken;
-
-    if (!hashedRefreshToken) return done(null, false);
-
-    const isRefreshTokenValid = await bcrypt.compare(
-      refreshToken!,
-      hashedRefreshToken
-    );
-
-    if (!isRefreshTokenValid) return done(null, false);
 
     return done(null, user);
   }
