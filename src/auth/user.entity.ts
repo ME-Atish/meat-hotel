@@ -11,6 +11,7 @@ import { AuthRole } from './auth-role.enum';
 import { AuthProvider } from './auth-provider.enum';
 import { Place } from 'src/place/place.entity';
 import { Wallet } from 'src/wallet/walllet.entity';
+import { Reserve } from 'src/reserve/reserve.entity';
 
 @Entity()
 export class User {
@@ -59,12 +60,15 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany((_type) => Place, (place) => place.owner, {
+  @OneToMany(() => Place, (place) => place.owner, {
     eager: true,
     cascade: true,
   })
-  place: Place;
+  places: Place[];
 
-  @OneToOne((_type) => Wallet, (wallet) => wallet.user, { cascade: true })
+  @OneToMany(() => Reserve, (reserve) => reserve.user)
+  reserves: Reserve[];
+
+  @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
   wallet: Wallet;
 }

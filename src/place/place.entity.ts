@@ -1,9 +1,11 @@
 import { User } from 'src/auth/user.entity';
+import { Reserve } from 'src/reserve/reserve.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -40,12 +42,15 @@ export class Place {
   @Column()
   image: string;
 
-  @ManyToOne((_type) => User, (user) => user.place, { eager: true })
+  @OneToMany(() => Reserve, (reserve) => reserve.place)
+  reserves: Reserve[];
+
+  @ManyToOne(() => User, (user) => user.places, { eager: false })
   owner: User;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
-  UpdatedAt: Date;
+  updatedAt: Date;
 }

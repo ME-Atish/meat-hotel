@@ -3,7 +3,6 @@ import { Place } from 'src/place/place.entity';
 import {
   CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,18 +13,16 @@ export class Reserve {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne((_type) => Place, (place) => place.isReserved, {
+  @ManyToOne(() => Place, (place) => place.reserves, {
     eager: true,
     cascade: true,
   })
-  @JoinTable()
   place: Place;
 
-  @ManyToOne((_type) => User, (user) => user.isReserved, {
+  @ManyToOne(() => User, (user) => user.reserves, {
     eager: true,
     cascade: true,
   })
-  @JoinTable()
   user: User;
 
   @CreateDateColumn()
