@@ -19,8 +19,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  getAll(): string {
-    return 'hello man';
+  async getAll(): Promise<User[]> {
+    const users = await this.authRepository.find();
+    return users;
   }
 
   async register(createUserDto: CreateUserDto): Promise<void> {

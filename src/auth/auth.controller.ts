@@ -8,7 +8,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get()
-  getAll(): string {
+  getAll(): Promise<User[]> {
     return this.authService.getAll();
   }
 
