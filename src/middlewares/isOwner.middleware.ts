@@ -12,7 +12,7 @@ const isOwnerMiddleware: RequestHandler = async (
   try {
     const typedReq = req as AuthenticationRequest;
 
-    if (!typedReq.cookies.refresh_token) {
+    if (!typedReq.cookies.refreshToken) {
       res.status(403).json({ message: "You have not access to this route" });
       return;
     }
@@ -24,7 +24,7 @@ const isOwnerMiddleware: RequestHandler = async (
     let token: RefreshToken;
 
     token = jwt.verify(
-      typedReq.cookies.refresh_token,
+      typedReq.cookies.refreshToken,
       process.env.REFRESH_TOKEN_SECRET!
     ) as RefreshToken;
 
