@@ -11,12 +11,13 @@ import { JwtStrategy } from './strategies/jwt-access-token.strategy';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt-access-token' }),
     JwtModule.register({
-      secret: process.env.ACCESS_TOKEN_SECRET,
+      secret: process.env.ACCESS_TOKEN_SECRET || 'dpeqdjqejdqo',
       signOptions: {
-        expiresIn: '15m',
+        expiresIn: '15d',
         algorithm: 'HS512',
       },
     }),
+
     TypeOrmModule.forFeature([User]),
   ],
   providers: [AuthService, JwtStrategy],
