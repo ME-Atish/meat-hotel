@@ -32,13 +32,18 @@ export class AuthService {
     const isUserExist = await this.authRepository.findOne({
       where: {
         username,
-        email,
       },
     });
 
     if (isUserExist) {
       throw new ConflictException('Username already exist');
     }
+
+    const isEmailExist = await this.authRepository.findOne({
+      where: { email },
+    });
+
+    if (isEmailExist) throw new ConflictException('Email already exist');
 
     const hashPassword = await bcrypt.hash(password, 10);
 
