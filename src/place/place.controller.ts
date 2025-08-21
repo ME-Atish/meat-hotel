@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -25,7 +26,12 @@ export class PlaceController {
   }
 
   @Post()
-  Create(@Body() createPlaceDto: CreatePlaceDto): Promise<void> {
+  create(@Body() createPlaceDto: CreatePlaceDto): Promise<void> {
     return this.placeService.create(createPlaceDto);
+  }
+
+  @Delete('/:id')
+  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.placeService.remove(id);
   }
 }

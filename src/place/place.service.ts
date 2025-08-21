@@ -41,4 +41,17 @@ export class PlaceService {
 
     return;
   }
+
+  async remove(id: string): Promise<void> {
+    const findPlaceToRemove = await this.placeRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!findPlaceToRemove) throw new NotFoundException();
+
+    await this.placeRepository.delete(id);
+    return;
+  }
 }
