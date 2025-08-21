@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -12,8 +13,13 @@ export class AuthController {
     return this.authService.getAll();
   }
 
-  @Post()
+  @Post('/register')
   register(@Body() createUserDto: CreateUserDto): Promise<void> {
     return this.authService.register(createUserDto);
+  }
+
+  @Post('/login')
+  login(@Body() loginUserDto: LoginUserDto): Promise<object> {
+    return this.authService.login(loginUserDto);
   }
 }

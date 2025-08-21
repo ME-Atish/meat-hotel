@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -50,5 +55,21 @@ export class AuthService {
     await this.authRepository.save(user);
 
     return;
+  }
+
+  async login(loginUserDto: LoginUserDto): Promise<object> {
+    const { identifier, password } = loginUserDto;
+
+    const user = await this.authRepository.findOne({
+      where: [{ username: identifier }, { email: identifier }],
+    });
+
+    if (!user) throw new UnauthorizedException('username or email not found');
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) throw new UnauthorizedException();
+
+    return { message: 'Login successfully' };
   }
 }
