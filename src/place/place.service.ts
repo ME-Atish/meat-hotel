@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Place } from './place.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreatePlaceDto } from 'src/auth/dto/create-place.dto';
 
 @Injectable()
 export class PlaceService {
@@ -20,5 +21,24 @@ export class PlaceService {
     if (!place) throw new NotFoundException('place not found');
 
     return place;
+  }
+
+  async create(createPlaceDto: CreatePlaceDto): Promise<void> {
+    const { name, address, description, facilities, price, province, city } =
+      createPlaceDto;
+
+    const createPlace = this.placeRepository.create({
+      name,
+      address,
+      description,
+      facilities,
+      price,
+      province,
+      city,
+    });
+
+    await this.placeRepository.save(createPlace);
+
+    return;
   }
 }

@@ -39,7 +39,7 @@ export class Place {
   @Column()
   city: string;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
 
   @OneToMany(() => Reserve, (reserve) => reserve.place)

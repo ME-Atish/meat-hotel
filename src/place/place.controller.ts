@@ -1,6 +1,14 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { Place } from './place.entity';
+import { CreatePlaceDto } from 'src/auth/dto/create-place.dto';
 
 @Controller('place')
 export class PlaceController {
@@ -14,5 +22,10 @@ export class PlaceController {
   @Get('/:id')
   getOne(@Param('id', ParseUUIDPipe) id: string): Promise<Place> {
     return this.placeService.getOne(id);
+  }
+
+  @Post()
+  Create(@Body() createPlaceDto: CreatePlaceDto): Promise<void> {
+    return this.placeService.create(createPlaceDto);
   }
 }
