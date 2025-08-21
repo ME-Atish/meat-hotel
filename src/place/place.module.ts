@@ -3,10 +3,9 @@ import { PlaceService } from './place.service';
 import { PlaceController } from './place.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Place } from './place.entity';
-import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Place]), AuthModule],
+  imports: [TypeOrmModule.forFeature([Place])],
   providers: [PlaceService],
   controllers: [PlaceController],
 })
