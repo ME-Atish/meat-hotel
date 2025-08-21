@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { Place } from './place.entity';
 
@@ -9,5 +9,10 @@ export class PlaceController {
   @Get()
   getAll(): Promise<Place[]> {
     return this.placeService.getAll();
+  }
+
+  @Get('/:id')
+  getOne(@Param('id', ParseUUIDPipe) id: string): Promise<Place> {
+    return this.placeService.getOne(id);
   }
 }

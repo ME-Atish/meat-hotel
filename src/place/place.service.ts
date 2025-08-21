@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Place } from './place.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,5 +13,12 @@ export class PlaceService {
   async getAll(): Promise<Place[]> {
     const places = await this.placeRepository.find();
     return places;
+  }
+
+  async getOne(id: string): Promise<Place> {
+    const place = await this.placeRepository.findOne({ where: { id } });
+    if (!place) throw new NotFoundException('place not found');
+
+    return place;
   }
 }
