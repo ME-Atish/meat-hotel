@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { Place } from './place.entity';
@@ -33,5 +34,13 @@ export class PlaceController {
   @Delete('/:id')
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.placeService.remove(id);
+  }
+
+  @Put('/:id')
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() createPlaceDto: CreatePlaceDto,
+  ): Promise<object> {
+    return this.placeService.update(id, createPlaceDto);
   }
 }

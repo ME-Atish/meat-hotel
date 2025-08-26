@@ -54,4 +54,25 @@ export class PlaceService {
     await this.placeRepository.delete(id);
     return;
   }
+
+  async update(id: string, createPlaceDto: CreatePlaceDto): Promise<object> {
+    const { name, address, description, facilities, price, province, city } =
+      createPlaceDto;
+
+    const place = await this.placeRepository.update(id, {
+      name,
+      address,
+      description,
+      facilities,
+      price,
+      province,
+      city,
+    });
+
+    if (place.affected === 0) {
+      throw new NotFoundException('Place not found');
+    }
+
+    return { message: 'Place updated successfully' };
+  }
 }
