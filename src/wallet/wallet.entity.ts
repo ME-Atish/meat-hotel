@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,7 +18,7 @@ export class Wallet {
   amount: number;
 
   @OneToOne((_type) => User, (user) => user.wallet)
-  @JoinTable()
+  @JoinColumn()
   user: User;
 
   @CreateDateColumn()

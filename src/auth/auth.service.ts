@@ -59,14 +59,12 @@ export class AuthService {
       password: hashPassword,
       refreshToken: 'dpqwjdp',
     });
+    await this.authRepository.save(user);
 
     const wallet = this.walletRepository.create({
-      id: user.id,
+      user,
     });
-
     await this.walletRepository.save(wallet);
-
-    await this.authRepository.save(user);
 
     return;
   }
