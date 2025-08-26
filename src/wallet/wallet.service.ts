@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wallet } from './wallet.entity';
 import { Repository } from 'typeorm';
@@ -25,6 +29,34 @@ export class WalletService {
 
     await this.walletRepository.update(findUserWallet.id, {
       amount: findUserWallet.amount + amount,
+    });
+
+    return;
+  }
+
+  async decrease(
+    userId: string,
+    walletAmountDto: WalletAmountDto,
+  ): Promise<void> {
+    const { amount } = walletAmountDto;
+
+    const findWallet = await this.walletRepository.findOne({
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    if (!findWallet) throw new NotFoundException('Wallet not found');
+
+    if (findWallet.amount < amount)
+      throw new NotAcceptableException(
+        'The amount to be deducted is less than the account balance.',
+      );
+
+    const deductedAmount = findWallet.amount - amount;
+
+    await this.walletRepository.update(findWallet.id, {
+      amount: deductedAmount,
     });
 
     return;
