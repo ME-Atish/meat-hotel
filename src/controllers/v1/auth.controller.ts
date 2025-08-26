@@ -131,7 +131,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         httpOnly: true,
         maxAge: 15 * 60 * 1000 // 15 minutes
       })
-      
+
       res.json({ message: "Login successfully" });
       return;
     }
@@ -396,7 +396,7 @@ export const refreshToken = async (
 
 export const logOut = async (req: Request, res: Response): Promise<void> => {
   try {
-    res.clearCookie("refresh_token");
+    res.clearCookie("refreshToken");
     res.clearCookie("accessToken");
     res.clearCookie("rememberMe_token");
 
