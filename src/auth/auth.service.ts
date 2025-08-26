@@ -11,12 +11,15 @@ import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { Wallet } from 'src/wallet/wallet.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly authRepository: Repository<User>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -56,6 +59,12 @@ export class AuthService {
       password: hashPassword,
       refreshToken: 'dpqwjdp',
     });
+
+    const wallet = this.walletRepository.create({
+      id: user.id,
+    });
+
+    await this.walletRepository.save(wallet);
 
     await this.authRepository.save(user);
 

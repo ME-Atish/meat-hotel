@@ -10,7 +10,7 @@ import {
 import { AuthRole } from './enums/auth-role.enum';
 import { AuthProvider } from './enums/auth-provider.enum';
 import { Place } from 'src/place/place.entity';
-import { Wallet } from 'src/wallet/walllet.entity';
+import { Wallet } from 'src/wallet/wallet.entity';
 import { Reserve } from 'src/reserve/reserve.entity';
 
 @Entity()

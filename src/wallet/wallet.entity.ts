@@ -14,7 +14,7 @@ export class Wallet {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unsigned: true })
+  @Column({ unsigned: true, default: 0 })
   amount: number;
 
   @OneToOne((_type) => User, (user) => user.wallet)
