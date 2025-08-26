@@ -1,9 +1,22 @@
-import { Controller, Delete, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { ReserveService } from './reserve.service';
+import { Reserve } from './reserve.entity';
 
 @Controller('reserve')
 export class ReserveController {
   constructor(private readonly reserveService: ReserveService) {}
+
+  @Get()
+  getAll(): Promise<Reserve[]> {
+    return this.reserveService.getAll();
+  }
 
   @Delete('/cancel/:id')
   cancelReservation(@Param('id') id: string): Promise<void> {

@@ -20,6 +20,11 @@ export class ReserveService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async getAll(): Promise<Reserve[]> {
+    const reserves = await this.reserveRepository.find();
+    return reserves;
+  }
+
   async reservePlace(placeId: string, userId: string): Promise<void> {
     const placeInfo = await this.placeRepository.findOne({
       where: { id: placeId },
