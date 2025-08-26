@@ -56,4 +56,38 @@ export class ReserveService {
 
     return;
   }
+
+  async cancelReservation(id: string): Promise<void> {
+    const findReservation = await this.reserveRepository.findOne({
+      where: { id },
+    });
+
+    if (!findReservation) throw new NotFoundException('Reservation not found');
+
+    const findPlaceForCancelReservation = await this.placeRepository.findOne({
+      where: { id: findReservation.place.id },
+    });
+
+    if (!findPlaceForCancelReservation)
+      throw new NotFoundException('Place not found');
+
+    await this.placeRepository.update(findPlaceForCancelReservation.id, {
+      isReserved: false,
+    });
+
+    const findUserForCancelReservation = await this.userRepository.findOne({
+      where: { id: findReservation.user.id },
+    });
+
+    if (!findUserForCancelReservation)
+      throw new NotFoundException('User not found');
+
+    await this.userRepository.update(findUserForCancelReservation.id, {
+      isReserved: false,
+    });
+
+    await this.reserveRepository.remove(findReservation);
+
+    return;
+  }
 }
