@@ -14,7 +14,7 @@ const isAdminMiddleware: RequestHandler = async (
 ) => {
   const typedReq = req as AuthenticationRequest;
 
-  if (!typedReq.cookies.refresh_token) {
+  if (!typedReq.cookies.refreshToken) {
     res.status(403).json({ message: "You have not access to this route" });
     return;
   }
@@ -26,7 +26,7 @@ const isAdminMiddleware: RequestHandler = async (
   let token: RefreshToken;
   try {
     token = jwt.verify(
-      typedReq.cookies.refresh_token,
+      typedReq.cookies.refreshToken,
       process.env.REFRESH_TOKEN_SECRET!
     ) as RefreshToken;
   } catch (err) {
