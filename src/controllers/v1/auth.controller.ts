@@ -125,6 +125,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(403).json({ message: "User not found" });
         return;
       }
+
+      const accessToken = generateAccessToken(user.dataValues.email)
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        maxAge: 15 * 60 * 1000 // 15 minutes
+      })
+      
       res.json({ message: "Login successfully" });
       return;
     }
@@ -138,14 +145,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const user = typedReq.user;
+    const { identifier, password } = req.body;
+
+    const user = await userModel.findOne({
+      where: {
+        [Op.or]: [
+          { email: identifier },
+          { username: identifier }
+        ]
+      }
+    })
+
+    if (!user) {
+      res.status(403).json({ message: 'User not found' })
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user?.dataValues.password)
+
+    if (!isPasswordValid) {
+      res.status(403).json({ message: "Password is not correct" })
+      return;
+    }
 
     const { rememberMe } = req.body;
 
     // Generate access token
-    const accessToken = generateAccessToken(user?.email);
+    const email = typedReq.user.email;
 
-    const email = user?.email;
+    const accessToken = generateAccessToken(email);
 
     // Find user for get user's refresh token
     const findUser = await userModel.findOne({
