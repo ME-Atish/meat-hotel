@@ -25,6 +25,12 @@ export class ReserveService {
     return reserves;
   }
 
+  async getOne(id: string): Promise<Reserve> {
+    const reserve = await this.reserveRepository.findOne({ where: { id } });
+    if (!reserve) throw new NotFoundException();
+    return reserve;
+  }
+
   async reservePlace(placeId: string, userId: string): Promise<void> {
     const placeInfo = await this.placeRepository.findOne({
       where: { id: placeId },

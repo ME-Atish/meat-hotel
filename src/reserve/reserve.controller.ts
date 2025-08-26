@@ -18,8 +18,13 @@ export class ReserveController {
     return this.reserveService.getAll();
   }
 
+  @Get('/:id')
+  getOne(@Param('id', ParseUUIDPipe) id: string): Promise<Reserve> {
+    return this.reserveService.getOne(id);
+  }
+
   @Delete('/cancel/:id')
-  cancelReservation(@Param('id') id: string): Promise<void> {
+  cancelReservation(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.reserveService.cancelReservation(id);
   }
 
