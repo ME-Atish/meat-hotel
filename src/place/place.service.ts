@@ -69,9 +69,7 @@ export class PlaceService {
       city,
     });
 
-    if (place.affected === 0) {
-      throw new NotFoundException('Place not found');
-    }
+    if (place.affected === 0) throw new NotFoundException('Place not found');
 
     return { message: 'Place updated successfully' };
   }
