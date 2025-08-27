@@ -48,7 +48,7 @@ export class User {
   @Column({ default: false })
   isBan: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   refreshToken: string;
 
   @Column({ default: 'local' })

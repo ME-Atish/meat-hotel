@@ -5,24 +5,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt-access-token.strategy';
+import { AccessTokenStrategy } from './strategies/jwt-access-token.strategy';
+import { RefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { Wallet } from 'src/wallet/wallet.entity';
+import { TokenModule } from 'src/tokens/token.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt-access-token' }),
-    JwtModule.register({
-      secret: process.env.ACCESS_TOKEN_SECRET || 'dpeqdjqejdqo',
-      signOptions: {
-        expiresIn: '15d',
-        algorithm: 'HS512',
-      },
-    }),
-
+    JwtModule.register({}),
+    TokenModule,
     TypeOrmModule.forFeature([User, Wallet]),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
   controllers: [AuthController],
-  exports: [JwtStrategy, PassportModule],
+  exports: [],
 })
 export class AuthModule {}

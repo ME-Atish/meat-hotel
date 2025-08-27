@@ -5,13 +5,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Wallet } from 'src/wallet/wallet.entity';
+import { TokenService } from 'src/tokens/token.service';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +23,7 @@ export class AuthService {
     private readonly authRepository: Repository<User>,
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async getAll(): Promise<User[]> {
@@ -57,7 +60,6 @@ export class AuthService {
       email,
       phone,
       password: hashPassword,
-      refreshToken: 'dpqwjdp',
     });
     await this.authRepository.save(user);
 
@@ -84,6 +86,17 @@ export class AuthService {
 
     if (!isPasswordValid) throw new UnauthorizedException();
 
-    return { message: 'Login successfully' };
+    const accessToken = await this.tokenService.accessToken(user);
+    const refreshToken = await this.tokenService.refreshToken(user);
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    user.refreshToken = hashedRefreshToken;
+    await this.authRepository.save(user);
+
+    return { accessToken, refreshToken };
+  }
+
+  async refreshToken(user: User): Promise<string> {
+    return await this.tokenService.refreshToken(user);
   }
 }

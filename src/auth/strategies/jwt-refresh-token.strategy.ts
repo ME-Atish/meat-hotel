@@ -8,16 +8,16 @@ import { User } from '../user.entity';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
-export class AccessTokenStrategy extends PassportStrategy(
+export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  'jwt-access',
+  'jwt-refresh',
 ) {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {
     super({
-      secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+      secretOrKey: process.env.REFRESH_TOKEN_SECRET,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
