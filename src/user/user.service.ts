@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from 'src/auth/user.entity';
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
+import { AuthRole } from 'src/auth/enums/auth-role.enum';
 @Injectable()
 export class UserService {
   constructor(
@@ -64,6 +65,18 @@ export class UserService {
       password: hashedPassword,
     });
 
+    return;
+  }
+
+  async changeRole(id: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) throw new NotFoundException();
+
+    const newRole =
+      user.role === AuthRole.ADMIN ? AuthRole.USER : AuthRole.ADMIN;
+
+    await this.userRepository.update(user.id, { role: newRole });
     return;
   }
 }
