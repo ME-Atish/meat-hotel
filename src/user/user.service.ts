@@ -32,4 +32,14 @@ export class UserService {
     await this.userRepository.update(user.id, { isBan: false });
     return;
   }
+
+  async removeUser(id: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) throw new NotFoundException();
+
+    await this.userRepository.remove(user);
+
+    return;
+  }
 }
