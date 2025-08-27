@@ -72,9 +72,11 @@ export class AuthService {
   async login(loginUserDto: LoginUserDto): Promise<object> {
     const { identifier, password } = loginUserDto;
 
-    const user = await this.authRepository.findOne({
-      where: [{ username: identifier }, { email: identifier }],
-    });
+    const user = await this.authRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('username = :identifier OR email = :identifier', { identifier })
+      .getOne();
 
     if (!user) throw new UnauthorizedException('username or email not found');
 
