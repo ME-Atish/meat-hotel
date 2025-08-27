@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { Place } from './place.entity';
-import { CreatePlaceDto } from 'src/auth/dto/create-place.dto';
+import { CreatePlaceDto } from 'src/place/dto/create-place.dto';
 
 @Controller('place')
 export class PlaceController {
