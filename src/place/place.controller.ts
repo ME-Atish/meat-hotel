@@ -7,15 +7,17 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import { Place } from './place.entity';
 import { CreatePlaceDto } from 'src/place/dto/create-place.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('place')
+@UseGuards(AuthGuard('jwt-access'))
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
-
   @Get()
   getAll(): Promise<Place[]> {
     return this.placeService.getAll();
