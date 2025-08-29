@@ -3,8 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  Param,
-  ParseUUIDPipe,
   Post,
   Req,
   UseGuards,
@@ -13,8 +11,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
-import { AccessTokenGuard } from './guards/access-token.guard';
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { AccessTokenGuard } from '../common/guards/access-token.guard';
+import { RefreshTokenGuard } from '../common/guards/refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {

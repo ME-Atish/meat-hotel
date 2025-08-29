@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { User } from '../user.entity';
+import { User } from '../../auth/user.entity';
 
 @Injectable()
 export class AccessTokenGuard extends AuthGuard('jwt-access') {
