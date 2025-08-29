@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Req,
 } from '@nestjs/common';
 import { ReserveService } from './reserve.service';
 import { Reserve } from './reserve.entity';
@@ -28,11 +29,12 @@ export class ReserveController {
     return this.reserveService.cancelReservation(id);
   }
 
-  @Post('/:placeId/:userId')
+  @Post('/:placeId')
   reservePlace(
+    @Req() req,
     @Param('placeId', ParseUUIDPipe) placeId: string,
-    @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<void> {
+    const userId = req.user.id;
     return this.reserveService.reservePlace(placeId, userId);
   }
 }
