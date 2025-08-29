@@ -93,7 +93,11 @@ export class PlaceService {
     if (!findUser)
       throw new NotFoundException('user not found. check access token');
 
-    const places = findUser.places;
+    const places = await this.placeRepository.find({
+      where: {
+        owner: { id: findUser.id },
+      },
+    });
 
     return places;
   }
