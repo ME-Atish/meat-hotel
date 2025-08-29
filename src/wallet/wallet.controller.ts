@@ -6,7 +6,7 @@ import { WalletAmountDto } from './dto/wallet-amount.dto';
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
-  @Post('/increase')
+  @Patch('/increase')
   increase(
     @Req() req,
     @Body() walletAmountDto: WalletAmountDto,
