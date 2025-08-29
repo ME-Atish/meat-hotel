@@ -43,7 +43,7 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('/refresh-token')
   @HttpCode(200)
-  refresh(@Req() req): Promise<string> {
+  refresh(@Req() req): Promise<{ accessToken: string }> {
     const user = req.user as User;
     return this.authService.refreshToken(user);
   }

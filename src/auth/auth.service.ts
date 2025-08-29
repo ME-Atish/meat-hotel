@@ -97,8 +97,9 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refreshToken(user: User): Promise<string> {
-    return await this.tokenService.accessToken(user);
+  async refreshToken(user: User): Promise<{ accessToken: string }> {
+    const accessToken = await this.tokenService.accessToken(user);
+    return { accessToken };
   }
 
   async logout(id: string): Promise<void> {
