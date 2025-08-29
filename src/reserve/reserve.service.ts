@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,6 +10,7 @@ import { Reserve } from './reserve.entity';
 import { Repository } from 'typeorm';
 import { Place } from 'src/place/place.entity';
 import { User } from 'src/auth/user.entity';
+import { Wallet } from 'src/wallet/wallet.entity';
 
 @Injectable()
 export class ReserveService {
@@ -18,6 +21,8 @@ export class ReserveService {
     private readonly placeRepository: Repository<Place>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
   ) {}
 
   async getAll(): Promise<Reserve[]> {
@@ -98,6 +103,66 @@ export class ReserveService {
     });
 
     await this.reserveRepository.remove(findReservation);
+
+    return;
+  }
+
+  async reservePlaceViaWallet(userId: string, placeId: string): Promise<void> {
+    const findUserWallet = await this.walletRepository.findOne({
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    if (!findUserWallet)
+      throw new NotFoundException(
+        'wallet not found. check registration process',
+      );
+
+    const findPlace = await this.placeRepository.findOne({
+      where: {
+        id: placeId,
+      },
+    });
+
+    if (!findPlace) throw new NotFoundException('place not found');
+    if (findPlace.isReserved)
+      throw new ConflictException('place already registered');
+
+    const findUser = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!findUser) throw new NotFoundException('user not found');
+    if (findUser.isReserved)
+      throw new ConflictException('user already reserved');
+
+    const walletBalance = findUserWallet.amount;
+    const placePrice = findPlace.price;
+
+    if (placePrice > walletBalance) {
+      throw new HttpException(
+        'Please charge wallet',
+        HttpStatus.PAYMENT_REQUIRED,
+      );
+    }
+
+    findPlace.isReserved = true;
+    findUser.isReserved = true;
+    findUserWallet.amount -= placePrice;
+
+    await this.placeRepository.save(findPlace);
+    await this.userRepository.save(findUser);
+    await this.walletRepository.save(findUserWallet);
+
+    const reserve = this.reserveRepository.create({
+      place: findPlace,
+      user: findUser,
+    });
+
+    await this.reserveRepository.save(reserve);
 
     return;
   }

@@ -6,9 +6,13 @@ import { ReserveService } from './reserve.service';
 import { ReserveController } from './reserve.controller';
 import { Place } from 'src/place/place.entity';
 import { User } from 'src/auth/user.entity';
+import { Wallet } from 'src/wallet/wallet.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reserve, Place, User]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([Reserve, Place, User, Wallet]),
+    AuthModule,
+  ],
   providers: [ReserveService],
   controllers: [ReserveController],
 })

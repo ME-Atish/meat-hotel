@@ -6,11 +6,14 @@ import {
   ParseUUIDPipe,
   Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ReserveService } from './reserve.service';
 import { Reserve } from './reserve.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('reserve')
+@UseGuards(AuthGuard('jwt-access'))
 export class ReserveController {
   constructor(private readonly reserveService: ReserveService) {}
 
@@ -36,5 +39,14 @@ export class ReserveController {
   ): Promise<void> {
     const userId = req.user.id;
     return this.reserveService.reservePlace(placeId, userId);
+  }
+
+  @Post('/via-wallet/:id')
+  reservePlaceViaWallet(
+    @Req() req,
+    @Param('id') placeId: string,
+  ): Promise<void> {
+    const userId = req.user.id;
+    return this.reserveService.reservePlaceViaWallet(userId, placeId);
   }
 }
