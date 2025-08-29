@@ -13,6 +13,8 @@ import { UserModule } from './user/user.module';
 import * as dotenv from 'dotenv';
 import { IsOwnerMiddleware } from './middleware/is-owner.middleware';
 import { PlaceController } from './place/place.controller';
+import { IsAdminMiddleware } from './middleware/is-admin.middleware';
+import { UserController } from './user/user.controller';
 dotenv.config();
 
 @Module({
@@ -43,5 +45,10 @@ export class AppModule implements NestModule {
         { path: '/:id', method: RequestMethod.GET },
       )
       .forRoutes(PlaceController);
+
+    consumer
+      .apply(IsAdminMiddleware)
+      .exclude({ path: '/:id', method: RequestMethod.PUT })
+      .forRoutes(UserController);
   }
 }

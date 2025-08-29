@@ -5,11 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import { AuthRole } from 'src/auth/enums/auth-role.enum';
+
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
-export class IsOwnerMiddleware implements NestMiddleware {
+export class IsAdminMiddleware implements NestMiddleware {
   constructor(private readonly userService: UserService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -35,7 +37,7 @@ export class IsOwnerMiddleware implements NestMiddleware {
     const user = await this.userService.getOne(payload.sub);
     if (!user) throw new UnauthorizedException('User not found');
 
-    if (!user.isOwner) {
+    if (user.role === AuthRole.USER) {
       throw new ForbiddenException('You do not have access to this route');
     }
 
