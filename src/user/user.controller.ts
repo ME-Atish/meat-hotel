@@ -7,12 +7,16 @@ import {
   ParseUUIDPipe,
   Patch,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/auth/user.entity';
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
+@UseGuards(AuthGuard('jwt-access'))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -37,10 +41,8 @@ export class UserController {
   }
 
   @Put('/:id')
-  updateInfo(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<void> {
+  updateInfo(@Req() req, @Body() createUserDto: CreateUserDto): Promise<void> {
+    const id = req.user.id;
     return this.userService.updateInfo(id, createUserDto);
   }
 

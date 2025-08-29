@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Patch, Post, Req } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { WalletAmountDto } from './dto/wallet-amount.dto';
 
@@ -13,19 +6,21 @@ import { WalletAmountDto } from './dto/wallet-amount.dto';
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
-  @Post('/increase/:userId')
+  @Post('/increase')
   increase(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Req() req,
     @Body() walletAmountDto: WalletAmountDto,
   ): Promise<void> {
+    const userId = req.user.id;
     return this.walletService.increase(userId, walletAmountDto);
   }
 
-  @Patch('/decrease/:userId')
+  @Patch('/decrease')
   decrease(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Req() req,
     @Body() walletAmountDto: WalletAmountDto,
   ): Promise<void> {
+    const userId = req.user.id;
     return this.walletService.decrease(userId, walletAmountDto);
   }
 }
