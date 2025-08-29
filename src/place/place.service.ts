@@ -84,4 +84,17 @@ export class PlaceService {
 
     return { message: 'Place updated successfully' };
   }
+
+  async getOwnerPlaces(userId: string): Promise<Place[]> {
+    const findUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!findUser)
+      throw new NotFoundException('user not found. check access token');
+
+    const places = findUser.places;
+
+    return places;
+  }
 }

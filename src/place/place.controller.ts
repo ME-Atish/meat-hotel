@@ -24,6 +24,12 @@ export class PlaceController {
     return this.placeService.getAll();
   }
 
+  @Get('/owner-places')
+  getOwnerPlaces(@Req() req): Promise<Place[]> {
+    const userId = req.user.id;
+    return this.placeService.getOwnerPlaces(userId);
+  }
+
   @Get('/:id')
   getOne(@Param('id', ParseUUIDPipe) id: string): Promise<Place> {
     return this.placeService.getOne(id);
