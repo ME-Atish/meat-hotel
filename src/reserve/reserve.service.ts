@@ -94,7 +94,6 @@ export class ReserveService {
     const findUserForCancelReservation = await this.userRepository.findOne({
       where: { id: findReservation.user.id },
     });
-
     if (!findUserForCancelReservation)
       throw new NotFoundException('User not found');
 
@@ -102,6 +101,20 @@ export class ReserveService {
       isReserved: false,
     });
 
+    const placePrice = findPlaceForCancelReservation.price;
+    const penalty = Math.floor(placePrice * 0.8);
+
+    const userWallet = await this.walletRepository.findOne({
+      where: {
+        user: { id: findUserForCancelReservation.id },
+      },
+    });
+    console.log(userWallet);
+    if (!userWallet)
+      throw new NotFoundException('Wallet not found. It is internal err');
+
+    userWallet.amount += penalty;
+    await this.walletRepository.save(userWallet);
     await this.reserveRepository.remove(findReservation);
 
     return;
