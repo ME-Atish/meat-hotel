@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Place } from './place.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePlaceDto } from 'src/place/dto/create-place.dto';
@@ -96,5 +96,25 @@ export class PlaceService {
     const places = findUser.places;
 
     return places;
+  }
+
+  async getOneOwnerPlace(userId: string, placeId: string): Promise<Place> {
+    const findUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!findUser)
+      throw new NotFoundException('user not found. check access token');
+
+    const place = await this.placeRepository.findOne({
+      where: {
+        owner: { id: findUser.id },
+        id: placeId,
+      },
+    });
+
+    if (!place) throw new NotFoundException('Place not found');
+
+    return place;
   }
 }
