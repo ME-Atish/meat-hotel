@@ -19,6 +19,7 @@ import { Wallet } from 'src/wallet/wallet.entity';
 import { TokenService } from 'src/tokens/token.service';
 import { EmailValidatorDto } from './dto/email-valiadtor.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { GenerateRandomCode } from 'src/utils/generate-random-code';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
     private readonly walletRepository: Repository<Wallet>,
     private readonly tokenService: TokenService,
     private readonly mailService: MailerService,
+    private readonly generateRandomCode: GenerateRandomCode,
   ) {}
 
   async getAll(): Promise<User[]> {
@@ -126,11 +128,12 @@ export class AuthService {
 
     if (!findUser) return;
 
+    const code = this.generateRandomCode.randomCode();
     await this.mailService.sendMail({
       subject: `You're code to login`,
       from: `${process.env.EMAIL}`,
       to,
-      text: '123',
+      text: code,
     });
     return;
   }

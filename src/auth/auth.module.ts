@@ -10,6 +10,7 @@ import { RefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { Wallet } from 'src/wallet/wallet.entity';
 import { TokenModule } from 'src/tokens/token.module';
 import { AccessTokenGuard } from '../common/guards/access-token.guard';
+import { GenerateRandomCode } from 'src/utils/generate-random-code';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AccessTokenGuard } from '../common/guards/access-token.guard';
     AccessTokenStrategy,
     RefreshTokenStrategy,
     AccessTokenGuard,
+    GenerateRandomCode,
   ],
   controllers: [AuthController],
   exports: [],
