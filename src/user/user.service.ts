@@ -18,6 +18,17 @@ export class UserService {
     return users;
   }
 
+  async getOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) throw new NotFoundException();
+    return user;
+  }
+
   async banUser(id: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id } });
 

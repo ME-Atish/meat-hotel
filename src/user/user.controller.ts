@@ -25,6 +25,11 @@ export class UserController {
     return this.userService.getAll();
   }
 
+  @Get('/:id')
+  getOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+    return this.userService.getOne(id);
+  }
+
   @Patch('/:id/ban')
   banUser(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.userService.banUser(id);
