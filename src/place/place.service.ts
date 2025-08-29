@@ -3,12 +3,15 @@ import { Repository } from 'typeorm';
 import { Place } from './place.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePlaceDto } from 'src/place/dto/create-place.dto';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class PlaceService {
   constructor(
     @InjectRepository(Place)
     private readonly placeRepository: Repository<Place>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async getAll(): Promise<Place[]> {
@@ -23,7 +26,7 @@ export class PlaceService {
     return place;
   }
 
-  async create(createPlaceDto: CreatePlaceDto): Promise<void> {
+  async create(createPlaceDto: CreatePlaceDto, id: string): Promise<void> {
     const { name, address, description, facilities, price, province, city } =
       createPlaceDto;
 
@@ -36,6 +39,14 @@ export class PlaceService {
       province,
       city,
     });
+
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user)
+      throw new NotFoundException('user not found, please check access token');
+
+    await this.userRepository.update(user.id, { isOwner: true });
+
+    createPlace.owner = user;
 
     await this.placeRepository.save(createPlace);
 

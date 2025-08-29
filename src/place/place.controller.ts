@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
@@ -29,8 +30,9 @@ export class PlaceController {
   }
 
   @Post()
-  create(@Body() createPlaceDto: CreatePlaceDto): Promise<void> {
-    return this.placeService.create(createPlaceDto);
+  create(@Body() createPlaceDto: CreatePlaceDto, @Req() req): Promise<void> {
+    const id = req.user.id;
+    return this.placeService.create(createPlaceDto, id);
   }
 
   @Delete('/:id')
