@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -16,6 +17,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Wallet } from 'src/wallet/wallet.entity';
 import { TokenService } from 'src/tokens/token.service';
+import { EmailValidatorDto } from './dto/email-valiadtor.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +28,7 @@ export class AuthService {
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
     private readonly tokenService: TokenService,
+    private readonly mailService: MailerService,
   ) {}
 
   async getAll(): Promise<User[]> {
@@ -108,6 +112,26 @@ export class AuthService {
     if (!user) throw new NotFoundException();
 
     await this.authRepository.update(user.id, { refreshToken: null as any });
+    return;
+  }
+
+  async loginWithEmail(emailValidatorDto: EmailValidatorDto): Promise<void> {
+    const { to } = emailValidatorDto;
+
+    const findUser = await this.authRepository.findOne({
+      where: {
+        email: to,
+      },
+    });
+
+    if (!findUser) return;
+
+    await this.mailService.sendMail({
+      subject: `You're code to login`,
+      from: `${process.env.EMAIL}`,
+      to,
+      text: '123',
+    });
     return;
   }
 }

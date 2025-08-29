@@ -15,6 +15,7 @@ import { IsOwnerMiddleware } from './middleware/is-owner.middleware';
 import { PlaceController } from './place/place.controller';
 import { IsAdminMiddleware } from './middleware/is-admin.middleware';
 import { UserController } from './user/user.controller';
+import { MailerModule } from '@nestjs-modules/mailer';
 dotenv.config();
 
 @Module({
@@ -29,6 +30,18 @@ dotenv.config();
       autoLoadEntities: true,
       synchronize: true,
     }),
+
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        host: `${process.env.EMAIL_HOST}`,
+        auth: {
+          user: `${process.env.EMAIL}`,
+          pass: `${process.env.EMAIL_PASSWORD}`,
+        },
+      },
+    }),
+
     AuthModule,
     PlaceModule,
     WalletModule,
