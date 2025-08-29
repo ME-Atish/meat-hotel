@@ -26,7 +26,11 @@ export class PlaceService {
     return place;
   }
 
-  async create(createPlaceDto: CreatePlaceDto, id: string): Promise<void> {
+  async create(
+    createPlaceDto: CreatePlaceDto,
+    id: string,
+    originalname: string,
+  ): Promise<void> {
     const { name, address, description, facilities, price, province, city } =
       createPlaceDto;
 
@@ -38,6 +42,7 @@ export class PlaceService {
       price,
       province,
       city,
+      image: originalname,
     });
 
     const user = await this.userRepository.findOne({ where: { id } });
@@ -71,6 +76,7 @@ export class PlaceService {
     userId: string,
     placeId: string,
     createPlaceDto: CreatePlaceDto,
+    originalname,
   ): Promise<void> {
     const { name, address, description, facilities, price, province, city } =
       createPlaceDto;
@@ -92,6 +98,7 @@ export class PlaceService {
       price,
       province,
       city,
+      image: originalname,
     });
 
     if (place.affected === 0) throw new NotFoundException();
