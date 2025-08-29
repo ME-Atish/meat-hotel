@@ -14,6 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { RefreshTokenGuard } from '../common/guards/refresh-token.guard';
 import { EmailValidatorDto } from './dto/email-valiadtor.dto';
+import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -57,8 +58,15 @@ export class AuthController {
     return this.authService.logout(user.id);
   }
 
-  @Get('/login-with-email')
+  @Post('/login-with-email')
   loginWithEmail(@Body() emailValidatorDto: EmailValidatorDto): Promise<void> {
     return this.authService.loginWithEmail(emailValidatorDto);
+  }
+
+  @Post('/verify-email-code')
+  verifyEmailCode(
+    @Body() verifyEmailCodeDto: VerifyEmailCodeDto,
+  ): Promise<object> {
+    return this.authService.verifyCode(verifyEmailCodeDto);
   }
 }

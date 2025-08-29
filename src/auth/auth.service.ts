@@ -1,6 +1,7 @@
 import {
-  BadRequestException,
   ConflictException,
+  ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -20,6 +21,8 @@ import { TokenService } from 'src/tokens/token.service';
 import { EmailValidatorDto } from './dto/email-valiadtor.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { GenerateRandomCode } from 'src/utils/generate-random-code';
+import Redis from 'ioredis';
+import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +31,7 @@ export class AuthService {
     private readonly authRepository: Repository<User>,
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
     private readonly tokenService: TokenService,
     private readonly mailService: MailerService,
     private readonly generateRandomCode: GenerateRandomCode,
@@ -129,6 +133,8 @@ export class AuthService {
     if (!findUser) return;
 
     const code = this.generateRandomCode.randomCode();
+    await this.redis.set(`login-code:${to}`, code, 'EX', 60 * 5);
+
     await this.mailService.sendMail({
       subject: `You're code to login`,
       from: `${process.env.EMAIL}`,
@@ -136,5 +142,30 @@ export class AuthService {
       text: code,
     });
     return;
+  }
+
+  async verifyCode(verifyEmailCodeDto: VerifyEmailCodeDto): Promise<object> {
+    const { to, code } = verifyEmailCodeDto;
+
+    const user = await this.authRepository.findOne({ where: { email: to } });
+    if (!user) throw new ForbiddenException('please try again');
+
+    const storedCode = await this.redis.get(`login-code:${to}`);
+
+    if (storedCode === code) {
+      const accessToken = await this.tokenService.accessToken(user);
+      const refreshToken = await this.tokenService.refreshToken(user);
+
+      user.refreshToken = refreshToken;
+      await this.authRepository.save(user);
+
+      await this.redis.del(`login-code:${to}`);
+      return {
+        accessToken,
+        refreshToken,
+      };
+    }
+
+    throw new ForbiddenException('code is mismatch');
   }
 }

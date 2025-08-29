@@ -16,6 +16,7 @@ import { PlaceController } from './place/place.controller';
 import { IsAdminMiddleware } from './middleware/is-admin.middleware';
 import { UserController } from './user/user.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { RedisModule } from './redis/redis.module';
 dotenv.config();
 
 @Module({
@@ -47,6 +48,7 @@ dotenv.config();
     WalletModule,
     ReserveModule,
     UserModule,
+    RedisModule,
   ],
 })
 export class AppModule implements NestModule {
