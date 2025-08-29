@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -98,5 +99,14 @@ export class AuthService {
 
   async refreshToken(user: User): Promise<string> {
     return await this.tokenService.accessToken(user);
+  }
+
+  async logout(id: string): Promise<void> {
+    const user = await this.authRepository.findOne({ where: { id } });
+
+    if (!user) throw new NotFoundException();
+
+    await this.authRepository.update(user.id, { refreshToken: null as any });
+    return;
   }
 }

@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -37,5 +47,13 @@ export class AuthController {
   refresh(@Req() req): Promise<string> {
     const user = req.user as User;
     return this.authService.refreshToken(user);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('/logout')
+  @HttpCode(204)
+  logout(@Req() req): Promise<void> {
+    const user: User = req.user;
+    return this.authService.logout(user.id);
   }
 }

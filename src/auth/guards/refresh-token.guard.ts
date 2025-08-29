@@ -28,6 +28,8 @@ export class RefreshTokenGuard extends AuthGuard('jwt-refresh') {
     const req = request as Request & { user: User };
     const user = req.user;
 
+    if (!user.refreshToken) return false;
+
     const isValid = await bcrypt.compare(token, user.refreshToken);
     if (!isValid) throw new UnauthorizedException('Refresh token mismatch');
 
