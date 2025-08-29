@@ -97,6 +97,6 @@ export class AuthService {
   }
 
   async refreshToken(user: User): Promise<string> {
-    return await this.tokenService.refreshToken(user);
+    return await this.tokenService.accessToken(user);
   }
 }

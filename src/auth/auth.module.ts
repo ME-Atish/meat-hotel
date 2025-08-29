@@ -9,15 +9,21 @@ import { AccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 import { RefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { Wallet } from 'src/wallet/wallet.entity';
 import { TokenModule } from 'src/tokens/token.module';
+import { AccessTokenGuard } from './guards/access-token.guard';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt-access-token' }),
+    PassportModule.register({ defaultStrategy: 'jwt-access' }),
     JwtModule.register({}),
     TokenModule,
     TypeOrmModule.forFeature([User, Wallet]),
   ],
-  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    AccessTokenGuard,
+  ],
   controllers: [AuthController],
   exports: [],
 })

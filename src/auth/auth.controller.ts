@@ -15,6 +15,13 @@ export class AuthController {
     return this.authService.getAll();
   }
 
+  @UseGuards(AccessTokenGuard)
+  @Get('/me')
+  getMe(@Req() req): User {
+    const user: User = req.user;
+    return user;
+  }
+
   @Post('/register')
   register(@Body() createUserDto: CreateUserDto): Promise<void> {
     return this.authService.register(createUserDto);
