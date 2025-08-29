@@ -53,24 +53,38 @@ export class PlaceService {
     return;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(userId: string, placeId: string): Promise<void> {
     const findPlaceToRemove = await this.placeRepository.findOne({
       where: {
-        id,
+        id: placeId,
+        owner: { id: userId },
       },
     });
 
     if (!findPlaceToRemove) throw new NotFoundException();
 
-    await this.placeRepository.delete(id);
+    await this.placeRepository.delete(placeId);
     return;
   }
 
-  async update(id: string, createPlaceDto: CreatePlaceDto): Promise<object> {
+  async update(
+    userId: string,
+    placeId: string,
+    createPlaceDto: CreatePlaceDto,
+  ): Promise<void> {
     const { name, address, description, facilities, price, province, city } =
       createPlaceDto;
 
-    const place = await this.placeRepository.update(id, {
+    const findPlaceToUpdate = await this.placeRepository.findOne({
+      where: {
+        id: placeId,
+        owner: { id: userId },
+      },
+    });
+
+    if (!findPlaceToUpdate) throw new NotFoundException();
+
+    const place = await this.placeRepository.update(placeId, {
       name,
       address,
       description,
@@ -80,9 +94,9 @@ export class PlaceService {
       city,
     });
 
-    if (place.affected === 0) throw new NotFoundException('Place not found');
+    if (place.affected === 0) throw new NotFoundException();
 
-    return { message: 'Place updated successfully' };
+    return;
   }
 
   async getOwnerPlaces(userId: string): Promise<Place[]> {

@@ -51,15 +51,21 @@ export class PlaceController {
   }
 
   @Delete('/:id')
-  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.placeService.remove(id);
+  remove(
+    @Req() req,
+    @Param('id', ParseUUIDPipe) placeId: string,
+  ): Promise<void> {
+    const userId = req.user.id;
+    return this.placeService.remove(userId, placeId);
   }
 
   @Put('/:id')
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req,
+    @Param('id', ParseUUIDPipe) placeId: string,
     @Body() createPlaceDto: CreatePlaceDto,
-  ): Promise<object> {
-    return this.placeService.update(id, createPlaceDto);
+  ): Promise<void> {
+    const userId = req.user.id;
+    return this.placeService.update(userId, placeId, createPlaceDto);
   }
 }
