@@ -40,12 +40,12 @@ passport.use("accessToken", accessTokenStrategy);
 passport.use("refreshToken", refreshTokenStrategy)
 passport.use(googleStrategy)
 
-app.use("/v1/auth", authRouter);
-app.use("/v1/user", userRouter);
-app.use("/v1/place", placeRouter);
-app.use("/v1/search", searchRouter);
-app.use("/v1/wallet", walletRouter);
-app.use("/v1/owner", ownerRouter);
+app.use(`/v${process.env.VERSION}/auth`, authRouter);
+app.use(`/v${process.env.VERSION}/user`, userRouter);
+app.use(`/v${process.env.VERSION}/place`, placeRouter);
+app.use(`/v${process.env.VERSION}/search`, searchRouter);
+app.use(`/v${process.env.VERSION}/wallet`, walletRouter);
+app.use(`/v${process.env.VERSION}/owner`, ownerRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
