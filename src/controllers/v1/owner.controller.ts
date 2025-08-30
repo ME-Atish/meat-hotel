@@ -35,7 +35,7 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!owner) {
-      res.status(403).json({ message: "Owner not found" });
+      res.status(404).json({ message: "Owner not found" });
       return;
     }
 
@@ -60,13 +60,13 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!findUser?.dataValues) {
-      res.status(403).json({ message: "User not found" });
+      res.status(401).json({ message: "User not found" });
       return;
     }
 
     // check if user already owner or not
     if (findUser.dataValues.isOwner) {
-      res.status(403).json({ message: "You are already owner" });
+      res.status(400).json({ message: "You are already owner" });
       return;
     }
 
@@ -97,7 +97,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!findUser?.dataValues) {
-      res.status(403).json({ message: "owner not found" });
+      res.status(404).json({ message: "owner not found" });
       return;
     }
 

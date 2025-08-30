@@ -30,7 +30,7 @@ const isAdminMiddleware: RequestHandler = async (
       process.env.REFRESH_TOKEN_SECRET!
     ) as RefreshToken;
   } catch (err) {
-    res.status(403).json({ message: "Invalid or expired token" });
+    res.status(400).json({ message: "Invalid or expired token" });
     return;
   }
 
@@ -41,7 +41,7 @@ const isAdminMiddleware: RequestHandler = async (
   });
 
   if (!user) {
-    res.status(403).json({ message: "User not found" });
+    res.status(401).json({ message: "User not found" });
     return;
   }
 

@@ -32,7 +32,7 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!place) {
-      res.status(403).json({ message: "Place not found" });
+      res.status(404).json({ message: "Place not found" });
       return;
     }
 
@@ -90,7 +90,7 @@ export const getOneOwnerPlace = async (
     });
 
     if (!place) {
-      res.status(403).json({ message: "Place not found" });
+      res.status(404).json({ message: "Place not found" });
       return;
     }
 
@@ -155,7 +155,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!deletePlace) {
-      res.status(403).json({ message: "The place not found" });
+      res.status(404).json({ message: "The place not found" });
       return;
     }
 
@@ -196,7 +196,7 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!findPlace?.dataValues) {
-      res.status(403).json({ message: "Place or villa not found" });
+      res.status(404).json({ message: "Place or villa not found" });
       return;
     }
 
@@ -313,7 +313,7 @@ export const cancelReservation = async (
     });
 
     if (!findReservation?.dataValues) {
-      res.status(403).json({ message: "Reservation not found" });
+      res.status(404).json({ message: "Reservation not found" });
       return;
     }
 
@@ -325,7 +325,7 @@ export const cancelReservation = async (
     });
 
     if (!findPlaceForCancelReservation?.dataValues) {
-      res.status(403).json({ message: "Place not found" });
+      res.status(404).json({ message: "Place not found" });
       return;
     }
     if (findPlaceForCancelReservation?.dataValues) {
@@ -342,7 +342,7 @@ export const cancelReservation = async (
     });
 
     if (!cancelUserReservationResult) {
-      res.status(403).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
       return;
     }
     if (cancelUserReservationResult?.dataValues) {
@@ -405,7 +405,7 @@ export const reserveViaWallet = async (
 
     if (!findUserWallet?.dataValues) {
       res
-        .status(403)
+        .status(404)
         .json({ message: "Wallet not found; Check registration process" });
       return;
     }
@@ -419,7 +419,7 @@ export const reserveViaWallet = async (
     });
 
     if (!findPlace?.dataValues) {
-      res.status(403).json({ message: "Place not found" });
+      res.status(404).json({ message: "Place not found" });
       return;
     }
 
@@ -435,7 +435,7 @@ export const reserveViaWallet = async (
     });
 
     if (!findUser?.dataValues) {
-      res.status(403).json({ message: "User not found!" });
+      res.status(401).json({ message: "User not found!" });
       return;
     }
 
@@ -514,7 +514,7 @@ export const getOneReserve = async (
     });
 
     if (!findReserve?.dataValues) {
-      res.status(403).json({ message: "reserve not found" });
+      res.status(404).json({ message: "reserve not found" });
       return;
     }
 

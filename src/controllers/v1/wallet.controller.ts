@@ -27,7 +27,7 @@ export const increase = async (req: Request, res: Response): Promise<void> => {
 
     if (!findUserWallet?.dataValues) {
       res
-        .status(403)
+        .status(401)
         .json({ message: "Wallet not found. Maybe user id is not correct" });
     }
 

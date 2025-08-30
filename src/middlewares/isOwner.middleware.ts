@@ -29,7 +29,7 @@ const isOwnerMiddleware: RequestHandler = async (
     ) as RefreshToken;
 
     if (!token) {
-      res.status(403).json({ message: "Invalid or expired token" });
+      res.status(401).json({ message: "Invalid or expired token" });
     }
 
     const user = await userModel.findOne({
@@ -39,7 +39,7 @@ const isOwnerMiddleware: RequestHandler = async (
     });
 
     if (!user) {
-      res.status(403).json({ message: "user not found" });
+      res.status(401).json({ message: "user not found" });
       return;
     }
 

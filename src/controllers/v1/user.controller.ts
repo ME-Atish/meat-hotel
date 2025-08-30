@@ -50,7 +50,7 @@ export const banUser = async (req: Request, res: Response): Promise<void> => {
       },
     });
     if (!mainUser?.dataValues) {
-      res.status(403).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
       return;
     }
     // Ban user process
@@ -88,7 +88,7 @@ export const unBanUser = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!user?.dataValues) {
-      res.status(403).json({
+      res.status(404).json({
         message: "User not found",
       });
       return;
@@ -127,7 +127,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!findUser?.dataValues) {
-      res.status(403).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
       return;
     }
 
@@ -183,7 +183,7 @@ export const updateInfo = async (
     });
 
     if (!findUser?.dataValues) {
-      res.status(403).json({
+      res.status(401).json({
         message: "User not found",
       });
     }
@@ -240,7 +240,7 @@ export const changeRole = async (
     });
 
     if (!user?.dataValues) {
-      res.status(403).json({ message: "User not found" });
+      res.status(400).json({ message: "User not found" });
       return;
     }
     // If user's role is admin, it change to user and on the contrary

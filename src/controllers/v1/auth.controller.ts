@@ -59,7 +59,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (isUserExist?.dataValues) {
-      res.status(403).json({ message: "The username or email already exist" });
+      res.status(400).json({ message: "The username or email already exist" });
       return;
     }
     // hash password
@@ -122,7 +122,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
       if (!user?.dataValues) {
         res.clearCookie("rememberMe_token");
-        res.status(403).json({ message: "User not found" });
+        res.status(401).json({ message: "User not found" });
         return;
       }
 
@@ -157,13 +157,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     })
 
     if (!user) {
-      res.status(403).json({ message: 'User not found' })
+      res.status(401).json({ message: 'User not found' })
     }
 
     const isPasswordValid = await bcrypt.compare(password, user?.dataValues.password)
 
     if (!isPasswordValid) {
-      res.status(403).json({ message: "Password is not correct" })
+      res.status(401).json({ message: "Password is not correct" })
       return;
     }
 
@@ -304,7 +304,7 @@ export const verifyEmailCode = async (
     });
 
     if (!findUser?.dataValues) {
-      res.status(403).json({ message: "Please try again" });
+      res.status(401).json({ message: "Please try again" });
       return;
     }
 
@@ -339,7 +339,7 @@ export const verifyEmailCode = async (
 
       res.status(200).json({ message: "Login successfully" });
     } else {
-      res.status(403).json({ message: "Code is invalid" });
+      res.status(400).json({ message: "Code is invalid" });
     }
   } catch (error) {
     if (error) {
@@ -364,7 +364,7 @@ export const refreshToken = async (
     // Check if refresh token is exist or not (in cookie)
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      res.status(401).json({ message: "The refresh token expired" });
+      res.status(400).json({ message: "The refresh token expired" });
       return;
     }
     // Find user with refresh token
@@ -375,7 +375,7 @@ export const refreshToken = async (
     });
 
     if (!user?.dataValues) {
-      res.status(403).json({ message: "User not found" });
+      res.status(401).json({ message: "User not found" });
       return;
     }
     // Verifying refresh token
