@@ -27,10 +27,10 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column({ select: false })
+  @Column({ select: false, nullable: true })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column({ unique: true })

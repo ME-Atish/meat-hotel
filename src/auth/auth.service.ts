@@ -31,7 +31,8 @@ export class AuthService {
     private readonly authRepository: Repository<User>,
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
-    @Inject('REDIS_CLIENT') private readonly redis: Redis,
+    @Inject('REDIS_CLIENT')
+    private readonly redis: Redis,
     private readonly tokenService: TokenService,
     private readonly mailService: MailerService,
     private readonly generateRandomCode: GenerateRandomCode,
@@ -167,5 +168,15 @@ export class AuthService {
     }
 
     throw new ForbiddenException('code is mismatch');
+  }
+
+  googleLogin(user: User): object {
+    const accessToken = this.tokenService.accessToken(user);
+    const refreshToken = this.tokenService.refreshToken(user);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

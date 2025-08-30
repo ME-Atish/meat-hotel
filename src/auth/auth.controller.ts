@@ -15,6 +15,7 @@ import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { RefreshTokenGuard } from '../common/guards/refresh-token.guard';
 import { EmailValidatorDto } from './dto/email-valiadtor.dto';
 import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +31,17 @@ export class AuthController {
   getMe(@Req() req): User {
     const user: User = req.user;
     return user;
+  }
+
+  @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {}
+
+  @Get('/google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleAuthCallback(@Req() req) {
+    const user = req.user;
+    return this.authService.googleLogin(user);
   }
 
   @Post('/register')
