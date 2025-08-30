@@ -7,6 +7,8 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -15,7 +17,6 @@ import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { RefreshTokenGuard } from '../common/guards/refresh-token.guard';
 import { EmailValidatorDto } from './dto/email-validator.dto';
 import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller(`v${process.env.VERSION}/auth`)
 export class AuthController {

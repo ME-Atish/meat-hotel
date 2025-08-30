@@ -8,9 +8,10 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
 import { ReserveService } from './reserve.service';
 import { Reserve } from './reserve.entity';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller(`v${process.env.VERSION}/reserve`)
 @UseGuards(AuthGuard('jwt-access'))

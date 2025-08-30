@@ -5,8 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
+
 import { UserService } from 'src/user/user.service';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class IsOwnerMiddleware implements NestMiddleware {

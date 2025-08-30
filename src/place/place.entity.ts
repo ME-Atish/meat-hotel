@@ -1,5 +1,3 @@
-import { User } from 'src/auth/user.entity';
-import { Reserve } from 'src/reserve/reserve.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { User } from 'src/auth/user.entity';
+import { Reserve } from 'src/reserve/reserve.entity';
 
 @Entity()
 export class Place {

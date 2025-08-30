@@ -12,11 +12,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 import { PlaceService } from './place.service';
 import { Place } from './place.entity';
 import { CreatePlaceDto } from 'src/place/dto/create-place.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationPipe } from 'src/common/pipe/file-validation.pipe';
 
 @Controller(`v${process.env.VERSION}/place`)

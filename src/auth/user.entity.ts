@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { AuthRole } from './enums/auth-role.enum';
 import { AuthProvider } from './enums/auth-provider.enum';
 import { Place } from 'src/place/place.entity';

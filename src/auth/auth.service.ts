@@ -9,6 +9,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import Redis from 'ioredis';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -19,9 +21,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { Wallet } from 'src/wallet/wallet.entity';
 import { TokenService } from 'src/tokens/token.service';
 import { EmailValidatorDto } from './dto/email-validator.dto';
-import { MailerService } from '@nestjs-modules/mailer';
 import { GenerateRandomCode } from 'src/utils/generate-random-code';
-import Redis from 'ioredis';
 import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
 
 @Injectable()

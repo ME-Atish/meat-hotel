@@ -5,18 +5,20 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
+import { MailerModule } from '@nestjs-modules/mailer';
+
 import { AuthModule } from './auth/auth.module';
 import { WalletModule } from './wallet/wallet.module';
 import { PlaceModule } from './place/place.module';
 import { ReserveModule } from './reserve/reserve.module';
 import { UserModule } from './user/user.module';
-import * as dotenv from 'dotenv';
 import { IsOwnerMiddleware } from './middleware/is-owner.middleware';
 import { PlaceController } from './place/place.controller';
 import { IsAdminMiddleware } from './middleware/is-admin.middleware';
 import { UserController } from './user/user.controller';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { RedisModule } from './redis/redis.module';
+
 dotenv.config();
 
 @Module({

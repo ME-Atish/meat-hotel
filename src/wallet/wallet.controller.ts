@@ -1,7 +1,8 @@
 import { Body, Controller, Patch, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
 import { WalletService } from './wallet.service';
 import { WalletAmountDto } from './dto/wallet-amount.dto';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller(`v${process.env.VERSION}/wallet`)
 @UseGuards(AuthGuard('jwt-access'))

@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/auth/user.entity';
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 import { AuthRole } from 'src/auth/enums/auth-role.enum';
+
 @Injectable()
 export class UserService {
   constructor(

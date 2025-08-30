@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AuthRole } from 'src/auth/enums/auth-role.enum';
 
+import { AuthRole } from 'src/auth/enums/auth-role.enum';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()

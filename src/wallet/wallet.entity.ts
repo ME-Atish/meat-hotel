@@ -1,4 +1,3 @@
-import { User } from 'src/auth/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { User } from 'src/auth/user.entity';
 
 @Entity()
 export class Wallet {
