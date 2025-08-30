@@ -91,5 +91,23 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@nestjs/core",
+      "@nestjs/core",
+      "@scarf/scarf",
+      "@scarf/scarf",
+      "bcrypt",
+      "bcrypt",
+      "unrs-resolver",
+      "unrs-resolver"
+    ],
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@scarf/scarf",
+      "bcrypt",
+      "unrs-resolver"
+    ]
   }
 }
