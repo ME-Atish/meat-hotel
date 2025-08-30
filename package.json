@@ -1,10 +1,10 @@
 {
   "name": "meat-place",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "2.0.0",
+  "description": "A platform for booking and mange places for rent or reserve",
+  "author": "Mohammad Erfan Atashrou <meatish2008@gmail.com>",
+  "private": "false",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
