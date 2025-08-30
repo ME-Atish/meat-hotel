@@ -13,7 +13,7 @@ import { User } from './user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { RefreshTokenGuard } from '../common/guards/refresh-token.guard';
-import { EmailValidatorDto } from './dto/email-valiadtor.dto';
+import { EmailValidatorDto } from './dto/email-validator.dto';
 import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
 import { AuthGuard } from '@nestjs/passport';
 

@@ -18,7 +18,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Wallet } from 'src/wallet/wallet.entity';
 import { TokenService } from 'src/tokens/token.service';
-import { EmailValidatorDto } from './dto/email-valiadtor.dto';
+import { EmailValidatorDto } from './dto/email-validator.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { GenerateRandomCode } from 'src/utils/generate-random-code';
 import Redis from 'ioredis';
