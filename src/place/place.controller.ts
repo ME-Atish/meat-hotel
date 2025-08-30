@@ -19,7 +19,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationPipe } from 'src/common/pipe/file-validation.pipe';
 
-@Controller('place')
+@Controller(`v${process.env.VERSION}/place`)
 @UseGuards(AuthGuard('jwt-access'))
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}

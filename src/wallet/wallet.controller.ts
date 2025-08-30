@@ -1,9 +1,9 @@
-import { Body, Controller, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Patch, Req, UseGuards } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { WalletAmountDto } from './dto/wallet-amount.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('wallet')
+@Controller(`v${process.env.VERSION}/wallet`)
 @UseGuards(AuthGuard('jwt-access'))
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}

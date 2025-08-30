@@ -12,7 +12,7 @@ import { ReserveService } from './reserve.service';
 import { Reserve } from './reserve.entity';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('reserve')
+@Controller(`v${process.env.VERSION}/reserve`)
 @UseGuards(AuthGuard('jwt-access'))
 export class ReserveController {
   constructor(private readonly reserveService: ReserveService) {}

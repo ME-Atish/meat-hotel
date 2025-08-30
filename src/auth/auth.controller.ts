@@ -17,7 +17,7 @@ import { EmailValidatorDto } from './dto/email-valiadtor.dto';
 import { VerifyEmailCodeDto } from './dto/verify-email-code.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('auth')
+@Controller(`v${process.env.VERSION}/auth`)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
